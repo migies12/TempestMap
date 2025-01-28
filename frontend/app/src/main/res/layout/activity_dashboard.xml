@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dashboard_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/dashboard_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- Server Information -->
+        <TextView
+            android:id="@+id/server_ip_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Server Public IP Address:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/server_ip_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/server_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Server Local Time (GMT):"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/server_time_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/backend_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Backend User Name:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/backend_name_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+        <!-- Client Information -->
+        <TextView
+            android:id="@+id/client_ip_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Client IP Address:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/client_ip_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/client_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Client Local Time (GMT):"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/client_time_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+        <!-- User Information -->
+        <TextView
+            android:id="@+id/logged_in_user_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logged-In User Name:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/logged_in_user_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:paddingBottom="8dp" />
+
+    </LinearLayout>
+</ScrollView>

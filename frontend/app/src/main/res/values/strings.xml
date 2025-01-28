@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">M1</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_compose_based">ComposeBasedActivity</string>
+    <string name="grant_location_permission_button_text">Grant Location Permission</string>
+    <string name="open_compose_based_view_button_text">Open Compose Based View</string>
+    <string name="open_google_maps_activity">Open Google Maps Activity</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="timer">Timer</string>
+    <string name="phone_details">Phone Details</string>
+    <string name="my_favourite_city">My Favourite City</string>
+    <string name="login_server_info">Login + Server Info</string>
+    <string name="title_activity_dashboard">dashboard</string>
+</resources>
