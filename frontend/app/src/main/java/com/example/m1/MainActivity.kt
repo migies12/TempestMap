@@ -162,7 +162,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleFailure(e: GetCredentialException) {
-        Log.e(TAG, "Error getting credential", e)
         Toast.makeText(this, "Error getting credential", Toast.LENGTH_SHORT).show()
     }
 
@@ -311,6 +310,7 @@ class MainActivity : AppCompatActivity() {
                     )
                     handleSignIn(result)
                 } catch (e: GetCredentialException) {
+                    Log.e(TAG, "Error getting credential", e)
                     handleFailure(e)
                 }
             }
