@@ -42,6 +42,10 @@
             android:exported="false"
             android:label="@string/title_activity_maps" />
         <activity
+            android:name=".MapboxActivity"
+            android:exported="false"
+            android:label="@string/title_activity_mapbox" />
+        <activity
             android:name=".ComposeBasedActivity"
             android:exported="false"
             android:label="@string/title_activity_compose_based"

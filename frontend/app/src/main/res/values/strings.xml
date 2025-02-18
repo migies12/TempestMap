@@ -13,4 +13,6 @@
     <string name="my_favourite_city">My Favourite City</string>
     <string name="login_server_info">Login + Server Info</string>
     <string name="title_activity_dashboard">dashboard</string>
+    <string name="mapbox_button_text">Open Mapbox App</string>
+    <string name="title_activity_mapbox">Mapbox Activity</string>
 </resources>

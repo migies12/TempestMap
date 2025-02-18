@@ -26,9 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Add WEB_CLIENT_ID from local.properties (if it exists)
-        val webClientId = properties.getProperty("WEB_CLIENT_ID", "")
-        buildConfigField("String", "WEB_CLIENT_ID", "\"$webClientId\"")
+
     }
 
     buildTypes {

@@ -321,6 +321,43 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TimerActivity::class.java)
             startActivity(intent)
         }
+        // Button #5: Mapbox
+        findViewById<Button>(R.id.mapbox_button).setOnClickListener {
+            // Location Permission + Grant
+            Log.d(TAG, "Location permission button clicked")
+            Toast.makeText(this, "Location permission button clicked", Toast.LENGTH_SHORT).show()
+
+            val shouldShowFindRationals =
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+            val shouldSHowCoarseRationale =
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
+
+            val finePermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            val coarsePermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            Log.d(
+                TAG,
+                "onClick: shouldShowRequestPermissionRationel for FINE Location: $shouldShowFindRationals"
+            )
+            Log.d(
+                TAG,
+                "onClick: shouldShowRequestPermissionRationel for COARSE Location: $shouldSHowCoarseRationale"
+            )
+            Log.d(
+                TAG,
+                "onClick: Permission STATUS for LOCATIONS: $finePermissionGranted, COARSE Location: $coarsePermissionGranted"
+            )
+            checkLocationPermission()
+
+            // Navigate to MapboxActivity
+            val intent = Intent(this, MapboxActivity::class.java)
+            startActivity(intent)
+        }
 
         // Location Permission
         findViewById<Button>(R.id.location_permission_button).setOnClickListener {
