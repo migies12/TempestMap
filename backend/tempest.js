@@ -110,9 +110,10 @@ app.get('/comment/:event_id', async (req, res) => {
   }
 });
 
-app.delete('/comment', async (req, res) => {
-
-  const { event_id, comment_id } = req.body;
+app.delete('/comment/:event_id', async (req, res) => {
+  
+  const { event_id } = req.params;
+  const comment_id = req.body.comment_id || req.query.comment_id;
   
   if (!event_id || !comment_id) {
     return res.status(400).json({ error: 'Missing event_id or comment_id in request body.' });
