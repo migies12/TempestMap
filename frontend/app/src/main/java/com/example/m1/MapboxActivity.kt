@@ -33,8 +33,14 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
     companion object {
         private const val DEBUG_TAG = "MapBoxActivity"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-        private const val WILDFIREMARKER_ICON_ID = "wildfiremarker-icon" // Unique ID for the marker icon
+
+        // Define the marker icons and sizez
+        private const val WILDFIREMARKER_ICON_ID = "wildfiremarker-icon"
         private const val WILDFIREMARKER_ICON_SIZE = 200 // Size of the marker icon in pixels
+
+        private const val HOME_ICON_ID = "home-icon"
+        private const val HOME_ICON_SIZE = 200 // Size of the marker icon in pixels
+
     }
 
     /**
@@ -87,15 +93,23 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         }
 
         // Load the map style and add the marker icons in Drawables
-
         mapView.mapboxMap.loadStyle(
             Style.STANDARD
         ) { style ->
-            val markerBitmap = drawableToBitmap(
+
+            //Loads all the icons into the style
+            val wildfireMarkerBitmap = drawableToBitmap(
                 ContextCompat.getDrawable(this, R.drawable.wildfiremarker_icon)!!
             )
-            val resizedWildfire = resizeBitmap(markerBitmap, WILDFIREMARKER_ICON_SIZE, WILDFIREMARKER_ICON_SIZE)
+            val resizedWildfire = resizeBitmap(wildfireMarkerBitmap, WILDFIREMARKER_ICON_SIZE, WILDFIREMARKER_ICON_SIZE)
             style.addImage(WILDFIREMARKER_ICON_ID, resizedWildfire)
+
+
+            val homeMarkerBitmap = drawableToBitmap(
+                ContextCompat.getDrawable(this, R.drawable.home_icon)!!
+            )
+            val resizedHome = resizeBitmap(homeMarkerBitmap, HOME_ICON_SIZE, HOME_ICON_SIZE)
+            style.addImage(HOME_ICON_ID, resizedHome)
         }
 
     }
@@ -143,8 +157,13 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
                 .build()
         )
 
+
+
         // Add a marker at the user's location
-        addWildfireMarker(userLocation)
+        addHomeMarker(userLocation)
+
+        // Show a Toast message to confirm the marker was added
+        Toast.makeText(this, "Wildfire Marker added at current location", Toast.LENGTH_SHORT).show()
     }
 
     //TODO: Find a way to make point Annotiation Managers saveable so we can turn them into layers.
@@ -168,9 +187,33 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         // Add the annotation to the map
         pointAnnotationManager.create(pointAnnotationOptions)
 
-        // Show a Toast message to confirm the marker was added
-        Toast.makeText(this, "Marker added at current location", Toast.LENGTH_SHORT).show()
+
     }
+
+    //TODO: Find a way to make point Annotiation Managers saveable so we can turn them into layers.
+    /**
+     * Adds a home marker at a given Point
+     *
+     * @param point Point: Point to add the marker at
+     *
+     * @precondition Point must have a longitude and latitude
+     * @precondition pointAnnotationManager must be initialized
+     */
+    private fun addHomeMarker(point: Point) {
+        // Delete all existing annotations (optional)
+        pointAnnotationManager.deleteAll()
+
+        // Create a new point annotation (marker)
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage(HOME_ICON_ID) // Use the marker icon loaded into the style
+
+        // Add the annotation to the map
+        pointAnnotationManager.create(pointAnnotationOptions)
+
+
+    }
+
 
 
 }
