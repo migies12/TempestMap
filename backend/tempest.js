@@ -6,16 +6,18 @@ const { v4: uuidv4 } = require('uuid');
 
 // SETUP
 const app = express();
-app.use(express.json()); // Middleware to parse JSON request bodies
+app.use(express.json()); 
 
 // AWS
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 AWS.config.update({ region: 'us-west-1' });
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
 
 /* --- API Routes --- */
 
 // TESTING ROUTE FOR CRON JOB
-app.post('/test_append', (req, res) => {
+app.post('/test_cron', (req, res) => {
 
   fetchDisasterData()
   res.status(200).json({ message: "Success!" });
@@ -35,12 +37,15 @@ app.get('/event', async (req, res) => {
   }
 });
 
-app.post('/comment:event_id', async (req, res) => {
+app.post('/comment/:event_id', async (req, res) => {
 
   const { event_id } = req.params;
-  const { comment, user} = req.body;
+  const comment = req.body.comment || req.query.comment;
+  const user = req.body.user || req.query.user;
   
   if (!event_id || !comment) {
+    console.log(event_id)
+    console.log(comment)
     return res.status(400).json({ error: 'Missing event_id or comment in request body' });
   }
   
