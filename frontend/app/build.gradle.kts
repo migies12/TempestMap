@@ -87,4 +87,7 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.15.1")
     implementation("com.mapbox.maps:android:11.10.0")
     implementation("com.mapbox.extension:maps-compose:11.10.0")
+    implementation("com.mapbox.plugin:maps-annotation:11.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3") // For API Calls
+    implementation("com.google.code.gson:gson:2.8.9")  // JSON Parsing
 }
