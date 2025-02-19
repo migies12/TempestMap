@@ -14,15 +14,31 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 /* --- API Routes --- */
 
+// TESTING ROUTE FOR CRON JOB
 app.post('/test_append', (req, res) => {
 
   fetchDisasterData()
   res.status(200).json({ message: "Success!" });
 });
 
-app.post('/comment', async (req, res) => {
-  // Destructure the event_id and comment text from the request body
-  const { event_id, comment, user} = req.body;
+app.get('/event', async (req, res) => {
+  try {
+    const params = {
+      TableName: 'event'
+    };
+
+    const result = await dynamoDB.scan(params).promise();
+    res.status(200).json({ events: result.Items });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ error: 'Error fetching events' });
+  }
+});
+
+app.post('/comment:event_id', async (req, res) => {
+
+  const { event_id } = req.params;
+  const { comment, user} = req.body;
   
   if (!event_id || !comment) {
     return res.status(400).json({ error: 'Missing event_id or comment in request body' });
@@ -56,6 +72,83 @@ app.post('/comment', async (req, res) => {
   } catch (error) {
     console.error('Error appending comment:', error);
     res.status(500).json({ error: 'Error appending comment' });
+  }
+});
+
+app.get('/comment/:event_id', async (req, res) => {
+  const { event_id } = req.params;
+
+  if (!event_id) {
+    return res.status(400).json({ error: 'Missing event_id in the URL parameter.' });
+  }
+
+  try {
+    const params = {
+      TableName: 'event',
+      Key: { event_id },
+      ProjectionExpression: 'comments',
+    };
+
+    const result = await dynamoDB.get(params).promise();
+
+    if (!result.Item) {
+      return res.status(404).json({ error: 'Event not found.' });
+    }
+
+    res.status(200).json({ 
+      event_id,
+      comments: result.Item.comments || []
+    });
+  } catch (error) {
+    console.error('Error retrieving comments:', error);
+    res.status(500).json({ error: 'Error retrieving comments.' });
+  }
+});
+
+app.delete('/comment', async (req, res) => {
+
+  const { event_id, comment_id } = req.body;
+  
+  if (!event_id || !comment_id) {
+    return res.status(400).json({ error: 'Missing event_id or comment_id in request body.' });
+  }
+  
+  try {
+    // Retrieve the event item, focusing on the comments attribute
+    const getParams = {
+      TableName: 'event',
+      Key: { event_id },
+      ProjectionExpression: 'comments'
+    };
+    
+    const data = await dynamoDB.get(getParams).promise();
+    if (!data.Item) {
+      return res.status(404).json({ error: 'Event not found.' });
+    }
+    
+    const comments = data.Item.comments || [];
+    // Find the index of the comment with the provided comment_id
+    const commentIndex = comments.findIndex(c => c.comment_id === comment_id);
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+    
+    // Use an update expression to remove the comment at the identified index
+    const updateParams = {
+      TableName: 'event',
+      Key: { event_id },
+      UpdateExpression: `REMOVE comments[${commentIndex}]`,
+      ReturnValues: 'UPDATED_NEW'
+    };
+    
+    const updateResult = await dynamoDB.update(updateParams).promise();
+    res.status(200).json({
+      message: 'Comment removed successfully.',
+      updatedAttributes: updateResult.Attributes
+    });
+  } catch (error) {
+    console.error('Error removing comment:', error);
+    res.status(500).json({ error: 'Error removing comment.' });
   }
 });
 
