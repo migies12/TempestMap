@@ -23,6 +23,8 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import kotlinx.coroutines.*
+
 
 
 //API CALLS SHOULD BE MOVED TO NEW FILE
@@ -83,10 +85,13 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
     private lateinit var pointAnnotationManager: PointAnnotationManager
     private lateinit var locationManager: LocationManager
     private var globalEvents: List<Event> = emptyList()
+    private val fetchScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 
     companion object {
         private const val DEBUG_TAG = "MapBoxActivity"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+
 
         // Define the marker icons and sizez
         private const val WILDFIREMARKER_ICON_ID = "wildfiremarker-icon"
@@ -116,7 +121,8 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         loadMapStyle()
         checkLocationPermissionAndFetch()
 
-        fetchEvents()
+        //Start coroutine to get event data
+        startFetchingEvents()
     }
 
 
@@ -270,12 +276,21 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
     }
 
+    private fun startFetchingEvents() {
+        fetchScope.launch {
+            while (isActive) {
+                fetchEvents()
+                delay(3600000) //1 hour delay
+            }
+        }
+    }
+
     private fun fetchEvents() {
         RetrofitClient.apiService.getEvents().enqueue(object : Callback<EventResponse> {
             override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        globalEvents = it.events.take(50) // Take first 50 items
+                        globalEvents = it.events.take(50)
                         Log.d("API_SUCCESS", "Fetched ${globalEvents.size} events")
                     }
                 } else {
@@ -287,6 +302,14 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
                 Log.e("API_FAILURE", "Failed to fetch events: ${t.message}")
             }
         })
+    }
+
+
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fetchScope.cancel() // Cancel coroutine to prevent memory leaks
     }
 
 
