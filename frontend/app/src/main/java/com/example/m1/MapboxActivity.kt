@@ -83,6 +83,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
     //Define Class Vars
     private lateinit var mapView: MapView
     private lateinit var pointAnnotationManager: PointAnnotationManager
+    private lateinit var eventAnnotationManager: PointAnnotationManager
     private lateinit var locationManager: LocationManager
     private var globalEvents: List<Event> = emptyList()
     private val fetchScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -95,10 +96,13 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         // Define the marker icons and sizez
         private const val WILDFIREMARKER_ICON_ID = "wildfiremarker-icon"
-        private const val WILDFIREMARKER_ICON_SIZE = 200 // Size of the marker icon in pixels
+        private const val WILDFIREMARKER_ICON_SIZE = 150 // Size of the marker icon in pixels
 
         private const val HOME_ICON_ID = "home-icon"
-        private const val HOME_ICON_SIZE = 200 // Size of the marker icon in pixels
+        private const val HOME_ICON_SIZE = 150
+
+        private const val EARTHQUAKE_ICON_ID = "earthquake-icon"
+        private const val EARTHQUAKE_ICON_SIZE = 100
 
     }
 
@@ -117,11 +121,14 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         //Define our class vars
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         pointAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
+
 
         loadMapStyle()
         checkLocationPermissionAndFetch()
 
         //Start coroutine to get event data
+        //fetchEvents()
         startFetchingEvents()
     }
 
@@ -172,6 +179,12 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
             )
             val resizedHome = resizeBitmap(homeMarkerBitmap, HOME_ICON_SIZE, HOME_ICON_SIZE)
             style.addImage(HOME_ICON_ID, resizedHome)
+
+            val earthquakeMarkerBitmap = drawableToBitmap(
+                ContextCompat.getDrawable(this, R.drawable.earthquake_icon)!!
+            )
+            val resizedEarthquake = resizeBitmap(earthquakeMarkerBitmap, EARTHQUAKE_ICON_SIZE, EARTHQUAKE_ICON_SIZE)
+            style.addImage(EARTHQUAKE_ICON_ID, resizedEarthquake)
         }
 
     }
@@ -215,7 +228,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         mapView.mapboxMap.setCamera(
             CameraOptions.Builder()
                 .center(userLocation)
-                .zoom(2.0) // Adjust the zoom level as needed
+                .zoom(4.0) // Adjust the zoom level as needed
                 .build()
         )
 
@@ -235,11 +248,11 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
      * @param point Point: Point to add the marker at
      *
      * @precondition Point must have a longitude and latitude
-     * @precondition pointAnnotationManager must be initialized
+     * @precondition eventAnnotationManager must be initialized
      */
     private fun addWildfireMarker(point: Point) {
-        // Delete all existing annotations (optional)
-        pointAnnotationManager.deleteAll()
+        eventAnnotationManager.deleteAll()
+
 
         // Create a new point annotation (marker)
         val pointAnnotationOptions = PointAnnotationOptions()
@@ -247,7 +260,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
             .withIconImage(WILDFIREMARKER_ICON_ID) // Use the marker icon loaded into the style
 
         // Add the annotation to the map
-        pointAnnotationManager.create(pointAnnotationOptions)
+        eventAnnotationManager.create(pointAnnotationOptions)
 
 
     }
@@ -259,21 +272,30 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
      * @param point Point: Point to add the marker at
      *
      * @precondition Point must have a longitude and latitude
-     * @precondition pointAnnotationManager must be initialized
+     * @precondition eventAnnotationManager must be initialized
      */
     private fun addHomeMarker(point: Point) {
-        // Delete all existing annotations (optional)
-        pointAnnotationManager.deleteAll()
 
-        // Create a new point annotation (marker)
+
+        // Create a new point annotation
         val pointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
-            .withIconImage(HOME_ICON_ID) // Use the marker icon loaded into the style
+            .withIconImage(HOME_ICON_ID)
 
         // Add the annotation to the map
         pointAnnotationManager.create(pointAnnotationOptions)
+    }
+
+    private fun addEarthquakeMarker(point: Point) {
 
 
+        // Create a new point annotation
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage(EARTHQUAKE_ICON_ID)
+
+        // Add the annotation to the map
+        eventAnnotationManager.create(pointAnnotationOptions)
     }
 
     private fun startFetchingEvents() {
@@ -292,6 +314,11 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
                     response.body()?.let {
                         globalEvents = it.events.take(50)
                         Log.d("API_SUCCESS", "Fetched ${globalEvents.size} events")
+                        Log.d("API_SUCCESS", "First event: ${globalEvents[0]}")
+
+                        //clear passed events
+                        eventAnnotationManager.deleteAll()
+                        populateEventsOnMap()
                     }
                 } else {
                     Log.e("API_ERROR", "Response not successful: ${response.errorBody()?.string()}")
@@ -302,6 +329,20 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
                 Log.e("API_FAILURE", "Failed to fetch events: ${t.message}")
             }
         })
+    }
+
+    private fun populateEventsOnMap() {
+        for (event in globalEvents) {
+            val point = Point.fromLngLat(event.lng, event.lat)
+            Log.d("API_POPULATE", "Populating event: ${event.event_name}")
+            if (event.event_type == "WF") {
+                addWildfireMarker(point)
+            } else if (event.event_type == "EQ") {
+                addEarthquakeMarker(point)
+            }
+        }
+
+
     }
 
 
