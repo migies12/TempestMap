@@ -1,6 +1,7 @@
 package com.example.m1
 
 import android.Manifest
+import android.util.Log
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -23,12 +24,65 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 
+
+//API CALLS SHOULD BE MOVED TO NEW FILE
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.http.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+data class EventResponse(
+    val events: List<Event>
+)
+
+data class Event(
+    val event_type: String,
+    val date: String,
+    val estimated_end_date: String,
+    val lng: Double,
+    val event_id: String,
+    val comments: List<String>,
+    val lat: Double,
+    val country_code: String,
+    val created_time: String,
+    val source_event_id: String,
+    val continent: String,
+    val event_name: String
+)
+
+interface ApiService {
+    @GET("prod/event")
+    fun getEvents(): Call<EventResponse>
+}
+
+object RetrofitClient {
+    private const val BASE_URL = "https://tocuul9kqj.execute-api.us-west-1.amazonaws.com/"
+
+    val apiService: ApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 class MapboxActivity : AppCompatActivity(), LocationListener {
 
     //Define Class Vars
     private lateinit var mapView: MapView
     private lateinit var pointAnnotationManager: PointAnnotationManager
     private lateinit var locationManager: LocationManager
+    private var globalEvents: List<Event> = emptyList()
 
     companion object {
         private const val DEBUG_TAG = "MapBoxActivity"
@@ -61,6 +115,8 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         loadMapStyle()
         checkLocationPermissionAndFetch()
+
+        fetchEvents()
     }
 
 
@@ -212,6 +268,25 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         pointAnnotationManager.create(pointAnnotationOptions)
 
 
+    }
+
+    private fun fetchEvents() {
+        RetrofitClient.apiService.getEvents().enqueue(object : Callback<EventResponse> {
+            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        globalEvents = it.events.take(50) // Take first 50 items
+                        Log.d("API_SUCCESS", "Fetched ${globalEvents.size} events")
+                    }
+                } else {
+                    Log.e("API_ERROR", "Response not successful: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
+                Log.e("API_FAILURE", "Failed to fetch events: ${t.message}")
+            }
+        })
     }
 
 
