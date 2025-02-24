@@ -122,10 +122,18 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         mapView = MapView(this)
         setContentView(mapView)
 
+    // Center map in North America on boot
+        mapView.mapboxMap.setCamera(
+            CameraOptions.Builder()
+                .center(Point.fromLngLat(-95.7129, 37.0902)) // Center on North America
+                .zoom(2.0) // Adjust the zoom level as needed
+                .build()
+        )
+
         //Define our class vars
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
         eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
 
         // Set up the click listener for the event annotations
         eventAnnotationManager.addClickListener(
@@ -241,7 +249,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         mapView.mapboxMap.setCamera(
             CameraOptions.Builder()
                 .center(userLocation)
-                .zoom(4.0) // Adjust the zoom level as needed
+                .zoom(3.0) // Adjust the zoom level as needed
                 .build()
         )
 
