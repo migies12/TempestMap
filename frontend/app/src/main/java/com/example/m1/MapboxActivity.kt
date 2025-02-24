@@ -262,8 +262,6 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
      * @precondition eventAnnotationManager must be initialized
      */
     private fun addWildfireMarker(point: Point) {
-        eventAnnotationManager.deleteAll()
-
 
         // Create a new point annotation (marker)
         val pointAnnotationOptions = PointAnnotationOptions()
@@ -381,7 +379,8 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
             Log.d("API_POPULATE", "Populating event: ${event.event_name}")
             if (event.event_type == "WF") {
                 addWildfireMarker(point)
-            } else if (event.event_type == "EQ") {
+            }
+            if (event.event_type == "EQ") {
                 addEarthquakeMarker(point)
             }
         }
