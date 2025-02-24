@@ -184,10 +184,13 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         // Load the map style and add the marker icons in Drawables
         mapView.mapboxMap.loadStyle(
-             Style.SATELLITE_STREETS
             //Diff Options that look good:
+//            "mapbox://styles/migies12/cm7jm8tzo006901t1epyf44vd"
 //            Style.OUTDOORS
 //            Style.SATELLITE
+            Style.SATELLITE_STREETS
+//            Style.DARK
+//            Style.Light
         ) { style ->
 
             //Loads all the icons into the style
