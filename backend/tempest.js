@@ -17,10 +17,14 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 /* --- API Routes --- */
 
 // TESTING ROUTE FOR CRON JOB
-app.post('/test_cron', (req, res) => {
-
-  fetchDisasterData()
-  res.status(200).json({ message: "Success!" });
+app.post('/test_cron', async (req, res) => {
+  try {
+    await fetchDisasterData();
+    res.status(200).json({ message: "Disaster data fetched successfully!" });
+  } catch (error) {
+    console.error('Error in fetchDisasterData:', error);
+    res.status(500).json({ error: "Error fetching disaster data" });
+  }
 });
 
 app.get('/event', async (req, res) => {
@@ -158,6 +162,62 @@ app.delete('/comment/:event_id', async (req, res) => {
   }
 });
 
+app.post('/user', async (req, res) => {
+
+  const name = req.body.name || req.query.name;
+  const location = req.body.location || req.query.location;
+  const account_type = req.body.account_type || req.query.account_type;
+  
+  if (!name || !location || !account_type) {
+    return res.status(400).json({ error: 'Missing name, location, or account_type in request body' });
+  }
+  
+  const newUser = {
+    user_id: uuidv4(),
+    name,
+    location,
+    account_type,
+    created_at: new Date().toISOString()
+  };
+
+  const params = {
+    TableName: 'user', 
+    Item: newUser
+  };
+
+  try {
+    await dynamoDB.put(params).promise();
+    res.status(201).json({ message: 'User created successfully', user: newUser });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Error creating user' });
+  }
+});
+
+app.get('/user/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  
+  if (!user_id) {
+    return res.status(400).json({ error: 'Missing user_id in URL parameter.' });
+  }
+
+  const params = {
+    TableName: 'user',
+    Key: { user_id }
+  };
+
+  try {
+    const result = await dynamoDB.get(params).promise();
+    if (!result.Item) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    res.status(200).json({ user: result.Item });
+  } catch (error) {
+    console.error('Error retrieving user:', error);
+    res.status(500).json({ error: 'Error retrieving user' });
+  }
+});
+
 /* --- Helper Functions --- */
 
 const deleteAllEvents = async () => {
@@ -223,25 +283,47 @@ const fetchDisasterData = async () => {
   try {
     console.log("Cron Job Process Ran");
 
+    const [responseDefault, responseWF] = await Promise.all([
+      axios.get('https://api.ambeedata.com/disasters/latest/by-continent', {
+        params: {
+          continent: 'NAR',
+          page: 1,
+          limit: 50,
+        },
+        headers: {
+          'x-api-key': '2589d0a50837e5fcf4d5b249f289ca84dd20bf924b5987c2bad7141eca095041',
+        },
+      }),
+      axios.get('https://api.ambeedata.com/disasters/latest/by-continent', {
+        params: {
+          continent: 'NAR',
+          page: 1,
+          limit: 50,
+          eventType: 'WF',
+        },
+        headers: {
+          'x-api-key': '2589d0a50837e5fcf4d5b249f289ca84dd20bf924b5987c2bad7141eca095041',
+        },
+      }),
+    ]);
+
     await deleteAllEvents();
 
-    const response = await axios.get('https://api.ambeedata.com/disasters/latest/by-continent', {
-      params: {
-        continent: 'NAR',
-        page: 1,
-        limit: 50,
-      },
-      headers: {
-        'x-api-key': '2589d0a50837e5fcf4d5b249f289ca84dd20bf924b5987c2bad7141eca095041',
-      },
-    });
-    console.log('Weather/Disaster data retrieved:', response.data);
+    const eventsDefault = Array.isArray(responseDefault.data.result)
+      ? responseDefault.data.result
+      : [];
+    const eventsWF = Array.isArray(responseWF.data.result)
+      ? responseWF.data.result
+      : [];
 
-    const events = response.data.result;
-    if (Array.isArray(events)) {
-      await appendEvents(events);
+    const combinedEvents = [...eventsDefault, ...eventsWF];
+
+    console.log('Combined weather/disaster data retrieved:', combinedEvents);
+
+    if (combinedEvents.length > 0) {
+      await appendEvents(combinedEvents);
     } else {
-      console.error("Expected 'result' to be an array of events.");
+      console.error("No events retrieved from APIs.");
     }
   } catch (error) {
     console.error('Error fetching weather/disaster data:', error);
