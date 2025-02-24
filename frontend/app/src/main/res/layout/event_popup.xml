@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/popup_background"> <!-- Add a background drawable for better aesthetics -->
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/eventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event Title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Warning -->
+    <TextView
+        android:id="@+id/eventWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Warning: Event Type detected at Country on Date"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Expected End Date -->
+    <TextView
+        android:id="@+id/eventEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This event is expected to end on Estimated End Date"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Danger Level -->
+    <TextView
+        android:id="@+id/eventDangerLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tempest rates this a Danger Level on 100 as your personal danger level based on your proximity."
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:paddingBottom="16dp" />
+
+    <!-- Footer -->
+    <TextView
+        android:id="@+id/eventFooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please refer to your local authorities to get more information about this notification."
+        android:textSize="14sp"
+        android:textColor="@color/gray"
+        android:paddingBottom="8dp" />
+
+</LinearLayout>
