@@ -24,6 +24,9 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import kotlinx.coroutines.*
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 
 
 
@@ -52,7 +55,8 @@ data class Event(
     val created_time: String,
     val source_event_id: String,
     val continent: String,
-    val event_name: String
+    val event_name: String,
+    val danger_level: Int
 )
 
 interface ApiService {
@@ -82,7 +86,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
     //Define Class Vars
     private lateinit var mapView: MapView
-    private lateinit var pointAnnotationManager: PointAnnotationManager
+    private lateinit var homeAnnotationManager: PointAnnotationManager
     private lateinit var eventAnnotationManager: PointAnnotationManager
     private lateinit var locationManager: LocationManager
     private var globalEvents: List<Event> = emptyList()
@@ -120,8 +124,17 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         //Define our class vars
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        pointAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
         eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
+
+        // Set up the click listener for the event annotations
+        eventAnnotationManager.addClickListener(
+            OnPointAnnotationClickListener { annotation ->
+                val event = globalEvents.find { it.lng == annotation.point.longitude() && it.lat == annotation.point.latitude() }
+                event?.let { showEventDetailsPopup(it) }
+                true
+            }
+        )
 
 
         loadMapStyle()
@@ -283,7 +296,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
             .withIconImage(HOME_ICON_ID)
 
         // Add the annotation to the map
-        pointAnnotationManager.create(pointAnnotationOptions)
+        homeAnnotationManager.create(pointAnnotationOptions)
     }
 
     private fun addEarthquakeMarker(point: Point) {
@@ -296,6 +309,39 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         // Add the annotation to the map
         eventAnnotationManager.create(pointAnnotationOptions)
+    }
+
+    /**
+     * Shows a popup with the details of the event.
+     *
+     * @param event The event to display details for.
+     */
+    /**
+     * Shows a popup with the details of the event in a nicer format.
+     *
+     * @param event The event to display details for.
+     */
+    private fun showEventDetailsPopup(event: Event) {
+        val dialogView = layoutInflater.inflate(R.layout.event_popup, null)
+        val eventTitle = dialogView.findViewById<TextView>(R.id.eventTitle)
+        val eventWarning = dialogView.findViewById<TextView>(R.id.eventWarning)
+        val eventEndDate = dialogView.findViewById<TextView>(R.id.eventEndDate)
+        val eventDangerLevel = dialogView.findViewById<TextView>(R.id.eventDangerLevel)
+        val eventFooter = dialogView.findViewById<TextView>(R.id.eventFooter)
+
+        // Set the event details
+        eventTitle.text = event.event_name
+        eventWarning.text = "Warning: ${event.event_type} detected on ${event.date}"
+        eventEndDate.text = "This event is expected to end on ${event.estimated_end_date}"
+        eventDangerLevel.text = "Tempest rates this a ${event.danger_level} on 100 as your personal danger level based on your proximity."
+        eventFooter.text = "Please refer to your local authorities to get more information about this notification."
+
+        AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun startFetchingEvents() {
