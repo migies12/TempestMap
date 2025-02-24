@@ -33,13 +33,21 @@ app.get('/event', async (req, res) => {
       TableName: 'event'
     };
 
-    const result = await dynamoDB.scan(params).promise();
-    res.status(200).json({ events: result.Items });
+    let items = [];
+    let scanResults;
+    do {
+      scanResults = await dynamoDB.scan(params).promise();
+      items = items.concat(scanResults.Items);
+      params.ExclusiveStartKey = scanResults.LastEvaluatedKey;
+    } while (scanResults.LastEvaluatedKey);
+
+    res.status(200).json({ events: items });
   } catch (error) {
     console.error('Error fetching events:', error);
     res.status(500).json({ error: 'Error fetching events' });
   }
 });
+
 
 app.post('/comment/:event_id', async (req, res) => {
 
