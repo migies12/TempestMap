@@ -14,6 +14,7 @@
         android:text="Event Title"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:paddingBottom="8dp" />
 
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:text="Warning: Event Type detected at Country on Date"
         android:textSize="16sp"
+        android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:paddingBottom="8dp" />
 
@@ -34,6 +36,7 @@
         android:layout_height="wrap_content"
         android:text="This event is expected to end on Estimated End Date"
         android:textSize="16sp"
+        android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:paddingBottom="8dp" />
 
@@ -44,6 +47,7 @@
         android:layout_height="wrap_content"
         android:text="Tempest rates this a Danger Level on 100 as your personal danger level based on your proximity."
         android:textSize="16sp"
+        android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:paddingBottom="16dp" />
 
@@ -54,7 +58,7 @@
         android:layout_height="wrap_content"
         android:text="Please refer to your local authorities to get more information about this notification."
         android:textSize="14sp"
+        android:fontFamily="@font/roboto"
         android:textColor="@color/gray"
         android:paddingBottom="8dp" />
-
 </LinearLayout>

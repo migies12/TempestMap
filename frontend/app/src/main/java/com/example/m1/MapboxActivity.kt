@@ -100,13 +100,13 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
         // Define the marker icons and sizez
         private const val WILDFIREMARKER_ICON_ID = "wildfiremarker-icon"
-        private const val WILDFIREMARKER_ICON_SIZE = 150 // Size of the marker icon in pixels
+        private const val WILDFIREMARKER_ICON_SIZE = 75 // Size of the marker icon in pixels
 
         private const val HOME_ICON_ID = "home-icon"
         private const val HOME_ICON_SIZE = 150
 
         private const val EARTHQUAKE_ICON_ID = "earthquake-icon"
-        private const val EARTHQUAKE_ICON_SIZE = 100
+        private const val EARTHQUAKE_ICON_SIZE = 75
 
     }
 
@@ -250,11 +250,9 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
         // Add a marker at the user's location
         addHomeMarker(userLocation)
 
-        // Show a Toast message to confirm the marker was added
-        Toast.makeText(this, "Wildfire Marker added at current location", Toast.LENGTH_SHORT).show()
     }
 
-    //TODO: Find a way to make point Annotiation Managers saveable so we can turn them into layers.
+
     /**
      * Adds a wildfire marker at a given Point
      *
@@ -278,7 +276,7 @@ class MapboxActivity : AppCompatActivity(), LocationListener {
 
     }
 
-    //TODO: Find a way to make point Annotiation Managers saveable so we can turn them into layers.
+
     /**
      * Adds a home marker at a given Point
      *
