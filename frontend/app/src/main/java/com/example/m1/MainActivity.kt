@@ -23,10 +23,16 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.fragment.app.Fragment
+import com.example.m1.fragments.AlertsFragment
+import com.example.m1.fragments.HomeFragment
+import com.example.m1.fragments.MapFragment
+import com.example.m1.fragments.ProfileFragment
 
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -41,6 +47,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val activityScope = CoroutineScope(Dispatchers.Main)
+
+    lateinit var bottomNav : BottomNavigationView
+
+    private  fun loadFragment(fragment: Fragment){
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.container,fragment)
+        transaction.commit()
+    }
 
     private fun checkLocationPermission() {
         when {
@@ -175,6 +189,30 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        loadFragment(HomeFragment())
+        bottomNav = findViewById(R.id.bottomNav) as BottomNavigationView
+        bottomNav.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> {
+                    loadFragment(HomeFragment())
+                    true
+                }
+                R.id.nav_map -> {
+                    loadFragment(MapFragment())
+                    true
+                }
+                R.id.nav_profile -> {
+                    loadFragment(ProfileFragment())
+                    true
+                }
+                R.id.nav_alerts -> {
+                    loadFragment(AlertsFragment())
+                    true
+                }
+                else -> false
+            }
         }
 
         // Button #1: Google Maps

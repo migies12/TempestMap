@@ -70,6 +70,8 @@ dependencies {
     implementation(libs.play.services.location)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.4.0")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
