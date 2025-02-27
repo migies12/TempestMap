@@ -54,11 +54,11 @@
             android:name=".MapboxActivity"
             android:exported="false"
             android:label="@string/title_activity_mapbox" />
-        <activity
+        <!--<activity
             android:name=".ComposeBasedActivity"
             android:exported="false"
             android:label="@string/title_activity_compose_based"
-            android:theme="@style/Theme.M1" />
+            android:theme="@style/Theme.M1" />-->
         <activity
             android:name=".MainActivity"
             android:exported="true">

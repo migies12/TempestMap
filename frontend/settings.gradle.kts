@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "M1"
+rootProject.name = "TempestMapFrontend"
 include(":app")

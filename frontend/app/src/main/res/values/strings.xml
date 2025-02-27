@@ -17,4 +17,7 @@
     <string name="title_activity_mapbox">Mapbox Activity</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in_button">Sign In</string>
+    <string name="sign_in_Title">Why sign in?</string>
+    <string name="sign_in_body">Signing in allows you to set up a profile. This lets you personalize your experience with the application, as well as allowing you to comment on weather pings</string>
 </resources>

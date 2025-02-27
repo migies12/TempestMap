@@ -1,6 +1,7 @@
 package com.example.m1
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.credentials.GetCredentialException
@@ -28,6 +29,7 @@ import com.example.m1.fragments.AlertsFragment
 import com.example.m1.fragments.HomeFragment
 import com.example.m1.fragments.MapFragment
 import com.example.m1.fragments.ProfileFragment
+import com.example.m1.fragments.SignInFragment
 
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -72,9 +74,9 @@ class MainActivity : AppCompatActivity() {
 
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-                        Log.d(TAG, "Requesting location permission with rationale")
-                        showLocationPermissionRationale()
-                    }
+                Log.d(TAG, "Requesting location permission with rationale")
+                showLocationPermissionRationale()
+            }
 
             else -> {
                 Log.d(TAG, "Requesting Location Permissions")
@@ -143,7 +145,12 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_profile -> {
-                    loadFragment(ProfileFragment())
+                    val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                    val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
+
+                    val fragment = if (isSignedIn) ProfileFragment() else SignInFragment()
+                    Log.d(TAG, "Fragment: " + fragment)
+                    loadFragment(fragment)
                     true
                 }
                 R.id.nav_alerts -> {
@@ -155,4 +162,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
