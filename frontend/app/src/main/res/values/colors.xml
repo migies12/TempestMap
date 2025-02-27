@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Core Neutral Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#808080</color>
+
+    <!-- Brand Palette -->
+    <!--
+         Darkest color from the palette, good for backgrounds or primary dark themes
+         #023047
+    -->
+    <color name="colorBackground">#023047</color>
+
+    <!--
+         Main brand color (teal-like), good for primary elements
+         #219EBC
+    -->
+    <color name="colorPrimary">#219EBC</color>
+
+    <!--
+         Lighter teal, works well for secondary UI components
+         #8ECAE6
+    -->
+    <color name="colorSecondary">#8ECAE6</color>
+
+    <!--
+         Accent colors (warm tones), for highlights or call-to-action
+         #FFB703 and #FB8500
+    -->
+    <color name="colorAccentYellow">#FFB703</color>
+    <color name="colorAccentOrange">#FB8500</color>
 </resources>
