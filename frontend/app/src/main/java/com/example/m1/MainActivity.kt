@@ -27,7 +27,7 @@ import androidx.credentials.GetCredentialResponse
 import androidx.fragment.app.Fragment
 import com.example.m1.fragments.AlertsFragment
 import com.example.m1.fragments.HomeFragment
-import com.example.m1.fragments.MapFragment
+import com.example.m1.fragments.MapboxFragment
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
 
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_map -> {
-                    loadFragment(MapFragment())
+                    loadFragment(MapboxFragment())
                     true
                 }
                 R.id.nav_profile -> {
