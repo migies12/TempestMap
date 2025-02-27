@@ -40,6 +40,7 @@ class ProfileFragment : Fragment() {
     private lateinit var dailyWeatherCheck: CheckBox
     private lateinit var specialWeatherCheck: CheckBox
     private lateinit var saveButton: Button
+    private lateinit var signOutButton: Button  // <-- New sign out button
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -77,6 +78,7 @@ class ProfileFragment : Fragment() {
         specialWeatherCheck = rootView.findViewById(R.id.special_weather_checkbox)
 
         saveButton = rootView.findViewById(R.id.save_button)
+        signOutButton = rootView.findViewById(R.id.sign_out_button) // Initialize sign out button
     }
 
     private fun setupClickListeners() {
@@ -94,6 +96,11 @@ class ProfileFragment : Fragment() {
                 // updateProfileOnServer()
                 Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Sign out button click listener
+        signOutButton.setOnClickListener {
+            signOut()
         }
     }
 
@@ -176,6 +183,17 @@ class ProfileFragment : Fragment() {
         }
 
         Log.d(TAG, "Profile saved: $fullName, $email, $location")
+    }
+
+    private fun signOut() {
+        // Clear sign-in credentials stored in "UserPrefs"
+        val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        signInPrefs.edit().clear().apply()
+        Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
+        // Navigate back to the SignInFragment
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, SignInFragment())
+            .commit()
     }
 
     /**
