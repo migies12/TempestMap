@@ -110,13 +110,18 @@ class SignInFragment : Fragment() {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
-                        // Use googleIdTokenCredential and extract id to validate and
-                        // authenticate on your server.
-                        val googleIdTokenCredential = GoogleIdTokenCredential
-                            .createFrom(credential.data)
-                        Log.d(TAG, "Received Goggle ID token: ${googleIdTokenCredential.idToken.take(10)}")
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        // Use the displayName property directly
+                        val displayName = googleIdTokenCredential.displayName.toString()
+
+                        // Save both sign-in status and full name to SharedPreferences
                         val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                        sharedPreferences.edit().putBoolean("isSignedIn", true).apply() // User is signed in
+                        sharedPreferences.edit()
+                            .putBoolean("isSignedIn", true)
+                            .putString("userName", displayName)
+                            .apply()
+
+                        Log.d(TAG, "Received Google ID token. User full name: $displayName")
                         loadProfileFrag()
                     } catch (e: Exception) {
                         Log.e(TAG, "Received an invalid google id token response", e)

@@ -14,7 +14,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -44,13 +48,20 @@ data class EventResponse(
     val events: List<Event>
 )
 
+data class Comment(
+    val created_at: String,
+    val text: String,
+    val comment_id: String,
+    val user: String
+)
+
 data class Event(
     val event_type: String,
     val date: String,
     val estimated_end_date: String,
     val lng: Double,
     val event_id: String,
-    val comments: List<String>,
+    val comments: List<Comment>, // Updated from List<String> to List<Comment>
     val lat: Double,
     val country_code: String,
     val created_time: String,
@@ -63,6 +74,13 @@ data class Event(
 interface ApiService {
     @GET("prod/event")
     fun getEvents(): Call<EventResponse>
+
+    @POST("prod/comment/{eventId}")
+    fun postComment(
+        @Path("eventId") eventId: String,
+        @Query("comment") comment: String,
+        @Query("user") user: String
+    ): Call<Void>
 }
 
 object RetrofitClient {
@@ -242,12 +260,93 @@ class MapboxFragment : Fragment(), LocationListener {
         val eventDangerLevel = dialogView.findViewById<TextView>(R.id.eventDangerLevel)
         val eventFooter = dialogView.findViewById<TextView>(R.id.eventFooter)
 
-        // Set the event details
+        // Set event details
         eventTitle.text = event.event_name
         eventWarning.text = "Warning: ${event.event_type} detected on ${event.date}"
-        eventEndDate.text = "This event is expected to end on ${event.estimated_end_date}"
-        eventDangerLevel.text = "Tempest rates this a ${event.danger_level} on 100 as your personal danger level based on your proximity."
-        eventFooter.text = "Please refer to your local authorities to get more information about this notification."
+        eventEndDate.text = "Expected end: ${event.estimated_end_date}"
+        eventDangerLevel.text = "Danger Level: ${event.danger_level} / 100 based on your proximity."
+        eventFooter.text = "Refer to local authorities for more information."
+
+        // Comment UI elements
+        val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
+        val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
+        val addCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
+
+        // Comment Bubble - Helper Function
+        fun addCommentBubble(username: String, comment: String) {
+            val bubbleContainer = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(8, 8, 8, 8)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 8, 0, 8)
+                layoutParams = params
+            }
+
+            val usernameTextView = TextView(requireContext()).apply {
+                text = username
+                setTypeface(null, android.graphics.Typeface.BOLD)
+            }
+            bubbleContainer.addView(usernameTextView)
+
+            val commentTextView = TextView(requireContext()).apply {
+                text = comment
+
+                // Set the background depending on the user
+                val bubbleDrawable = if (username == getSignedInUserName()) {
+                    R.drawable.comment_bubble_background_light_blue
+                } else {
+                    R.drawable.comment_bubble_background
+                }
+                setBackgroundResource(bubbleDrawable)
+                setPadding(16, 8, 16, 8)
+            }
+            bubbleContainer.addView(commentTextView)
+
+            commentSection.addView(bubbleContainer)
+        }
+
+        // Populate existing comments
+        event.comments.forEach { comment ->
+            addCommentBubble(comment.user, comment.text)
+        }
+
+        // OnClick Listener for Comments
+        addCommentButton.setOnClickListener {
+            val newComment = commentInput.text.toString().trim()
+            if (newComment.isNotEmpty()) {
+
+                // Retrieve the signed-in user's name from SharedPreferences
+                val userName = getSignedInUserName()
+
+                // Log event_id, newComment, and username
+                Log.d("CommentDebug", "Event ID: ${event.event_id}, Comment: $newComment, Username: $userName")
+
+                // Call the POST API with event.event_id, comment, and user name
+                RetrofitClient.apiService.postComment(event.event_id, newComment, userName)
+                    .enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            if (response.isSuccessful) {
+
+                                // Add the comment bubble only if the POST is successful
+                                addCommentBubble(userName, newComment)
+                                commentInput.text.clear()
+                                Toast.makeText(requireContext(), "Comment added", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to add comment", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+            } else {
+                Toast.makeText(requireContext(), "Please enter a comment", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         AlertDialog.Builder(requireContext())
             .setView(dialogView)
@@ -256,6 +355,13 @@ class MapboxFragment : Fragment(), LocationListener {
             }
             .show()
     }
+
+    // Helper to get the signed-in user's name from SharedPreferences
+    private fun getSignedInUserName(): String {
+        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("userName", "Anonymous") ?: "Anonymous"
+    }
+
 
     private fun startFetchingEvents() {
         fetchScope.launch {

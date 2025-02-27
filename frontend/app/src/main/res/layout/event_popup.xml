@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/popup_background"> <!-- Add a background drawable for better aesthetics -->
+    android:background="@drawable/popup_background">
 
     <!-- Title -->
     <TextView
@@ -50,6 +50,40 @@
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:paddingBottom="16dp" />
+
+    <!-- Comment Section Title -->
+    <TextView
+        android:id="@+id/commentSectionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comments"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingBottom="8dp" />
+
+    <!-- Comment Section: Existing comments will be added here dynamically -->
+    <LinearLayout
+        android:id="@+id/commentSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+        <!-- Existing comments will be added here dynamically -->
+    </LinearLayout>
+
+    <!-- New Comment Input -->
+    <EditText
+        android:id="@+id/commentInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your comment" />
+
+    <!-- Add Comment Button -->
+    <Button
+        android:id="@+id/addCommentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Comment" />
 
     <!-- Footer -->
     <TextView
