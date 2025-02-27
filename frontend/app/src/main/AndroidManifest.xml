@@ -26,9 +26,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TimerActivity"
-            android:exported="false" />
-        <activity
             android:name=".DashboardActivity"
             android:exported="false" />
         <!--
@@ -46,14 +43,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" />
-        <activity
-            android:name=".MapboxActivity"
-            android:exported="false"
-            android:label="@string/title_activity_mapbox" />
+
         <!--<activity
             android:name=".ComposeBasedActivity"
             android:exported="false"
