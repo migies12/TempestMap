@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/userMarkerType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Type: "
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/userMarkerDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description: "
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/commentSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp" />
+
+    <EditText
+        android:id="@+id/commentInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add a comment" />
+
+    <Button
+        android:id="@+id/addCommentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Comment" />
+
+</LinearLayout>
