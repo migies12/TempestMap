@@ -56,55 +56,6 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 
-    private fun checkLocationPermission() {
-        when {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                Log.d(TAG, "Location Permission Granted")
-                Toast.makeText(this,
-                    "Location permission already granted",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-                        Log.d(TAG, "Requesting location permission with rationale")
-                        showLocationPermissionRationale()
-                    }
-
-            else -> {
-                Log.d(TAG, "Requesting Location Permissions")
-                requestLocationPermission()
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    private fun showLocationPermissionRationale() {
-        AlertDialog.Builder(this)
-            .setMessage("Location permission is required to show your location")
-            .setPositiveButton("OK") { dialog, _ ->
-                dialog.dismiss()
-                requestLocationPermission()
-            }.setNegativeButton("Cancel") {dialog, _ ->
-                dialog.dismiss()
-                Toast.makeText(this, "PLease grant the location permission", Toast.LENGTH_SHORT).show()
-            }.show()
-    }
-
-    private fun requestLocationPermission() {
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),0
-        )
-    }
-
     private fun generateHashedNonce(): String {
         val rawNonce = UUID.randomUUID().toString()
         val bytes = rawNonce.toByteArray()
