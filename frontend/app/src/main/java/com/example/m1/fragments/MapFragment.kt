@@ -6,8 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.m1.R
+import com.mapbox.maps.MapView
+import com.mapbox.maps.Style
+
 
 class MapFragment : Fragment() {
+
+    private var mapView: MapView? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
