@@ -30,11 +30,17 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import com.mapbox.maps.plugin.animation.MapAnimationOptions.Companion.mapAnimationOptions
+import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.createPolygonAnnotationManager
+import com.mapbox.maps.toCameraOptions
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -117,6 +123,7 @@ class MapboxFragment : Fragment(), LocationListener {
     private var globalEvents: List<Event> = emptyList()
     private val fetchScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var lastKnownLocation = Location("")
+    private var previousCameraOptions: CameraOptions? = null
 
     companion object {
         private const val DEBUG_TAG = "MapBoxFragment"
@@ -176,11 +183,26 @@ class MapboxFragment : Fragment(), LocationListener {
         eventAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
                 val event = globalEvents.find { it.lng == annotation.point.longitude() && it.lat == annotation.point.latitude() }
-                event?.let { showEventDetailsPopup(it) }
+                event?.let {
+                    // Store current camera position before zooming in
+                    previousCameraOptions = mapView.mapboxMap.cameraState.toCameraOptions()
+
+                    // Animate zoom in to the event location with smooth animation
+                    mapView.mapboxMap.flyTo(
+                        CameraOptions.Builder()
+                            .center(annotation.point)
+                            .zoom(12.0) // Adjust zoom level as needed
+                            .build(),
+                        mapAnimationOptions {
+                            duration(2000) // 2 seconds for smooth animation
+                        }
+                    )
+
+                    showEventDetailsPopup(it)
+                }
                 true
             }
         )
-
         // Set up the click listener for the user annotations
         userAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
@@ -220,7 +242,7 @@ class MapboxFragment : Fragment(), LocationListener {
 
         // Load the map style and add the marker icons in Drawables
         mapView.mapboxMap.loadStyle(
-            Style.SATELLITE_STREETS
+            Style.DARK
         ) { style ->
             // Loads all the icons into the style
             val wildfireMarkerBitmap = drawableToBitmap(
@@ -574,12 +596,28 @@ class MapboxFragment : Fragment(), LocationListener {
             }
         }
 
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
             }
-            .show()
+            .create()
+
+        // Set a dismiss listener to restore the previous camera position with animation
+        dialog.setOnDismissListener {
+            // Restore the previous camera position when the dialog is dismissed
+            previousCameraOptions?.let { prevCamera ->
+                mapView.mapboxMap.flyTo(
+                    prevCamera,
+                    mapAnimationOptions {
+                        duration(2000) // 2 seconds for smooth animation
+                    }
+                )
+            }
+        }
+
+        dialog.show()
+
     }
 
     // Helper to get the signed-in user's name from SharedPreferences
@@ -607,8 +645,6 @@ class MapboxFragment : Fragment(), LocationListener {
                         Log.d("API_SUCCESS", "Fetched ${globalEvents.size} events")
                         Log.d("API_SUCCESS", "First event: ${globalEvents[0]}")
 
-                        // Clear passed events
-                        eventAnnotationManager.deleteAll()
                         populateEventsOnMap()
                     }
                 } else {
