@@ -12,6 +12,7 @@ import com.example.m1.R
 import com.example.m1.data.models.Event
 import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.dialogs.CreateMarkerDialog
+import com.example.m1.ui.dialogs.EventBottomSheetDialog
 import com.example.m1.ui.dialogs.EventDetailsDialog
 import com.example.m1.ui.dialogs.UserMarkerDetailsDialog
 import com.example.m1.ui.map.MarkerManager
@@ -199,7 +200,7 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
     private fun showEventDetailsDialog(event: Event) {
-        EventDetailsDialog(requireContext(), viewModel) {
+        EventBottomSheetDialog(requireContext(), viewModel) {
             // On dismiss - restore camera position
             previousCameraOptions?.let { prevCamera ->
                 mapView.mapboxMap.flyTo(
@@ -211,6 +212,14 @@ class MapboxFragment : Fragment(), LocationListener {
             }
         }.show(event)
     }
+
+//    private fun showEventDetailsDialog(event: Event) {
+//        // Use the new bottom sheet dialog instead of the old dialog
+//        EventBottomSheetDialog(requireContext(), viewModel) {
+//            // On dismiss - No need to restore camera position as map remains visible
+//            // But we can still provide an optional callback if needed
+//        }.show(event)
+//    }
 
     private fun showUserMarkerDetailsDialog(userMarker: UserMarker) {
         UserMarkerDetailsDialog(requireContext(), viewModel).show(userMarker)

@@ -37,4 +37,10 @@
     <color name="danger_low">#FFD700</color>      <!-- Gold -->
     <color name="danger_minimal">#008000</color>  <!-- Green -->
 
+    <!-- Event colors -->
+    <color name="wildfire_color">#FF5722</color>
+    <color name="earthquake_color">#8BC34A</color>
+    <color name="default_event_color">#2196F3</color>
+
+
 </resources>
