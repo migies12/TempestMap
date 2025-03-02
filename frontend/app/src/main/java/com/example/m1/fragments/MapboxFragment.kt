@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.m1.R
@@ -13,7 +14,7 @@ import com.example.m1.data.models.Event
 import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.dialogs.CreateMarkerDialog
 import com.example.m1.ui.dialogs.EventBottomSheetDialog
-import com.example.m1.ui.dialogs.EventDetailsDialog
+import com.example.m1.ui.dialogs.UserMarkerBottomSheetDialog
 import com.example.m1.ui.dialogs.UserMarkerDetailsDialog
 import com.example.m1.ui.map.MarkerManager
 import com.example.m1.ui.viewmodels.MapViewModel
@@ -22,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
+import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.flyTo
@@ -29,6 +31,7 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.toCameraOptions
 
 class MapboxFragment : Fragment(), LocationListener {
@@ -41,6 +44,7 @@ class MapboxFragment : Fragment(), LocationListener {
     private lateinit var fabAddMarker: FloatingActionButton
 
     // Mapbox components
+    private lateinit var mapboxMap: MapboxMap
     private lateinit var homeAnnotationManager: PointAnnotationManager
     private lateinit var eventAnnotationManager: PointAnnotationManager
     private lateinit var userAnnotationManager: PointAnnotationManager
@@ -51,6 +55,7 @@ class MapboxFragment : Fragment(), LocationListener {
 
     // State
     private var previousCameraOptions: CameraOptions? = null
+    private var markerPlacementMode = false
 
     companion object {
         private const val TAG = "MapboxFragment"
@@ -69,12 +74,15 @@ class MapboxFragment : Fragment(), LocationListener {
         mapView = view.findViewById(R.id.mapView)
         fabAddMarker = view.findViewById(R.id.fabAddMarker)
 
+        // Get the MapboxMap instance
+        mapboxMap = mapView.mapboxMap
+
         // Initialize helper classes
         locationHandler = LocationHandler(requireContext(), requireActivity(), this)
         markerManager = MarkerManager(requireContext())
 
         // Set initial camera position
-        mapView.mapboxMap.setCamera(
+        mapboxMap.setCamera(
             CameraOptions.Builder()
                 .center(Point.fromLngLat(-95.7129, 37.0902)) // Center on North America
                 .zoom(2.0)
@@ -107,12 +115,27 @@ class MapboxFragment : Fragment(), LocationListener {
     private fun setupClickListeners() {
         // FAB click listener
         fabAddMarker.setOnClickListener {
-            showCreateMarkerDialog()
+            toggleMarkerPlacementMode()
+        }
+
+        // Map click listener
+        mapboxMap.addOnMapClickListener { point ->
+            if (markerPlacementMode) {
+                // Show marker creation dialog at this point
+                showCreateMarkerDialog(point)
+                // Exit marker placement mode
+                toggleMarkerPlacementMode()
+                return@addOnMapClickListener true
+            }
+            false
         }
 
         // Event marker click listener
         eventAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
+                // If in marker placement mode, ignore marker clicks
+                if (markerPlacementMode) return@OnPointAnnotationClickListener true
+
                 // Find the event by coordinates
                 val event = viewModel.events.value?.find {
                     it.lng == annotation.point.longitude() && it.lat == annotation.point.latitude()
@@ -120,10 +143,10 @@ class MapboxFragment : Fragment(), LocationListener {
 
                 event?.let {
                     // Store current camera position
-                    previousCameraOptions = mapView.mapboxMap.cameraState.toCameraOptions()
+                    previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
 
                     // Zoom to event
-                    mapView.mapboxMap.flyTo(
+                    mapboxMap.flyTo(
                         CameraOptions.Builder()
                             .center(annotation.point)
                             .zoom(12.0)
@@ -143,10 +166,13 @@ class MapboxFragment : Fragment(), LocationListener {
         // User marker click listener
         userAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
+                // If in marker placement mode, ignore marker clicks
+                if (markerPlacementMode) return@OnPointAnnotationClickListener true
+
                 // Find the user marker by coordinates
                 val userMarker = viewModel.userMarkers.value?.find {
-                    it.latitude == annotation.point.latitude() &&
-                            it.longitude == annotation.point.longitude()
+                    it.longitude == annotation.point.longitude() &&
+                            it.latitude == annotation.point.latitude()
                 }
 
                 userMarker?.let {
@@ -155,6 +181,19 @@ class MapboxFragment : Fragment(), LocationListener {
                 true
             }
         )
+    }
+
+    private fun toggleMarkerPlacementMode() {
+        markerPlacementMode = !markerPlacementMode
+
+        if (markerPlacementMode) {
+            // Visual indicator that we're in placement mode
+            fabAddMarker.setImageResource(R.drawable.ic_close) // Make sure you have this icon
+            Toast.makeText(context, "Tap on the map to place a marker", Toast.LENGTH_SHORT).show()
+        } else {
+            // Reset to normal
+            fabAddMarker.setImageResource(R.drawable.ic_add) // Make sure you have this icon
+        }
     }
 
     private fun setupObservers() {
@@ -181,7 +220,7 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
     private fun loadMapStyle() {
-        mapView.mapboxMap.loadStyle(Style.DARK) { style ->
+        mapboxMap.loadStyle(Style.DARK) { style ->
             // Load marker icons
             markerManager.loadMarkerIcons(style)
         }
@@ -191,19 +230,18 @@ class MapboxFragment : Fragment(), LocationListener {
         locationHandler.startLocationUpdates()
     }
 
-    private fun showCreateMarkerDialog() {
-        val lastLocation = viewModel.userLocation.value
-
+    private fun showCreateMarkerDialog(point: Point) {
         CreateMarkerDialog(requireContext(), viewModel) { marker ->
             // Marker created callback - no extra action needed as ViewModel handles it
-        }.show(lastLocation)
+            Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
+        }.show(point)
     }
 
     private fun showEventDetailsDialog(event: Event) {
         EventBottomSheetDialog(requireContext(), viewModel) {
             // On dismiss - restore camera position
             previousCameraOptions?.let { prevCamera ->
-                mapView.mapboxMap.flyTo(
+                mapboxMap.flyTo(
                     prevCamera,
                     MapAnimationOptions.mapAnimationOptions {
                         duration(2000)
@@ -213,16 +251,34 @@ class MapboxFragment : Fragment(), LocationListener {
         }.show(event)
     }
 
-//    private fun showEventDetailsDialog(event: Event) {
-//        // Use the new bottom sheet dialog instead of the old dialog
-//        EventBottomSheetDialog(requireContext(), viewModel) {
-//            // On dismiss - No need to restore camera position as map remains visible
-//            // But we can still provide an optional callback if needed
-//        }.show(event)
-//    }
-
     private fun showUserMarkerDetailsDialog(userMarker: UserMarker) {
-        UserMarkerDetailsDialog(requireContext(), viewModel).show(userMarker)
+        // Store current camera position before showing dialog
+        previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
+
+        // Zoom to the marker location
+        val markerPoint = Point.fromLngLat(userMarker.longitude, userMarker.latitude)
+        mapboxMap.flyTo(
+            CameraOptions.Builder()
+                .center(markerPoint)
+                .zoom(14.0) // Slightly higher zoom for markers since they're more precise
+                .build(),
+            MapAnimationOptions.mapAnimationOptions {
+                duration(1500)
+            }
+        )
+
+        // Show the bottom sheet dialog
+        UserMarkerBottomSheetDialog(requireContext(), viewModel) {
+            // On dismiss - restore camera position
+            previousCameraOptions?.let { prevCamera ->
+                mapboxMap.flyTo(
+                    prevCamera,
+                    MapAnimationOptions.mapAnimationOptions {
+                        duration(1500)
+                    }
+                )
+            }
+        }.show(userMarker)
     }
 
     // LocationListener implementation
@@ -236,7 +292,7 @@ class MapboxFragment : Fragment(), LocationListener {
         // Move camera to user's location if this is the first location update
         if (previousCameraOptions == null) {
             val userLocation = Point.fromLngLat(location.longitude, location.latitude)
-            mapView.mapboxMap.setCamera(
+            mapboxMap.setCamera(
                 CameraOptions.Builder()
                     .center(userLocation)
                     .zoom(3.0)
