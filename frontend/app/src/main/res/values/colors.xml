@@ -30,4 +30,11 @@
     -->
     <color name="colorAccentYellow">#FFB703</color>
     <color name="colorAccentOrange">#FB8500</color>
+
+    <!-- Danger level colors -->
+    <color name="danger_high">#FF0000</color>     <!-- Red -->
+    <color name="danger_medium">#FF8C00</color>   <!-- Dark Orange -->
+    <color name="danger_low">#FFD700</color>      <!-- Gold -->
+    <color name="danger_minimal">#008000</color>  <!-- Green -->
+
 </resources>
