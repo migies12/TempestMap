@@ -339,7 +339,7 @@ const fetchDisasterData = async () => {
 };
 
 // Schedule the job to run at the start of every hour
-cron.schedule('0 0 * * *', fetchDisasterData);
+// cron.schedule('0 0 * * *', fetchDisasterData);
 
 app.listen(80, () => {
   console.log("Tempest Backend: Server running on port 80");
