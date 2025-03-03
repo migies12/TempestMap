@@ -20,6 +20,7 @@
     <string name="sign_in_button">Sign In</string>
     <string name="sign_in_Title">Why sign in?</string>
     <string name="sign_in_body">Signing in allows you to set up a profile. This lets you personalize your experience with the application, as well as allowing you to comment on weather pings</string>
+    <string name="default_notification_channel_id">com.google.firebase.messaging.default_notification_channel_id</string>
     <string-array name="marker_types">
         <item>Warning</item>
         <item>Safehouse</item>

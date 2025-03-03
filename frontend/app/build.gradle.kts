@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     id("kotlin-kapt")
+    //id("com.android.application")
+    id("com.google.gms.google-services")
     //id("org.jetbrains.kotlin.android")
 }
 
@@ -96,5 +98,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.cardview:cardview:1.0.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
 
 }

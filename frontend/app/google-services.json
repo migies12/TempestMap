@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "203736042066",
+    "project_id": "tempestmap-f0234",
+    "storage_bucket": "tempestmap-f0234.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203736042066:android:23664b5d9e3b1d5badad8b",
+        "android_client_info": {
+          "package_name": "com.example.m1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBksFSNGLsCNxWC_v4iwoXMUN7sIcp9dw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

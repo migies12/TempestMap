@@ -67,8 +67,10 @@ object DangerLevelCalculator {
      */
     fun updateEventDangerLevels(events: List<Event>, userLocation: Location): List<Event> {
         return events.map { event ->
+            val eventDate = event.date ?: "DATE ERROR"
+            val eventType = event.event_type ?: "Disaster"
             val dangerLevel = calculateDangerLevel(event, userLocation)
-            event.copy(danger_level = dangerLevel)
+            event.copy(danger_level = dangerLevel, event_type = eventType, date = eventDate)
         }
     }
 }
