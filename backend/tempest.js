@@ -3,9 +3,11 @@ const AWS = require('aws-sdk');
 const cron = require('node-cron');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
+const { initializeApp } = require('firebase-admin/app')
 
 // SETUP
 const app = express();
+const firebase = initializeApp();
 app.use(express.json()); 
 
 // AWS
@@ -175,9 +177,12 @@ app.post('/user', async (req, res) => {
   const name = req.body.name || req.query.name;
   const location = req.body.location || req.query.location;
   const account_type = req.body.account_type || req.query.account_type;
+  const email = req.body.email || req.query.email
+  const regToken = req.body.regToken || req.query.regToken
+  const notifications = req.body.notifications || req.query.notifications
   
-  if (!name || !location || !account_type) {
-    return res.status(400).json({ error: 'Missing name, location, or account_type in request body' });
+  if (!name || !location || !account_type || !email || !regToken || !notifications) {
+    return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
   
   const newUser = {
@@ -185,6 +190,9 @@ app.post('/user', async (req, res) => {
     name,
     location,
     account_type,
+    email,
+    regToken,
+    notifications,
     created_at: new Date().toISOString()
   };
 

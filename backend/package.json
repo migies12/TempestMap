@@ -13,6 +13,7 @@
     "aws-sdk": "^2.1692.0",
     "axios": "^1.7.9",
     "express": "^4.21.2",
+    "firebase-admin": "^13.1.0",
     "node-cron": "^3.0.3",
     "uuid": "^11.0.5"
   },
