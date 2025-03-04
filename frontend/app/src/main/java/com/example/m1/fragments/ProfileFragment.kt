@@ -210,6 +210,7 @@ class ProfileFragment : Fragment() {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
+                Log.d(TAG, "permission already granted")
                 val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                 sharedPreferences.edit()
                     .putBoolean("notificationsEnabled", true)
@@ -355,7 +356,7 @@ class ProfileFragment : Fragment() {
         val user_account_type = "base"
         val user_email = sharedPreferences.getString(KEY_EMAIL, null)
         val user_regToken = otherSharedPreferences.getString("registrationToken", null)
-        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
+        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", true)
 
         val user = User(
             name = username,
@@ -365,6 +366,8 @@ class ProfileFragment : Fragment() {
             regToken = user_regToken,
             notifications = user_notifications
         )
+
+        Log.d(TAG, "name: $username, location $user_location, account: $user_account_type, email: $user_email, regToken: $user_regToken, noti: $user_notifications")
 
         RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
@@ -378,7 +381,7 @@ class ProfileFragment : Fragment() {
                     }
 
                 } else {
-                    Log.e("Retrofit", "Error: ${response.code()} ${response.message()}")
+                    Log.e("Retrofit", "Error: ${response.code()} ${response.errorBody()}")
                 }
             }
 
