@@ -209,7 +209,7 @@ app.post('/user', async (req, res) => {
     await dynamoDB.put(params).promise();
 
     const message = {
-      data: {
+      notification: {
         title: "This is a test notification",
         body: "This is a notification sent to users when they save their profile."
       },
