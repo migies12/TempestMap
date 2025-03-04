@@ -184,7 +184,7 @@ app.post('/user', async (req, res) => {
   const notifications = req.body.notifications || req.query.notifications
   
   if (!name || !location || !account_type || !email || !regToken || !notifications) {
-    console.log("Bad params");
+    console.log("Bad params", req.body);
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
   
