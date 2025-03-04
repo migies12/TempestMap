@@ -4,6 +4,7 @@ const cron = require('node-cron');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const { initializeApp, applicationDefault } = require('firebase-admin/app')
+const { getMessaging } = require('firebase-admin/messaging');
 
 // SETUP
 const app = express();
@@ -183,7 +184,7 @@ app.post('/user', async (req, res) => {
   const regToken = req.body.regToken || req.query.regToken
   const notifications = req.body.notifications || req.query.notifications
   
-  if (!name || !location || !account_type || !email || !regToken || !notifications) {
+  if (!name || !location || !account_type || !email || !regToken || notifications == null) {
     console.log("Bad params", req.body);
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
