@@ -50,7 +50,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.*
 import java.util.UUID
-
+import com.example.m1.FavoriteLocation
+import com.example.m1.FavoriteLocationManager
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.gestures
 
 data class EventResponse(
     val events: List<Event>
@@ -132,6 +135,10 @@ class MapboxFragment : Fragment(), LocationListener {
     private val fetchScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var lastKnownLocation = Location("")
     private var previousCameraOptions: CameraOptions? = null
+    private lateinit var favoriteLocationManager: FavoriteLocationManager
+    private var selectedPoint: Point? = null
+    private var favoriteMarkerAnnotationManager: PointAnnotationManager? = null
+    private var selectedPointAnnotationManager: PointAnnotationManager? = null
 
     companion object {
         private const val DEBUG_TAG = "MapBoxFragment"
@@ -178,14 +185,20 @@ class MapboxFragment : Fragment(), LocationListener {
         // Initialize the FAB
         val fabAddMarker = view.findViewById<FloatingActionButton>(R.id.fabAddMarker)
         fabAddMarker.setOnClickListener {
-            showCreateMarkerDialog()
+            // Show options dialog
+            showOptionsDialog()
         }
+
+        // Initialize FavoriteLocationManager
+        favoriteLocationManager = FavoriteLocationManager(requireContext())
 
         // Define our class vars
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
         userAnnotationManager = mapView.annotations.createPointAnnotationManager()
         homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        selectedPointAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        favoriteMarkerAnnotationManager = mapView.annotations.createPointAnnotationManager()
 
         // Set up the click listener for the event annotations
         eventAnnotationManager.addClickListener(
@@ -211,6 +224,7 @@ class MapboxFragment : Fragment(), LocationListener {
                 true
             }
         )
+
         // Set up the click listener for the user annotations
         userAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
@@ -221,6 +235,46 @@ class MapboxFragment : Fragment(), LocationListener {
                 true
             }
         )
+
+        // Add map click listener for location selection
+        mapView.mapboxMap.addOnMapClickListener { point ->
+            // Store the selected point
+            selectedPoint = point
+
+            // Add a marker for the selected point
+            addSelectedPointMarker(point)
+
+            // Show the save to favorites option
+            showSaveToFavoritesDialog(point)
+
+            true
+        }
+
+        // Check for any passed location from FavoritesFragment
+        arguments?.let {
+            val latitude = it.getDouble("latitude", 0.0)
+            val longitude = it.getDouble("longitude", 0.0)
+            val locationName = it.getString("locationName")
+
+            if (latitude != 0.0 && longitude != 0.0) {
+                // Navigate to this location
+                val point = Point.fromLngLat(longitude, latitude)
+                mapView.mapboxMap.setCamera(
+                    CameraOptions.Builder()
+                        .center(point)
+                        .zoom(15.0)
+                        .build()
+                )
+
+                // Add a marker at this location
+                addFavoriteLocationMarker(point)
+
+                // Show a toast with the location name
+                locationName?.let { name ->
+                    Toast.makeText(context, "Viewing: $name", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
         loadMapStyle()
         checkLocationPermissionAndFetch()
@@ -698,6 +752,197 @@ class MapboxFragment : Fragment(), LocationListener {
                 addEarthquakeMarker(point)
             }
         }
+    }
+
+    private fun showFabMenu() {
+        val options = arrayOf("My Favorites", "Add Current Location to Favorites")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Map Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> navigateToFavoritesFragment()
+                    1 -> addCurrentLocationToFavorites()
+                }
+            }
+            .show()
+    }
+
+    private fun addCurrentLocationToFavorites() {
+        lastKnownLocation?.let { location ->
+            val point = Point.fromLngLat(location.longitude, location.latitude)
+            showSaveToFavoritesDialog(point)
+        } ?: run {
+            Toast.makeText(context, "Current location not available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showSaveToFavoritesDialog(point: Point) {
+        // First check if user is logged in
+        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
+
+        if (!isSignedIn) {
+            // Show sign-in required dialog
+            AlertDialog.Builder(requireContext())
+                .setTitle("Sign In Required")
+                .setMessage("You must be logged in to save locations to favorites.")
+                .setPositiveButton("Sign In") { _, _ ->
+                    // Navigate to SignInFragment
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.container, SignInFragment())
+                        .addToBackStack(null)
+                        .commit()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+            return
+        }
+
+        // If already a favorite, notify user
+        if (favoriteLocationManager.isLocationFavorite(point.latitude(), point.longitude())) {
+            Toast.makeText(context, "This location is already in your favorites", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Create and show the save dialog
+        val dialogView = layoutInflater.inflate(R.layout.dialog_save_favorite, null)
+        val etLocationName = dialogView.findViewById<EditText>(R.id.etLocationName)
+        val etLocationDescription = dialogView.findViewById<EditText>(R.id.etLocationDescription)
+        val tvLatitude = dialogView.findViewById<TextView>(R.id.tvLatitude)
+        val tvLongitude = dialogView.findViewById<TextView>(R.id.tvLongitude)
+        val btnSaveLocation = dialogView.findViewById<Button>(R.id.btnSaveLocation)
+
+        // Set coordinate values
+        tvLatitude.text = point.latitude().toString()
+        tvLongitude.text = point.longitude().toString()
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Save button click listener
+        btnSaveLocation.setOnClickListener {
+            val locationName = etLocationName.text.toString().trim()
+            val description = etLocationDescription.text.toString().trim()
+
+            if (locationName.isEmpty()) {
+                etLocationName.error = "Please enter a name for this location"
+                return@setOnClickListener
+            }
+
+            // Create a new FavoriteLocation object
+            val favoriteLocation = FavoriteLocation(
+                name = locationName,
+                latitude = point.latitude(),
+                longitude = point.longitude(),
+                description = description
+            )
+
+            // Save to preferences
+            if (favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
+                Toast.makeText(context, "Location saved to Favorites", Toast.LENGTH_SHORT).show()
+
+                // Add a marker for this favorite location
+                addFavoriteLocationMarker(point)
+
+                dialog.dismiss()
+            } else {
+                Toast.makeText(context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun addSelectedPointMarker(point: Point) {
+        // Clear any existing selected point markers
+        selectedPointAnnotationManager?.let {
+            it.deleteAll()
+        }
+
+        // Create a point annotation for the selected location
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage("selected_location_icon") // Use an appropriate icon
+
+        selectedPointAnnotationManager?.create(pointAnnotationOptions)
+    }
+
+    private fun addFavoriteLocationMarker(point: Point) {
+        // Create the annotation manager if not already created
+        if (favoriteMarkerAnnotationManager == null) {
+            favoriteMarkerAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        }
+
+        // Create a point annotation for the favorite location
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage("favorite_location_icon") // Use a star or heart icon
+
+        favoriteMarkerAnnotationManager?.create(pointAnnotationOptions)
+    }
+
+    // Add this method to display all favorite locations on the map
+    private fun displayFavoriteLocations() {
+        val favorites = favoriteLocationManager.getFavoriteLocations()
+
+        // Create the annotation manager if not already created
+        if (favoriteMarkerAnnotationManager == null) {
+            favoriteMarkerAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        }
+
+        // Clear existing favorite markers
+        favoriteMarkerAnnotationManager?.deleteAll()
+
+        // Add a marker for each favorite location
+        for (favorite in favorites) {
+            val point = Point.fromLngLat(favorite.longitude, favorite.latitude)
+            val pointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(point)
+                .withIconImage("favorite_location_icon") // Use a star or heart icon
+
+            favoriteMarkerAnnotationManager?.create(pointAnnotationOptions)
+        }
+    }
+
+    private fun showOptionsDialog() {
+        val options = arrayOf("Create Marker", "Save Current Location", "View Favorites")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Map Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showCreateMarkerDialog() // Your existing functionality
+                    1 -> showSaveCurrentLocationDialog()
+                    2 -> navigateToFavoritesFragment()
+                }
+            }
+            .show()
+    }
+
+    private fun showSaveCurrentLocationDialog() {
+        lastKnownLocation?.let { location ->
+            val point = Point.fromLngLat(location.longitude, location.latitude)
+            showSaveToFavoritesDialog(point)
+        } ?: run {
+            Toast.makeText(context, "Current location not available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToFavoritesFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, FavoritesFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    // Add this to your onResume method
+    override fun onResume() {
+        super.onResume()
+
+        // Display favorite locations whenever the fragment resumes
+        displayFavoriteLocations()
     }
 
     override fun onDestroyView() {
