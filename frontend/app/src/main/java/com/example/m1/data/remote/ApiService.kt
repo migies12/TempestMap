@@ -1,7 +1,10 @@
 package com.example.m1.data.remote
 
 import com.example.m1.data.models.EventResponse
+import com.example.m1.fragments.ApiResponse
+import com.example.m1.fragments.User
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -29,4 +32,7 @@ interface ApiService {
         @Query("comment") comment: String,
         @Query("user") user: String
     ): Call<Void>
+
+    @POST("prod/user")
+    fun postUser(@Body user: User): Call<ApiResponse>
 }
