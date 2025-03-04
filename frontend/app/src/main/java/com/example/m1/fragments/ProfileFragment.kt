@@ -1,7 +1,10 @@
 package com.example.m1.fragments
 
+import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +15,9 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.m1.R
 import java.util.UUID
@@ -41,6 +47,7 @@ class ProfileFragment : Fragment() {
     private lateinit var specialWeatherCheck: CheckBox
     private lateinit var saveButton: Button
     private lateinit var signOutButton: Button  // <-- New sign out button
+    private lateinit var notiButton: Button
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -53,6 +60,9 @@ class ProfileFragment : Fragment() {
 
         // Initialize SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val sharedPreferencesTesting = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferencesTesting.getString("registrationToken", "No token")
+        Log.d(TAG, "Token: $token")
 
         // Initialize views
         initializeViews(rootView)
@@ -79,6 +89,7 @@ class ProfileFragment : Fragment() {
 
         saveButton = rootView.findViewById(R.id.save_button)
         signOutButton = rootView.findViewById(R.id.sign_out_button) // Initialize sign out button
+        notiButton = rootView.findViewById(R.id.notification_button) // New noti button
     }
 
     private fun setupClickListeners() {
@@ -102,6 +113,74 @@ class ProfileFragment : Fragment() {
         signOutButton.setOnClickListener {
             signOut()
         }
+
+        notiButton.setOnClickListener {
+            askNotificationPermission()
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
+        } else {
+            // TODO: Inform user that that your app will not show notifications.
+            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", false)
+                .apply()
+        }
+    }
+
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+                showNotificationPermissionDialog()
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private fun showNotificationPermissionDialog() {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Enable Notifications?")
+            .setMessage("Notifications allow you to get information on natural disasters quickly." +
+                    " It is highly suggested notifications are enabled.")
+            .setPositiveButton("Yes") { dialog, _ ->
+                // Update UserPrefs sharedPreferences
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putBoolean("notificationsEnabled", true)
+                    .apply()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putBoolean("notificationsEnabled", false)
+                    .apply()
+                dialog.dismiss() // Just close the dialog
+            }
+            .create()
+
+        alertDialog.show()
     }
 
     private fun validateInput(): Boolean {

@@ -31,11 +31,13 @@ import com.example.m1.fragments.HomeFragment
 import com.example.m1.fragments.MapboxFragment
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
+import com.google.android.gms.tasks.OnCompleteListener
 
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -64,9 +66,17 @@ class MainActivity : AppCompatActivity() {
     ) { isGranted: Boolean ->
         if (isGranted) {
             // FCM SDK (and your app) can post notifications.
-
+            val sharedPreferences = this.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
         } else {
             // TODO: Inform user that that your app will not show notifications.
+            Toast.makeText(this, "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+            val sharedPreferences = this.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", false)
+                .apply()
         }
     }
 
@@ -190,6 +200,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadFragment(HomeFragment())
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            //val msg = getString(R.string.msg_token_fmt, token)
+            Log.d(TAG, "Token: $token")
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
+
         bottomNav = findViewById(R.id.bottomNav) as BottomNavigationView
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
