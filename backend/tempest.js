@@ -184,6 +184,7 @@ app.post('/user', async (req, res) => {
   const notifications = req.body.notifications || req.query.notifications
   
   if (!name || !location || !account_type || !email || !regToken || !notifications) {
+    console.log("Bad params");
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
   
@@ -213,6 +214,7 @@ app.post('/user', async (req, res) => {
       },
       token: newUser.regToken
     };
+    console.log('Message object:', message);
 
     // Send a message to the device corresponding to the provided
     // registration token.
