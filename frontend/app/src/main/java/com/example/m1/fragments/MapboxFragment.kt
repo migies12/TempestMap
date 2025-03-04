@@ -72,6 +72,11 @@ data class Comment(
     val user: String
 )
 
+data class CommentResponse(
+    val event_id: String,
+    val comments: List<Comment>
+)
+
 data class Event(
     val event_type: String,
     val date: String,
@@ -98,6 +103,9 @@ interface ApiService {
         @Query("comment") comment: String,
         @Query("user") user: String
     ): Call<Void>
+
+    @GET("prod/comment/{eventId}")
+    fun getComments(@Path("eventId") eventId: String): Call<CommentResponse>
 }
 
 object RetrofitClient {
@@ -520,7 +528,7 @@ class MapboxFragment : Fragment(), LocationListener {
         val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
         val addCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
 
-        // Comment Bubble - Helper Function
+        // Helper function to add a comment bubble
         fun addCommentBubble(username: String, comment: String) {
             val bubbleContainer = LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.VERTICAL
@@ -532,7 +540,6 @@ class MapboxFragment : Fragment(), LocationListener {
                 params.setMargins(0, 8, 0, 8)
                 layoutParams = params
             }
-
             val usernameTextView = TextView(requireContext()).apply {
                 text = username
                 setTypeface(null, android.graphics.Typeface.BOLD)
@@ -541,8 +548,6 @@ class MapboxFragment : Fragment(), LocationListener {
 
             val commentTextView = TextView(requireContext()).apply {
                 text = comment
-
-                // Set the background depending on the user
                 val bubbleDrawable = if (username == getSignedInUserName()) {
                     R.drawable.comment_bubble_background_light_blue
                 } else {
@@ -552,41 +557,66 @@ class MapboxFragment : Fragment(), LocationListener {
                 setPadding(16, 8, 16, 8)
             }
             bubbleContainer.addView(commentTextView)
-
             commentSection.addView(bubbleContainer)
         }
 
-        // Populate existing comments
-        event.comments.forEach { comment ->
-            addCommentBubble(comment.user, comment.text)
-        }
+        // Clear any existing comments
+        commentSection.removeAllViews()
 
-        // OnClick Listener for Comments
+        // Fetch comments from the server using the new GET endpoint
+        RetrofitClient.apiService.getComments(event.event_id).enqueue(object : Callback<CommentResponse> {
+            override fun onResponse(call: Call<CommentResponse>, response: Response<CommentResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.comments?.forEach { comment ->
+                        addCommentBubble(comment.user, comment.text)
+                    }
+                } else {
+                    Log.e("API_ERROR", "Failed to load comments: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<CommentResponse>, t: Throwable) {
+                Log.e("API_FAILURE", "Error fetching comments: ${t.message}")
+            }
+        })
+
+        // OnClick Listener for adding new comments
+
         addCommentButton.setOnClickListener {
+            val userName = getSignedInUserName()
+            if (userName == "Anonymous") {
+                Toast.makeText(requireContext(), "Please sign in to comment", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val newComment = commentInput.text.toString().trim()
             if (newComment.isNotEmpty()) {
-
-                // Retrieve the signed-in user's name from SharedPreferences
-                val userName = getSignedInUserName()
-
-                // Log event_id, newComment, and username
                 Log.d("CommentDebug", "Event ID: ${event.event_id}, Comment: $newComment, Username: $userName")
-
-                // Call the POST API with event.event_id, comment, and user name
                 RetrofitClient.apiService.postComment(event.event_id, newComment, userName)
                     .enqueue(object : Callback<Void> {
                         override fun onResponse(call: Call<Void>, response: Response<Void>) {
                             if (response.isSuccessful) {
-
-                                // Add the comment bubble only if the POST is successful
-                                addCommentBubble(userName, newComment)
+                                // Optionally refresh the comments
+                                RetrofitClient.apiService.getComments(event.event_id)
+                                    .enqueue(object : Callback<CommentResponse> {
+                                        override fun onResponse(call: Call<CommentResponse>, response: Response<CommentResponse>) {
+                                            if (response.isSuccessful) {
+                                                commentSection.removeAllViews()
+                                                response.body()?.comments?.forEach { comment ->
+                                                    addCommentBubble(comment.user, comment.text)
+                                                }
+                                            }
+                                        }
+                                        override fun onFailure(call: Call<CommentResponse>, t: Throwable) {
+                                            Log.e("API_FAILURE", "Error refreshing comments: ${t.message}")
+                                        }
+                                    })
                                 commentInput.text.clear()
                                 Toast.makeText(requireContext(), "Comment added", Toast.LENGTH_SHORT).show()
                             } else {
                                 Toast.makeText(requireContext(), "Failed to add comment", Toast.LENGTH_SHORT).show()
                             }
                         }
-
                         override fun onFailure(call: Call<Void>, t: Throwable) {
                             Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                         }
@@ -603,22 +633,21 @@ class MapboxFragment : Fragment(), LocationListener {
             }
             .create()
 
-        // Set a dismiss listener to restore the previous camera position with animation
+        // Restore previous camera position when the dialog is dismissed
         dialog.setOnDismissListener {
-            // Restore the previous camera position when the dialog is dismissed
             previousCameraOptions?.let { prevCamera ->
                 mapView.mapboxMap.flyTo(
                     prevCamera,
                     mapAnimationOptions {
-                        duration(2000) // 2 seconds for smooth animation
+                        duration(2000)
                     }
                 )
             }
         }
 
         dialog.show()
-
     }
+
 
     // Helper to get the signed-in user's name from SharedPreferences
     private fun getSignedInUserName(): String {
