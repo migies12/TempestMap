@@ -40,6 +40,9 @@
     <!-- Event colors -->
     <color name="wildfire_color">#FF5722</color>
     <color name="earthquake_color">#8BC34A</color>
+    <color name="flood_color">#2196F3</color>
+    <color name="hurricane_color">#9C27B0</color>
+    <color name="tornado_color">#F44336</color>
     <color name="default_event_color">#2196F3</color>
 
     <!-- User Marker Colors -->

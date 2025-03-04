@@ -9,8 +9,8 @@ import kotlin.math.min
  * Utility class for calculating danger levels based on various factors
  */
 object DangerLevelCalculator {
-    // Maximum distance in meters at which an event is considered dangerous (100km)
-    private const val MAX_DANGER_DISTANCE = 100000.0
+    // Maximum distance in meters at which an event is considered dangerous (500km)
+    private const val MAX_DANGER_DISTANCE = 500000.0
 
     // Base danger levels by event type (on a scale of 0-100)
     private val baseDangerLevels = mapOf(
