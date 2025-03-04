@@ -3,11 +3,14 @@ const AWS = require('aws-sdk');
 const cron = require('node-cron');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
-const { initializeApp } = require('firebase-admin/app')
+const { initializeApp, applicationDefault } = require('firebase-admin/app')
+const { getMessaging } = require('firebase-admin/messaging');
 
 // SETUP
 const app = express();
-const firebase = initializeApp();
+const firebase = initializeApp({
+  credential: applicationDefault()
+});
 app.use(express.json()); 
 
 // AWS
@@ -181,7 +184,8 @@ app.post('/user', async (req, res) => {
   const regToken = req.body.regToken || req.query.regToken
   const notifications = req.body.notifications || req.query.notifications
   
-  if (!name || !location || !account_type || !email || !regToken || !notifications) {
+  if (!name || !location || !account_type || !email || !regToken || notifications == null) {
+    console.log("Bad params", req.body);
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
   
@@ -203,6 +207,29 @@ app.post('/user', async (req, res) => {
 
   try {
     await dynamoDB.put(params).promise();
+
+    const message = {
+      notification: {
+        title: "This is a test notification",
+        body: "This is a notification sent to users when they save their profile."
+      },
+      token: newUser.regToken
+    };
+    console.log('Message object:', message);
+
+    // Send a message to the device corresponding to the provided
+    // registration token.
+    setTimeout( () => {
+      getMessaging().send(message)
+      .then((response) => {
+        // Response is a message ID string.
+        console.log('Successfully sent message:', response);
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
+    }, 5000)
+    
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
     console.error('Error creating user:', error);
