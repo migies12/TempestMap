@@ -241,6 +241,7 @@ class ProfileFragment : Fragment() {
                     .putBoolean("notificationsEnabled", true)
                     .apply()
                 dialog.dismiss()
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
             .setNegativeButton("No") { dialog, _ ->
                 val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
