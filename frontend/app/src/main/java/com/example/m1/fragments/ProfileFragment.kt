@@ -227,6 +227,14 @@ class ProfileFragment : Fragment() {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "API < 33, >= 31, permission not required")
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
+        }
     }
 
     private fun showNotificationPermissionDialog() {
