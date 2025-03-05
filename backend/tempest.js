@@ -202,6 +202,8 @@ app.post('/user', async (req, res) => {
     user_id: user_id,
     name,
     location,
+    latitude,
+    longitude,
     account_type,
     email,
     regToken,
