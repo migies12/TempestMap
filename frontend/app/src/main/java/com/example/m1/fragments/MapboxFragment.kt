@@ -150,6 +150,16 @@ class MapboxFragment : Fragment(), LocationListener {
         // Start fetching events
         viewModel.startFetchingEvents()
 
+        val sharedPreferences = requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+        val currLocation = getLastKnownLocation()
+        if (currLocation != null) {
+            Log.d(TAG, "Adding Location, ${currLocation.latitude}, ${currLocation.longitude}")
+            sharedPreferences.edit()
+                .putFloat("latitude", currLocation.latitude.toFloat())
+                .putFloat("longitude", currLocation.longitude.toFloat())
+                .apply()
+        }
+
         // Check for any passed location from FavoritesFragment
         arguments?.let {
             val latitude = it.getDouble("latitude", 0.0)
@@ -177,6 +187,30 @@ class MapboxFragment : Fragment(), LocationListener {
         }
 
         return view
+    }
+
+    private fun getLastKnownLocation(): Location? {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Log.d(TAG, "Don't have required location permissions")
+            return null
+        } else {
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
     }
 
     private fun setupClickListeners() {
@@ -374,6 +408,14 @@ class MapboxFragment : Fragment(), LocationListener {
                     .build()
             )
         }
+
+        Log.d(TAG, "Location changed: $location")
+
+        val sharedPreferences = requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putFloat("latitude", location.latitude.toFloat())
+            .putFloat("longitude", location.longitude.toFloat())
+            .apply()
     }
 
     private fun showOptionsDialog() {

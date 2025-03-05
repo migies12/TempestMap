@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,8 +21,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.m1.MainActivity
+import com.example.m1.MainActivity.Companion
 import com.example.m1.R
 import com.example.m1.data.remote.ApiService
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,9 +39,12 @@ import retrofit2.http.Path
 import java.util.UUID
 
 data class User(
+    val user_id: String?,
     val name: String?,
     val email: String?,
     val location: String?,
+    val latitude: Double?,
+    val longitude: Double?,
     val regToken: String?,
     val account_type: String?,
     val notifications: Boolean
@@ -119,8 +128,28 @@ class ProfileFragment : Fragment() {
         // Initialize SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val sharedPreferencesTesting = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val token = sharedPreferencesTesting.getString("registrationToken", "No token")
+        var token = sharedPreferencesTesting.getString("registrationToken", "No token")
         Log.d(TAG, "Token: $token")
+
+        if (token == "No token") {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                // Get new FCM registration token
+                token = task.result
+
+                // Log and toast
+                //val msg = getString(R.string.msg_token_fmt, token)
+                Log.d(TAG, "Token: $token")
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putString("registrationToken", token)
+                    .apply()
+            })
+        }
 
         // Initialize views
         initializeViews(rootView)
@@ -361,15 +390,21 @@ class ProfileFragment : Fragment() {
         val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val otherSharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString(KEY_FULL_NAME, null)
+        val user_user_id = sharedPreferences.getString(KEY_USER_ID, null)
         val user_location = sharedPreferences.getString(KEY_LOCATION, null)
         val user_account_type = "base"
+        val user_latitude = sharedPreferences.getFloat("latitude", 0f).toDouble()
+        val user_longitude = sharedPreferences.getFloat("longitude", 0f).toDouble()
         val user_email = sharedPreferences.getString(KEY_EMAIL, null)
         val user_regToken = otherSharedPreferences.getString("registrationToken", null)
         val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", true)
 
         val user = User(
+            user_id = user_user_id,
             name = username,
             location = user_location,
+            latitude = user_latitude,
+            longitude = user_longitude,
             account_type = user_account_type,
             email = user_email,
             regToken = user_regToken,
