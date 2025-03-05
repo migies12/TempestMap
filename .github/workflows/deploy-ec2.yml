@@ -15,12 +15,16 @@ jobs:
           echo "EC2_USER: ${{ secrets.EC2_USER }}"
           echo "EC2_SSH_KEY ${{ secrets.EC2_SSH_KEY }}"
 
+      - name: List ec2-ssh folder contents
+        run: ls -la ec2-ssh/
+
       - name: SSH to EC2 and Deploy
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: "http://ec2-13-52-250-118.us-west-1.compute.amazonaws.com"
           username: "ec2-user"
           key_path: ec2-ssh/ec2-tempest-ssh.pem
+          port: 22
           script: |
             cd /TempestMap
             git pull
