@@ -177,6 +177,7 @@ app.delete('/comment/:event_id', async (req, res) => {
 
 app.post('/user', async (req, res) => {
 
+  const user_id = req.body.user_id || req.query.user_id;
   const name = req.body.name || req.query.name;
   const location = req.body.location || req.query.location;
   const account_type = req.body.account_type || req.query.account_type;
@@ -188,9 +189,13 @@ app.post('/user', async (req, res) => {
     console.log("Bad params", req.body);
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
+
+  if (user_id == null) {
+    user_id == uuidv4();
+  }
   
   const newUser = {
-    user_id: uuidv4(),
+    user_id: user_id,
     name,
     location,
     account_type,
