@@ -223,6 +223,7 @@ class ProfileFragment : Fragment() {
             sharedPreferences.edit()
                 .putBoolean("notificationsEnabled", true)
                 .apply()
+            sendProfileToServer()
         } else {
             // TODO: Inform user that that your app will not show notifications.
             Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
@@ -244,6 +245,7 @@ class ProfileFragment : Fragment() {
                 sharedPreferences.edit()
                     .putBoolean("notificationsEnabled", true)
                     .apply()
+                sendProfileToServer()
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
