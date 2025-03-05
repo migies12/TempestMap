@@ -54,6 +54,33 @@ app.get('/event', async (req, res) => {
 });
 
 
+// Endpoint to fetch FIRMS data
+app.get('/event/firms', async (req, res) => {
+  try {
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      // Construct the URL for the FIRMS API
+      const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/840168c717a27d2e1ed7faf3744dc8cc/VIIRS_NOAA21_NRT/world/10/${currentDate}`;
+
+      // Log the URL being called
+      console.log('Fetching FIRMS data from:', url);
+
+      // Fetch data from the FIRMS API
+      const response = await axios.get(url);
+
+      // Log the response data
+      console.log('FIRMS data fetched successfully:', response.data);
+
+      // Send the data back to the client
+      res.json(response.data);
+  } catch (error) {
+      console.error('Error fetching FIRMS data:', error);
+      res.status(500).json({ error: 'Failed to fetch FIRMS data' });
+  }
+});
+
+
+
 app.post('/comment/:event_id', async (req, res) => {
 
   const { event_id } = req.params;
@@ -334,6 +361,8 @@ const appendEvents = async (events) => {
     }
   }
 };
+
+
 
 const fetchDisasterData = async () => {
   try {
