@@ -16,7 +16,7 @@ jobs:
           echo "EC2_SSH_KEY ${{ secrets.EC2_SSH_KEY }}"
 
       - name: List ec2-ssh folder contents
-        run: ls -la ec2-ssh/
+        run: pwd
 
       - name: SSH to EC2 and Deploy
         uses: appleboy/ssh-action@v0.1.5
