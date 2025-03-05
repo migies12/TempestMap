@@ -21,6 +21,15 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 
 /* --- API Routes --- */
+app.get('/', async (req, res) => {
+  try {
+    res.status(200).json({message: "Success"});
+  } catch (error) {
+    console.error('Error', error);
+    res.status(500).json({ error: 'Error' });
+  }
+});
+
 
 // TESTING ROUTE FOR CRON JOB
 app.post('/test_cron', async (req, res) => {
