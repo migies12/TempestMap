@@ -431,11 +431,7 @@ const notifyUsers = async () => {
         const message = {
           notification: {
             title: `WARNING: ${event.event_type} detected near your location!`,
-            body: `There is a weather event being reported:
-            Event Type: ${event.event_type}\n
-            Latitude: ${event.lat}\n
-            Longitude: ${event.lng}\n
-            DangerLevel: ${dangerLevel}\n`
+            body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
           },
           token: user.regToken
         };
