@@ -10,15 +10,26 @@
 
 - **February 26th, 2025: Added Google Sign-In and Authnetication**: Users are now redirected to a sign-in page if they are not signed in. After users sign in, they are redirected to a profile page where they can update information about their profile.
 
+- **March 1st, 2025: Revisited and Changed Non_Functional Requirements**: These NFRs were added to ensure the app meets global accessibility standards (WCAG 2.1 Level AA), complies with data protection regulations (GDPR, CCPA), and provides a user-friendly experience. These changes are critical for legal compliance, inclusivity, and user satisfaction. The older NFR's that were put in place were incomplete, inviable and unmeasured compared to the new and improved specs.
+
 - **March 2nd, 2025: Added Front-End Notification Functionality**: Users can now enable notifications and notifications can be received and displayed.
 
 - **March 4th, 2025: Added Back-End Notification and User Functionality**: Updated the POST /user endpoint to match new notification functionality, as well as not duplicate users by viewing user_id. Notification system is also in place to be sent, sending a test notification to users when they save their profile.
+
+- **March 4th, 2025: Added Back-End Notification and User Functionality**: Updated the POST /user endpoint to match new notification functionality, as well as not duplicate users by viewing user_id. Notification system is also in place to be sent, sending a test notification to users when they save their profile.
+
+- **March 4th, 2025: Updated Interfaces**: Updated the Comment component to include endpoints for posting, retrieving, and deleting comments. Updated the Weather component to include endpoints for updating the weather database and notifying users. Added the User component with endpoints for user creation, retrieval, and authentication. Added the Map component with endpoints for retrieving weather events and marker details. All Interfaces were improperly written and did not reflect the true nature of the project, hence they were all changed.
+
+- **March 4th, 2025: Modified Non-Functional Requirement Design**: The modifications were made to align the design decisions with the Non-Functional Requirements (NFRs) outlined in Section 3.5. This ensures that the design explicitly addresses accessibility, user privacy, and ease of use, as required by the NFRs.
+
 
 
 
 ## 2. Project Description
 
 **Tempest** is a reimagined weather and emergency preparedness application designed to prioritize critical information about natural disasters, such as wildfires, earthquakes, hurricanes, and other extreme weather events. The app delivers **real-time updates** and **localized alerts**, empowering users to stay informed and prepared during emergencies.
+
+For the scope of this project and due to the limited amount of free data available. Tempest is currenly only available for North America. However its interfaces are highly scalable and ready to accept worldwide data as well as additional complex map vizualisations.
 
 Tempest goes beyond traditional weather apps by fostering a **proactive and collaborative community**. Users can:
 
@@ -38,7 +49,6 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 
 1. **[Unregistered User]**: Unregistered Users can interact with the map to get information about the weather conditions in their area. These users can also view weather event markers, custom User markers,  read comments, and become Registered Users.
 2. **[Registered User]**: Registered Users can interact with the app with all the same privileges as an Unregistered User, but can also enable push notifications, create comments, add custom markers (e.g., safehouses, resource points, dangers), and save locations.
-3. **[Admin]**: Admins have the capacity to manage comments by removing or modifying unwanted comments, as well as manually modifying weather events.
 
 ### **3.3. Functional Requirements**
 
@@ -143,39 +153,6 @@ By combining **real-time weather data** with **community-driven insights**, Temp
          - 4a2. User is prompted to enable push notifications in their device settings.
 
 
-7. **[Delete Comment]**:
-
-   - **Description**: Admins have the capacity to delete comments
-   - **Primary actor(s)**: Admin
-   - **Main success scenario**:
-
-     1. Admin clicks on marker
-     2. Admin can click delete comment button
-     3. Admin gets a confirmation message
-
-   - **Failure scenario(s)**:
-      - 2a. Server is unavailable
-         - System displays an error message: "Server failed to remove message, please refresh and try again"
-
-8. **[Modify Custom Marker]**:
-
-   - **Description**: Admins have the ability to modify Custom Marker information
-   - **Primary actor(s)**: Admin
-   - **Main success scenario**:
-
-     1. Admin clicks on custom marker
-     2. Admin can choose to modify location, description, support information, etc.
-     3. Admin edits respective section
-     4. Admin confirms edits and the weather ping is updated for all users
-
-
-   - **Failure scenario(s)**:
-      - 4a. Admin attempts to enter an empty edit
-         - 4a1. Error is returned, displaying the text "Edits must not be empty, please enter content"
-         - 4a2. Edits are not updated for all users, and the Admin can continue to edit.
-
-
-
 ### **3.4. Screen Mockups**
 
 1. **App Icon**
@@ -231,7 +208,7 @@ By combining **real-time weather data** with **community-driven insights**, Temp
             - *user_ID*(String): user_ID generated by the server. Can be null.
             - *name*(String): The user's name.
             - *location*(String): The user's location.
-            - *account_type*(String): The type of account (e.g., Registered, Admin).
+            - *account_type*(String): The type of account (e.g., Registered, Unregistered).
             - *latitude*(Double): The latitude of the user's location.
             - *longitude*(Double): The longitude of the user's location.
             - *email*(String): The user's email address.
@@ -314,7 +291,7 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 5. **Notification**
    - **Purpose**: The notification component is responsible for delivering alerts and updates to users. 
    - **Rationale**: By decoupling notification logic, the app can support multiple notification channels and enhance scalability.
-   - **Interfaces**: Enabling push notifications will send a request to the server, updating your status as a user that would like to receive notifications. To make the notification system easy to demonstrate, you can see the notifications you would receive based on your danger level by saving your profile.
+   - **Interfaces**: We ran out of time implementing the proper interfaces for this and instead it is merged into the /user endpoint to change the specific user preference settings.
       
 ### **4.2. Databases**
 
