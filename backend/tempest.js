@@ -2,6 +2,7 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const cron = require('node-cron');
 const axios = require('axios');
+const csv = require('csv-parser');
 const { v4: uuidv4 } = require('uuid');
 const { initializeApp, applicationDefault } = require('firebase-admin/app')
 const { getMessaging } = require('firebase-admin/messaging');
@@ -52,6 +53,38 @@ app.get('/event', async (req, res) => {
     res.status(500).json({ error: 'Error fetching events' });
   }
 });
+
+
+// Endpoint to fetch FIRMS data
+app.get('/event/firms', async (req, res) => {
+  console.log('Received request at /event/firms');
+  try {
+      const currentDate = new Date().toISOString().split('T')[0]; // Get current date
+      const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/840168c717a27d2e1ed7faf3744dc8cc/VIIRS_NOAA21_NRT/world/10/${currentDate}`;
+      console.log('Fetching FIRMS data from:', url);
+
+      const response = await axios.get(url, { responseType: 'stream' });
+      const results = [];
+
+      // Parse the CSV response
+      response.data
+          .pipe(csv())
+          .on('data', (data) => results.push(data))
+          .on('end', () => {
+              console.log('FIRMS data fetched and parsed successfully:', results);
+              res.json(results); // Send JSON response
+          })
+          .on('error', (error) => {
+              console.error('Error parsing CSV:', error);
+              res.status(500).json({ error: 'Failed to parse FIRMS data' });
+          });
+  } catch (error) {
+      console.error('Error fetching FIRMS data:', error);
+      res.status(500).json({ error: 'Failed to fetch FIRMS data' });
+  }
+});
+
+
 
 
 app.post('/comment/:event_id', async (req, res) => {
@@ -334,6 +367,8 @@ const appendEvents = async (events) => {
     }
   }
 };
+
+
 
 const fetchDisasterData = async () => {
   try {
