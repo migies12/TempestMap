@@ -224,16 +224,14 @@ app.post('/user', async (req, res) => {
 
     // Send a message to the device corresponding to the provided
     // registration token.
-    setTimeout( () => {
-      getMessaging().send(message)
-      .then((response) => {
-        // Response is a message ID string.
-        console.log('Successfully sent message:', response);
-      })
-      .catch((error) => {
-        console.log('Error sending message:', error);
-      });
-    }, 5000)
+    getMessaging().send(message)
+    .then((response) => {
+      // Response is a message ID string.
+      console.log('Successfully sent message:', response);
+    })
+    .catch((error) => {
+      console.log('Error sending message:', error);
+    });
     
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
