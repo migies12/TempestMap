@@ -427,6 +427,9 @@ const notifyUsers = async () => {
     for (const event of events) {
       const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
       if (dangerLevel > 25) {
+        setTimeout(() => {
+          console.log("in danger")
+        }, 3000);
         console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
         console.log("Danger Level: ", dangerLevel);
         const message = {
