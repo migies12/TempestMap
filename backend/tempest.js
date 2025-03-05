@@ -463,7 +463,12 @@ const notifyUsers = async () => {
             title: `WARNING: ${event.event_type} detected near your location!`,
             body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
           },
-          token: user.regToken
+          token: user.regToken,
+          android: {
+            notification: {
+              tag: `event_${event.event_id}`
+            }
+          }
         };
 
         getMessaging().send(message)
