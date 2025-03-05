@@ -427,27 +427,29 @@ const notifyUsers = async () => {
     for (const event of events) {
       const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
       if (dangerLevel > 25) {
-        setTimeout(() => {
-          console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
-          console.log("Danger Level: ", dangerLevel);
-          const message = {
+        console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
+        console.log("Danger Level: ", dangerLevel);
+        const message = {
+          notification: {
+            title: `WARNING: ${event.event_type} detected near your location!`,
+            body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
+          },
+          token: user.regToken,
+          android: {
             notification: {
-              title: `WARNING: ${event.event_type} detected near your location!`,
-              body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
-            },
-            token: user.regToken
-          };
+              tag: `event_${event.event_id}`
+            }
+          }
+        };
 
-          getMessaging().send(message)
-            .then((response) => {
-              // Response is a message ID string.
-              console.log('Successfully sent message:', response);
-            })
-            .catch((error) => {
-              console.log('Error sending message:', error);
-            });
-        }, 3000);
-        
+        getMessaging().send(message)
+          .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+          })
+          .catch((error) => {
+            console.log('Error sending message:', error);
+          });
       }
     }
   }
