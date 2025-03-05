@@ -428,26 +428,26 @@ const notifyUsers = async () => {
       const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
       if (dangerLevel > 25) {
         setTimeout(() => {
-          console.log("in danger")
-        }, 3000);
-        console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
-        console.log("Danger Level: ", dangerLevel);
-        const message = {
-          notification: {
-            title: `WARNING: ${event.event_type} detected near your location!`,
-            body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
-          },
-          token: user.regToken
-        };
+          console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
+          console.log("Danger Level: ", dangerLevel);
+          const message = {
+            notification: {
+              title: `WARNING: ${event.event_type} detected near your location!`,
+              body: `${event.event_type} detected. Lat: ${event.lat.toFixed(2)}, Lng: ${event.lng.toFixed(2)}`
+            },
+            token: user.regToken
+          };
 
-        getMessaging().send(message)
-          .then((response) => {
-            // Response is a message ID string.
-            console.log('Successfully sent message:', response);
-          })
-          .catch((error) => {
-            console.log('Error sending message:', error);
-          });
+          getMessaging().send(message)
+            .then((response) => {
+              // Response is a message ID string.
+              console.log('Successfully sent message:', response);
+            })
+            .catch((error) => {
+              console.log('Error sending message:', error);
+            });
+        }, 3000);
+        
       }
     }
   }
