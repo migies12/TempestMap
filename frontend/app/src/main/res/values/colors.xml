@@ -30,4 +30,23 @@
     -->
     <color name="colorAccentYellow">#FFB703</color>
     <color name="colorAccentOrange">#FB8500</color>
+
+    <!-- Danger level colors -->
+    <color name="danger_high">#FF0000</color>     <!-- Red -->
+    <color name="danger_medium">#FF8C00</color>   <!-- Dark Orange -->
+    <color name="danger_low">#FFD700</color>      <!-- Gold -->
+    <color name="danger_minimal">#008000</color>  <!-- Green -->
+
+    <!-- Event colors -->
+    <color name="wildfire_color">#FF5722</color>
+    <color name="earthquake_color">#8BC34A</color>
+    <color name="default_event_color">#2196F3</color>
+
+    <!-- User Marker Colors -->
+    <color name="safehouse_color">#4CAF50</color> <!-- Green -->
+    <color name="resource_color">#2196F3</color> <!-- Blue -->
+    <color name="warning_color">#FF9800</color> <!-- Orange -->
+    <color name="default_marker_color">#9E9E9E</color> <!-- Gray -->
+
+
 </resources>

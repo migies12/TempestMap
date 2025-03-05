@@ -1,37 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/etLatitude"
+    <TextView
+        android:id="@+id/tvCreateMarkerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Latitude" />
+        android:text="Add a Custom Marker"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/etLongitude"
+    <TextView
+        android:id="@+id/tvLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Longitude" />
+        android:text="Location: 0.0, 0.0"
+        android:textStyle="italic"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Marker Type"
+        android:layout_marginBottom="4dp"/>
 
     <Spinner
         android:id="@+id/spinnerMarkerType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:entries="@array/marker_types" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:layout_marginBottom="4dp"/>
 
     <EditText
         android:id="@+id/etDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description" />
+        android:hint="Enter marker description"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:gravity="top|start"
+        android:layout_marginBottom="24dp"/>
 
-    <Button
-        android:id="@+id/btnCreateMarker"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create Marker" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Cancel"
+            android:backgroundTint="@color/cardview_dark_background"/>
+
+        <Button
+            android:id="@+id/btnCreateMarker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Create Marker"/>
+    </LinearLayout>
 
 </LinearLayout>

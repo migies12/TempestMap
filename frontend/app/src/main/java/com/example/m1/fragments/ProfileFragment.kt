@@ -1,7 +1,10 @@
 package com.example.m1.fragments
 
+import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,9 +15,70 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.m1.R
+import com.example.m1.data.remote.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import java.util.UUID
+
+data class User(
+    val name: String?,
+    val email: String?,
+    val location: String?,
+    val regToken: String?,
+    val account_type: String?,
+    val notifications: Boolean
+)
+
+data class UserResponse(
+    val user_id: String,
+    val name: String,
+    val email: String,
+    val location: String,
+    val regToken: String,
+    val account_type: String,
+    val notifications: Boolean,
+    val created_at: String
+)
+
+data class ApiResponse(
+    val message: String,
+    val user: UserResponse
+)
+interface ApiService {
+    @POST("prod/user")
+    fun postUser(@Body user:User): Call<ApiResponse>
+
+    /* @PUT("prod/user/{userID}")  Add if using put
+    fun putUser(
+        @Path("userID") userID: String,
+        @Query("comment") comment: String,
+        @Query("user") user: String
+    ): Call<Void> */
+}
+
+object RetrofitClient {
+    private const val BASE_URL = "https://tocuul9kqj.execute-api.us-west-1.amazonaws.com/"
+
+    val apiService: ApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+    }
+}
 
 class ProfileFragment : Fragment() {
 
@@ -41,6 +105,7 @@ class ProfileFragment : Fragment() {
     private lateinit var specialWeatherCheck: CheckBox
     private lateinit var saveButton: Button
     private lateinit var signOutButton: Button  // <-- New sign out button
+    private lateinit var notiButton: Button
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -53,6 +118,9 @@ class ProfileFragment : Fragment() {
 
         // Initialize SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val sharedPreferencesTesting = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferencesTesting.getString("registrationToken", "No token")
+        Log.d(TAG, "Token: $token")
 
         // Initialize views
         initializeViews(rootView)
@@ -79,6 +147,7 @@ class ProfileFragment : Fragment() {
 
         saveButton = rootView.findViewById(R.id.save_button)
         signOutButton = rootView.findViewById(R.id.sign_out_button) // Initialize sign out button
+        notiButton = rootView.findViewById(R.id.notification_button) // New noti button
     }
 
     private fun setupClickListeners() {
@@ -102,6 +171,96 @@ class ProfileFragment : Fragment() {
         signOutButton.setOnClickListener {
             signOut()
         }
+
+        notiButton.setOnClickListener {
+            val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val name = sharedPreferences.getString(KEY_FULL_NAME, null)
+            if (name != null){
+                askNotificationPermission()
+            }
+            else {
+                Toast.makeText(requireContext(), "Please save profile information before enabling notifications.", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
+        } else {
+            // TODO: Inform user that that your app will not show notifications.
+            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", false)
+                .apply()
+        }
+    }
+
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "permission already granted")
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putBoolean("notificationsEnabled", true)
+                    .apply()
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+                showNotificationPermissionDialog()
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "API < 33, >= 31, permission not required")
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
+        }
+    }
+
+    private fun showNotificationPermissionDialog() {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Enable Notifications?")
+            .setMessage("Notifications allow you to get information on natural disasters quickly." +
+                    " It is highly suggested notifications are enabled.")
+            .setPositiveButton("Yes") { dialog, _ ->
+                // Update UserPrefs sharedPreferences
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putBoolean("notificationsEnabled", true)
+                    .apply()
+                dialog.dismiss()
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putBoolean("notificationsEnabled", false)
+                    .apply()
+                dialog.dismiss() // Just close the dialog
+            }
+            .create()
+
+        alertDialog.show()
     }
 
     private fun validateInput(): Boolean {
@@ -165,9 +324,9 @@ class ProfileFragment : Fragment() {
 
         // Get or create user ID
         var userId = sharedPreferences.getString(KEY_USER_ID, null)
-        if (userId == null) {
+        /* if (userId == null) {
             userId = UUID.randomUUID().toString()
-        }
+        } */
 
         // Save to SharedPreferences
         sharedPreferences.edit().apply {
@@ -182,6 +341,8 @@ class ProfileFragment : Fragment() {
             apply()
         }
 
+        sendProfileToServer()
+
         Log.d(TAG, "Profile saved: $fullName, $email, $location")
     }
 
@@ -194,6 +355,50 @@ class ProfileFragment : Fragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, SignInFragment())
             .commit()
+    }
+
+    private fun sendProfileToServer() {
+        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val otherSharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString(KEY_FULL_NAME, null)
+        val user_location = sharedPreferences.getString(KEY_LOCATION, null)
+        val user_account_type = "base"
+        val user_email = sharedPreferences.getString(KEY_EMAIL, null)
+        val user_regToken = otherSharedPreferences.getString("registrationToken", null)
+        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", true)
+
+        val user = User(
+            name = username,
+            location = user_location,
+            account_type = user_account_type,
+            email = user_email,
+            regToken = user_regToken,
+            notifications = user_notifications
+        )
+
+        Log.d(TAG, "name: $username, location $user_location, account: $user_account_type, email: $user_email, regToken: $user_regToken, noti: $user_notifications")
+
+        RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    val userResponse = response.body()
+                    Log.d("Retrofit", "User created: ${userResponse?.user?.name}")
+                    if (userResponse != null) {
+                        sharedPreferences.edit()
+                            .putString(KEY_USER_ID, userResponse.user.user_id)
+                            .apply()
+                    }
+
+                } else {
+                    Log.e("Retrofit", "Error: ${response.code()} ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.e("Retrofit", "Request failed: ${t.message}")
+            }
+        })
+
     }
 
     /**

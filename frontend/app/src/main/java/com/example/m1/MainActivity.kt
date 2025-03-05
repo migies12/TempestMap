@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,11 +31,13 @@ import com.example.m1.fragments.HomeFragment
 import com.example.m1.fragments.MapboxFragment
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
+import com.google.android.gms.tasks.OnCompleteListener
 
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -133,6 +136,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadFragment(HomeFragment())
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            //val msg = getString(R.string.msg_token_fmt, token)
+            Log.d(TAG, "Token: $token")
+            val sharedPreferences = this.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putString("registrationToken", token)
+                .apply()
+        })
+
         bottomNav = findViewById(R.id.bottomNav) as BottomNavigationView
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
