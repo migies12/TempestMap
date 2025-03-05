@@ -394,7 +394,7 @@ const notifyUsers = async () => {
     let scanResults;
     do {
       scanResults = await dynamoDB.scan(params).promise();
-      events = items.concat(scanResults.Items);
+      events = events.concat(scanResults.Items);
       params.ExclusiveStartKey = scanResults.LastEvaluatedKey;
     } while (scanResults.LastEvaluatedKey);
 
@@ -412,7 +412,7 @@ const notifyUsers = async () => {
     let scanResults;
     do {
       scanResults = await dynamoDB.scan(params).promise();
-      users = items.concat(scanResults.Items);
+      users = users.concat(scanResults.Items);
       params.ExclusiveStartKey = scanResults.LastEvaluatedKey;
     } while (scanResults.LastEvaluatedKey);
 
