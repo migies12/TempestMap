@@ -426,8 +426,9 @@ const notifyUsers = async () => {
   for (const user of users) {
     for (const event of events) {
       const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
-      console.log("Danger Level: ", dangerLevel);
       if (dangerLevel > 25) {
+        console.log(`lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`)
+        console.log("Danger Level: ", dangerLevel);
         const message = {
           notification: {
             title: `WARNING: ${event.event_type} detected near your location!`,
@@ -462,8 +463,6 @@ const dangerLevelCalc = function(lat1, lon1, lat2, lon2, disasterType) {
     "VO": 85,  // Volcano
     "LS": 70   // Landslide
   };
-
-  console.log(`lat1: ${lat1}, lon1: ${lon1}, lat2: ${lat2}, lon2: ${lon2}, disaster: ${disasterType}`)
 
   const R = 6371000; // Radius of Earth in meters
 
