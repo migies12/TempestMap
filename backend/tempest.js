@@ -54,6 +54,47 @@ app.get('/event', async (req, res) => {
   }
 });
 
+//Adds new custom marker information to the DB
+app.post('/event/custom', async (req, res) => {
+  const { latitude, longitude, markerType } = req.body;
+
+  // Validate required fields
+  if (!latitude || !longitude || !markerType) {
+    return res.status(400).json({ error: 'Missing latitude, longitude, or markerType in request body.' });
+  }
+
+  // Create a new event object
+  const newEvent = {
+    event_id: uuidv4(), // Generate a unique event ID
+    event_type: markerType, 
+    event_name: `Custom ${markerType} Event`, 
+    date: new Date().toISOString(), 
+    lat: parseFloat(latitude),
+    lng: parseFloat(longitude), 
+    continent: 'Custom', 
+    country_code: 'N/A',
+    created_time: new Date().toISOString(),
+    source_event_id: 'custom',
+    estimated_end_date: null, 
+    comments: [], 
+  };
+
+  // Define DynamoDB parameters
+  const params = {
+    TableName: 'event',
+    Item: newEvent,
+  };
+
+  try {
+    // Insert the new event into the DynamoDB table
+    await dynamoDB.put(params).promise();
+    res.status(201).json({ message: 'Custom event created successfully', event: newEvent });
+  } catch (error) {
+    console.error('Error creating custom event:', error);
+    res.status(500).json({ error: 'Error creating custom event' });
+  }
+});
+
 
 // Endpoint to fetch FIRMS data
 app.get('/event/firms', async (req, res) => {
@@ -304,6 +345,39 @@ app.get('/user/:user_id', async (req, res) => {
   } catch (error) {
     console.error('Error retrieving user:', error);
     res.status(500).json({ error: 'Error retrieving user' });
+  }
+});
+
+app.post('/user/locations', async (req, res) => {
+  const { user_id, latitude, longitude } = req.body;
+
+  // Validate required fields
+  if (!user_id || !latitude || !longitude) {
+    return res.status(400).json({ error: 'Missing user_id, latitude, or longitude in request body.' });
+  }
+
+  // Define DynamoDB parameters to update the user's location
+  const params = {
+    TableName: 'user',
+    Key: { user_id },
+    UpdateExpression: 'SET latitude = :lat, longitude = :lng', 
+    ExpressionAttributeValues: {
+      ':lat': parseFloat(latitude), 
+      ':lng': parseFloat(longitude), 
+    },
+    ReturnValues: 'UPDATED_NEW', 
+  };
+
+  try {
+    // Update the user's location in the DynamoDB table
+    const result = await dynamoDB.update(params).promise();
+    res.status(200).json({ 
+      message: 'User location updated successfully',
+      updatedAttributes: result.Attributes, // Return the updated fields
+    });
+  } catch (error) {
+    console.error('Error updating user location:', error);
+    res.status(500).json({ error: 'Error updating user location' });
   }
 });
 
