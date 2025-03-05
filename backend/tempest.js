@@ -406,7 +406,7 @@ const notifyUsers = async () => {
   var users = [];
   try {
     const params = {
-      TableName: 'users'
+      TableName: 'user'
     };
 
     let scanResults;
