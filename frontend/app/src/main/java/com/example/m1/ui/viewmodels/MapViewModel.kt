@@ -1,6 +1,7 @@
 package com.example.m1.ui.viewmodels
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -57,6 +58,15 @@ class MapViewModel : ViewModel() {
         viewModelScope.launch {
             val fetchedEvents = repository.getEvents()
             _events.value = fetchedEvents.take(50) // Limit to 50 events
+
+            // Fetch FIRMS data
+            val firmsData = repository.getFIRMSData()
+            Log.d("MapViewModel", "FIRMS Data fetched: ${firmsData.size} items")
+
+            // Log the first few items for debugging
+            firmsData.take(5).forEach { data ->
+                Log.d("MapViewModel", "FIRMS Event: $data")
+            }
 
             // Update danger levels based on user location if available
             _userLocation.value?.let { location ->

@@ -35,3 +35,20 @@ data class Event(
     val event_name: String,
     val danger_level: Int
 )
+
+data class FIRMSData(
+    val latitude: Double,
+    val longitude: Double,
+    val bright_ti4: Double,
+    val scan: Double,
+    val track: Double,
+    val acq_date: String,
+    val acq_time: String,
+    val satellite: String,
+    val instrument: String,
+    val confidence: String,
+    val version: String,
+    val bright_ti5: Double,
+    val frp: Double,
+    val daynight: String
+)

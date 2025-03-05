@@ -3,6 +3,7 @@ package com.example.m1.data.repository
 import android.util.Log
 import com.example.m1.data.models.Event
 import com.example.m1.data.models.EventResponse
+import com.example.m1.data.models.FIRMSData
 import com.example.m1.data.remote.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,6 +47,33 @@ class EventRepository {
             }
         } catch (e: Exception) {
             Log.e("EventRepository", "Exception fetching events: ${e.message}")
+            emptyList()
+        }
+    }
+
+    suspend fun getFIRMSData(): List<FIRMSData> = withContext(Dispatchers.IO) {
+        try {
+            suspendCoroutine { continuation ->
+                apiService.getFIRMSData().enqueue(object : Callback<List<FIRMSData>> {
+                    override fun onResponse(call: Call<List<FIRMSData>>, response: Response<List<FIRMSData>>) {
+                        if (response.isSuccessful) {
+                            val firmsData = response.body() ?: emptyList()
+                            Log.d("EventRepository", "Fetched FIRMS Data:${firmsData.size} FIRMS data points")
+                            continuation.resume(firmsData)
+                        } else {
+                            Log.e("EventRepository", "Response not successful: ${response.errorBody()?.string()}")
+                            continuation.resume(emptyList())
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<FIRMSData>>, t: Throwable) {
+                        Log.e("EventRepository", "Failed to fetch FIRMS data: ${t.message}")
+                        continuation.resume(emptyList())
+                    }
+                })
+            }
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception fetching FIRMS data: ${e.message}")
             emptyList()
         }
     }

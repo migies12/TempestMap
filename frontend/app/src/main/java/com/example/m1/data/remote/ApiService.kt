@@ -1,6 +1,7 @@
 package com.example.m1.data.remote
 
 import com.example.m1.data.models.EventResponse
+import com.example.m1.data.models.FIRMSData
 import com.example.m1.fragments.ApiResponse
 import com.example.m1.fragments.User
 import retrofit2.Call
@@ -19,6 +20,9 @@ interface ApiService {
      */
     @GET("prod/event")
     fun getEvents(): Call<EventResponse>
+
+    @GET("prod/event/firms")
+    fun getFIRMSData(): Call<List<FIRMSData>>
 
     /**
      * Post a comment to an event
