@@ -248,6 +248,9 @@ class MapboxFragment : Fragment(), LocationListener {
                 }
 
                 event?.let {
+                    // Reload comments for the event by fetching the latest comments
+                    viewModel.fetchComments(it.event_id)
+
                     // Store current camera position
                     previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
 
@@ -262,7 +265,7 @@ class MapboxFragment : Fragment(), LocationListener {
                         }
                     )
 
-                    // Show event details
+                    // Show event details (which should observe the updated comments LiveData)
                     showEventDetailsDialog(it)
                 }
                 true

@@ -1,6 +1,8 @@
 package com.example.m1.data.repository
 
 import android.util.Log
+import com.example.m1.data.models.Comment
+import com.example.m1.data.models.CommentResponse
 import com.example.m1.data.models.Event
 import com.example.m1.data.models.EventResponse
 import com.example.m1.data.models.FIRMSData
@@ -108,6 +110,37 @@ class EventRepository {
         } catch (e: Exception) {
             Log.e("EventRepository", "Exception posting comment: ${e.message}")
             false
+        }
+    }
+
+    /**
+     * Fetch comments for an event from the API
+     * @param eventId The ID of the event
+     * @return List of comments or empty list if there was an error
+     */
+    suspend fun getComments(eventId: String): List<Comment> = withContext(Dispatchers.IO) {
+        try {
+            suspendCoroutine { continuation ->
+                apiService.getComments(eventId).enqueue(object : Callback<CommentResponse> {
+                    override fun onResponse(call: Call<CommentResponse>, response: Response<CommentResponse>) {
+                        if (response.isSuccessful) {
+                            val comments = response.body()?.comments ?: emptyList()
+                            Log.d("EventRepository", "Fetched ${comments.size} comments")
+                            continuation.resume(comments)
+                        } else {
+                            Log.e("EventRepository", "Response not successful: ${response.errorBody()?.string()}")
+                            continuation.resume(emptyList())
+                        }
+                    }
+                    override fun onFailure(call: Call<CommentResponse>, t: Throwable) {
+                        Log.e("EventRepository", "Failed to fetch comments: ${t.message}")
+                        continuation.resume(emptyList())
+                    }
+                })
+            }
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception fetching comments: ${e.message}")
+            emptyList()
         }
     }
 }

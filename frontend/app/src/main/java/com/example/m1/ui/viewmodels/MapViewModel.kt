@@ -1,11 +1,11 @@
 package com.example.m1.ui.viewmodels
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m1.data.models.Comment
 import com.example.m1.data.models.Event
 import com.example.m1.data.models.UserMarker
 import com.example.m1.data.repository.EventRepository
@@ -34,6 +34,10 @@ class MapViewModel : ViewModel() {
     private val _userLocation = MutableLiveData<Location>()
     val userLocation: LiveData<Location> = _userLocation
 
+    // LiveData for comments associated with an event
+    private val _comments = MutableLiveData<List<Comment>>(emptyList())
+    val comments: LiveData<List<Comment>> = _comments
+
     // Job for periodic events fetching
     private var fetchJob: Job? = null
 
@@ -59,14 +63,9 @@ class MapViewModel : ViewModel() {
             val fetchedEvents = repository.getEvents()
             _events.value = fetchedEvents.take(50) // Limit to 50 events
 
-            // Fetch FIRMS data
+            // Fetch FIRMS data (logging/debug omitted)
             val firmsData = repository.getFIRMSData()
-            Log.d("MapViewModel", "FIRMS Data fetched: ${firmsData.size} items")
-
-            // Log the first few items for debugging
-            firmsData.take(5).forEach { data ->
-                Log.d("MapViewModel", "FIRMS Event: $data")
-            }
+            // Optionally log or process FIRMS data here
 
             // Update danger levels based on user location if available
             _userLocation.value?.let { location ->
@@ -81,11 +80,7 @@ class MapViewModel : ViewModel() {
      */
     private fun updateEventDangerLevels(userLocation: Location) {
         val currentEvents = _events.value ?: return
-
-        // Use the DangerLevelCalculator to update danger levels
         val updatedEvents = DangerLevelCalculator.updateEventDangerLevels(currentEvents, userLocation)
-
-        // Update the events LiveData with the new values
         _events.value = updatedEvents
     }
 
@@ -118,6 +113,19 @@ class MapViewModel : ViewModel() {
         _userMarkers.value = currentMarkers + marker
 
         return marker
+    }
+
+    /**
+     * Fetch comments for a specific event from the repository
+     * @param eventId The ID of the event
+     */
+    fun fetchComments(eventId: String) {
+        // Clear current comments to force an update
+        _comments.value = emptyList()
+        viewModelScope.launch {
+            val fetchedComments = repository.getComments(eventId)
+            _comments.value = fetchedComments
+        }
     }
 
     /**
