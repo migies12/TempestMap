@@ -4,6 +4,11 @@ data class EventResponse(
     val events: List<Event>
 )
 
+data class CommentResponse(
+    val event_id: String,
+    val comments: List<Comment>
+)
+
 data class UserMarker(
     val id: String,
     val type: String,

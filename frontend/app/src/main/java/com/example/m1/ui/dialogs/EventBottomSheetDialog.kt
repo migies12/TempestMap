@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.m1.R
+import com.example.m1.data.models.Comment
 import com.example.m1.data.models.Event
 import com.example.m1.ui.viewmodels.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -34,14 +35,32 @@ class EventBottomSheetDialog(
      * Show event details in a bottom sheet
      * @param event The event to show details for
      */
+
+    private fun updateCommentSection(dialogView: View, comments: List<Comment>) {
+        val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
+        // Clear the existing views before updating.
+        commentSection.removeAllViews()
+        comments.forEach { comment ->
+            addCommentBubble(commentSection, comment.user, comment.text)
+        }
+    }
+
     fun show(event: Event) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.event_bottom_sheet_dialog, null)
 
-        // Set up content first so the sheet appears with all information already loaded
+        // Set up the event details and initial comment section.
         setupEventDetails(dialogView, event)
         setupCommentSection(dialogView, event)
 
-        // Show detailed section immediately for expanded view
+        // Observe LiveData for updated comments.
+        // Here we cast context to LifecycleOwner; ensure your activity implements LifecycleOwner.
+        (context as? androidx.lifecycle.LifecycleOwner)?.let { lifecycleOwner ->
+            viewModel.comments.observe(lifecycleOwner) { comments ->
+                updateCommentSection(dialogView, comments)
+            }
+        }
+
+        // Continue with dialog setup
         val detailSection = dialogView.findViewById<View>(R.id.detailSection)
         detailSection.visibility = View.VISIBLE
 
@@ -76,6 +95,7 @@ class EventBottomSheetDialog(
 
         bottomSheetDialog.show()
     }
+
 
     /**
      * Set up event details in the dialog
@@ -148,17 +168,24 @@ class EventBottomSheetDialog(
 
         // Set up add comment button
         addCommentButton.setOnClickListener {
+            // Check if user is signed in before allowing a comment
+            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
+            if (!isSignedIn) {
+                Toast.makeText(context, "Please sign in to comment", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val newComment = commentInput.text.toString().trim()
             if (newComment.isNotEmpty()) {
-                // Get user name from shared preferences
+                // Get user name from SharedPreferences
                 val userName = getSignedInUserName(context)
 
-                // Post comment
+                // Post comment using a coroutine
                 CoroutineScope(Dispatchers.Main).launch {
                     val success = viewModel.postComment(event.event_id, newComment, userName)
-
                     if (success) {
-                        // Add comment bubble
+                        // Add the new comment bubble to the comment section
                         addCommentBubble(commentSection, userName, newComment)
                         commentInput.text.clear()
                         Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
@@ -171,6 +198,7 @@ class EventBottomSheetDialog(
             }
         }
     }
+
 
     /**
      * Add a comment bubble to the comment section
