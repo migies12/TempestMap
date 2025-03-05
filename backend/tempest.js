@@ -180,6 +180,8 @@ app.post('/user', async (req, res) => {
   const user_id = req.body.user_id || req.query.user_id;
   const name = req.body.name || req.query.name;
   const location = req.body.location || req.query.location;
+  const latitude = req.body.latitude || req.query.latitude;
+  const longitude = req.body.longitude || req.query.longitude;
   const account_type = req.body.account_type || req.query.account_type;
   const email = req.body.email || req.query.email
   const regToken = req.body.regToken || req.query.regToken
@@ -189,6 +191,8 @@ app.post('/user', async (req, res) => {
     console.log("Bad params", req.body);
     return res.status(400).json({ error: 'Missing name, location, email, regToken, notifications, or account_type in request body' });
   }
+
+  console.log(`latitude: ${latitude}, longitude: ${longitude}`)
 
   if (user_id == null) {
     user_id == uuidv4();
