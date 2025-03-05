@@ -480,7 +480,7 @@ const dangerLevelCalc = function(lat1, lon1, lat2, lon2, disasterType) {
 
   const danger = baseDangerLevels[disasterType];
 
-  const distanceFactor = 1.0 - Math.min(1.0, distanceInMeters / 500000.0); // Max danger distance set to 500,000m, or 500km
+  const distanceFactor = 1.0 - Math.min(1.0, distance / 500000.0); // Max danger distance set to 500,000m, or 500km
 
   const scaledDanger = Math.round(danger*distanceFactor);
 
