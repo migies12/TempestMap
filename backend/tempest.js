@@ -465,6 +465,8 @@ const dangerLevelCalc = function(lat1, lon1, lat2, lon2, disasterType) {
     "LS": 70   // Landslide
   };
 
+  console.log(`lat1: ${lat1}, lon1: ${lon1}, lat2: ${lat2}, lon2: ${lon2}, disaster: ${disasterType}`)
+
   const R = 6371000; // Radius of Earth in meters
 
   // Conversion from latitude and longitude to meters
