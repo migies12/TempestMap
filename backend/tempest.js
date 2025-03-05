@@ -217,7 +217,8 @@ app.post('/user', async (req, res) => {
   try {
     await dynamoDB.put(params).promise();
 
-    const message = {
+    /*
+     const message = {
       notification: {
         title: "This is a test notification",
         body: "This is a notification sent to users when they save their profile."
@@ -236,6 +237,9 @@ app.post('/user', async (req, res) => {
     .catch((error) => {
       console.log('Error sending message:', error);
     });
+    */
+
+    notifyUsers();
     
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
@@ -379,6 +383,111 @@ const fetchDisasterData = async () => {
     console.error('Error fetching weather/disaster data:', error);
   }
 };
+
+const notifyUsers = async () => {
+  var events = [];
+  try {
+    const params = {
+      TableName: 'event'
+    };
+
+    let scanResults;
+    do {
+      scanResults = await dynamoDB.scan(params).promise();
+      events = items.concat(scanResults.Items);
+      params.ExclusiveStartKey = scanResults.LastEvaluatedKey;
+    } while (scanResults.LastEvaluatedKey);
+
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return;
+  }
+
+  var users = [];
+  try {
+    const params = {
+      TableName: 'users'
+    };
+
+    let scanResults;
+    do {
+      scanResults = await dynamoDB.scan(params).promise();
+      users = items.concat(scanResults.Items);
+      params.ExclusiveStartKey = scanResults.LastEvaluatedKey;
+    } while (scanResults.LastEvaluatedKey);
+
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return;
+  }
+
+  for (const user of users) {
+    for (const event of events) {
+      const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
+      if (dangerLevel > 25) {
+        const message = {
+          notification: {
+            title: `WARNING: ${event.event_type} detected near your location!`,
+            body: `There is a weather event being reported:
+            Event Type: ${event.event_type}
+            Latitude: ${event.lat}
+            Longitude: ${event.lng}
+            DangerLevel: ${dangerLevel}`
+          },
+          token: user.regToken
+        };
+
+        getMessaging().send(message)
+          .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+          })
+          .catch((error) => {
+            console.log('Error sending message:', error);
+          });
+      }
+    }
+  }
+}
+
+const dangerLevelCalc = function(lat1, lon1, lat2, lon2, disasterType) {
+
+  baseDangerLevels = {
+    "WF": 100,  // Wildfire
+    "EQ": 80,  // Earthquake
+    "FL": 75,  // Flood
+    "TS": 70,  // Tropical storm
+    "HU": 95,  // Hurricane
+    "TO": 90,  // Tornado
+    "BZ": 65,  // Blizzard
+    "VO": 85,  // Volcano
+    "LS": 70   // Landslide
+  };
+
+  const R = 6371000; // Radius of Earth in meters
+
+  // Conversion from latitude and longitude to meters
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  distance = R * c; // Distance in meters
+
+  const danger = baseDangerLevels[disasterType];
+
+  const distanceFactor = 1.0 - Math.min(1.0, distanceInMeters / 500000.0); // Max danger distance set to 500,000m, or 500km
+
+  const scaledDanger = Math.round(danger*distanceFactor);
+
+  return scaledDanger;
+
+};
+
 
 // Schedule the job to run at the start of every hour
 // cron.schedule('0 0 * * *', fetchDisasterData);
