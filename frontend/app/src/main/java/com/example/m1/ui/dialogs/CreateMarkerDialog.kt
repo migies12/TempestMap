@@ -49,30 +49,7 @@ class CreateMarkerDialog(
 
         // Set up create button click listener
         btnCreateMarker.setOnClickListener {
-            val markerType = spinnerMarkerType.selectedItem.toString()
-            val description = etDescription.text.toString().trim()
-
-            if (description.isEmpty()) {
-                Toast.makeText(context, "Please enter a description", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Create marker through ViewModel
-            val marker = viewModel.addUserMarker(
-                type = markerType,
-                latitude = latitude,
-                longitude = longitude,
-                description = description
-            )
-
-            // Notify callback
-            onMarkerCreated(marker)
-
-            // Show confirmation
-            Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
-
-            // Dismiss dialog
-            dialog.dismiss()
+            handleCreateMarkerClick(spinnerMarkerType, etDescription, latitude, longitude, dialog)
         }
 
         // Set up cancel button click listener
@@ -81,5 +58,38 @@ class CreateMarkerDialog(
         }
 
         dialog.show()
+    }
+
+    private fun handleCreateMarkerClick(
+        spinnerMarkerType: Spinner,
+        etDescription: EditText,
+        latitude: Double,
+        longitude: Double,
+        dialog: AlertDialog
+    ) {
+        val markerType = spinnerMarkerType.selectedItem.toString()
+        val description = etDescription.text.toString().trim()
+
+        if (description.isEmpty()) {
+            Toast.makeText(context, "Please enter a description", Toast.LENGTH_SHORT).show()
+            return // Exit the function early if description is empty
+        }
+
+        // Create marker through ViewModel
+        val marker = viewModel.addUserMarker(
+            type = markerType,
+            latitude = latitude,
+            longitude = longitude,
+            description = description
+        )
+
+        // Notify callback
+        onMarkerCreated(marker)
+
+        // Show confirmation
+        Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
+
+        // Dismiss dialog
+        dialog.dismiss()
     }
 }

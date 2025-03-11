@@ -405,6 +405,7 @@ class MapboxFragment : Fragment(), LocationListener {
 
     // LocationListener implementation
     override fun onLocationChanged(location: Location) {
+
         // Store last known location
         lastKnownLocation = location
 
@@ -414,6 +415,11 @@ class MapboxFragment : Fragment(), LocationListener {
         // Recalculate danger levels based on new location
         viewModel.fetchEvents()
 
+
+        //don't update map if the fragment is not attached. This will crash system if removed as setCamera requires context
+        if (!isAdded || isDetached) {
+            return
+        }
         // Move camera to user's location if this is the first location update
         if (previousCameraOptions == null) {
             val userLocation = Point.fromLngLat(location.longitude, location.latitude)

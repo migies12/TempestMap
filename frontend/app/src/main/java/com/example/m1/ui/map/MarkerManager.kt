@@ -187,29 +187,19 @@ class MarkerManager(private val context: Context) {
         }
     }
 
-    /**
-     * Add icon to the map style
-     * @param style The Mapbox style to add the icon to
-     * @param iconId The ID of the icon
-     * @param drawableId The drawable resource ID
-     * @param size The size of the icon
-     */
+
     private fun addIconToStyle(style: Style, iconId: String, drawableId: Int, size: Int) {
         val drawable = ContextCompat.getDrawable(context, drawableId)
             ?: return
 
-        val bitmap = drawableToBitmap(drawable)
+        val bitmap = convertDrawableToBitmap(drawable)
         val resizedBitmap = resizeBitmap(bitmap, size, size)
 
         style.addImage(iconId, resizedBitmap)
     }
 
-    /**
-     * Convert drawable to bitmap
-     * @param drawable The drawable to convert
-     * @return The bitmap
-     */
-    private fun drawableToBitmap(drawable: Drawable): Bitmap {
+
+    private fun convertDrawableToBitmap(drawable: Drawable): Bitmap {
         val bitmap = Bitmap.createBitmap(
             drawable.intrinsicWidth,
             drawable.intrinsicHeight,
@@ -221,14 +211,6 @@ class MarkerManager(private val context: Context) {
         return bitmap
     }
 
-
-    /**
-     * Resize bitmap
-     * @param bitmap The bitmap to resize
-     * @param width The new width
-     * @param height The new height
-     * @return The resized bitmap
-     */
     private fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(bitmap, width, height, false)
     }
