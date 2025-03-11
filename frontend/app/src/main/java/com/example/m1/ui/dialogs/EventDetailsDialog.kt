@@ -11,13 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.example.m1.R
-import com.example.m1.data.models.Comment
 import com.example.m1.data.models.Event
 import com.example.m1.ui.viewmodels.MapViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Dialog to display event details
@@ -35,7 +33,7 @@ class EventDetailsDialog(
     fun show(event: Event) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.event_popup, null)
         setupEventDetails(dialogView, event)
-        setupCommentSection(dialogView, event)
+        createCommentSection(dialogView, event)
 
         val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -52,11 +50,7 @@ class EventDetailsDialog(
         dialog.show()
     }
 
-    /**
-     * Set up event details in the dialog
-     * @param dialogView The dialog view
-     * @param event The event
-     */
+
     private fun setupEventDetails(dialogView: View, event: Event) {
         val eventTitle = dialogView.findViewById<TextView>(R.id.eventTitle)
         val eventWarning = dialogView.findViewById<TextView>(R.id.eventWarning)
@@ -104,18 +98,14 @@ class EventDetailsDialog(
         eventFooter.text = "Refer to local authorities for more information."
     }
 
-    /**
-     * Set up comment section in the dialog
-     * @param dialogView The dialog view
-     * @param event The event
-     */
-    private fun setupCommentSection(dialogView: View, event: Event) {
+
+    private fun createCommentSection(dialogView: View, event: Event) {
         val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
         val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
         val addCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
 
         event.comments.forEach { comment ->
-            addCommentBubble(commentSection, comment.user, comment.text)
+            addCommentBubbleToCommentSection(commentSection, comment.user, comment.text)
         }
 
         addCommentButton.setOnClickListener {
@@ -127,7 +117,7 @@ class EventDetailsDialog(
                     val success = viewModel.postComment(event.event_id, newComment, userName)
 
                     if (success) {
-                        addCommentBubble(commentSection, userName, newComment)
+                        addCommentBubbleToCommentSection(commentSection, userName, newComment)
                         commentInput.text.clear()
                         Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
                     } else {
@@ -140,13 +130,8 @@ class EventDetailsDialog(
         }
     }
 
-    /**
-     * Add a comment bubble to the comment section
-     * @param commentSection The LinearLayout to add the comment bubble to
-     * @param username The username of the commenter
-     * @param comment The comment text
-     */
-    private fun addCommentBubble(commentSection: LinearLayout, username: String, comment: String) {
+
+    private fun addCommentBubbleToCommentSection(commentSection: LinearLayout, username: String, comment: String) {
         val bubbleContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(8, 8, 8, 8)
@@ -180,11 +165,6 @@ class EventDetailsDialog(
         commentSection.addView(bubbleContainer)
     }
 
-    /**
-     * Get the signed-in user's name from SharedPreferences
-     * @param context The context
-     * @return The user's name, or "Anonymous" if not signed in
-     */
     private fun getSignedInUserName(context: Context): String {
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userName", "Anonymous") ?: "Anonymous"

@@ -31,10 +31,6 @@ class EventBottomSheetDialog(
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
-    /**
-     * Show event details in a bottom sheet
-     * @param event The event to show details for
-     */
 
     private fun updateCommentSection(dialogView: View, comments: List<Comment>) {
         val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
@@ -97,11 +93,6 @@ class EventBottomSheetDialog(
     }
 
 
-    /**
-     * Set up event details in the dialog
-     * @param dialogView The dialog view
-     * @param event The event
-     */
     private fun setupEventDetails(dialogView: View, event: Event) {
         val eventTitle = dialogView.findViewById<TextView>(R.id.eventTitle)
         val eventWarning = dialogView.findViewById<TextView>(R.id.eventWarning)
@@ -151,11 +142,6 @@ class EventBottomSheetDialog(
         eventFooter.text = "Refer to local authorities for more information."
     }
 
-    /**
-     * Set up comment section in the dialog
-     * @param dialogView The dialog view
-     * @param event The event
-     */
     private fun setupCommentSection(dialogView: View, event: Event) {
         val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
         val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
@@ -200,12 +186,7 @@ class EventBottomSheetDialog(
     }
 
 
-    /**
-     * Add a comment bubble to the comment section
-     * @param commentSection The LinearLayout to add the comment bubble to
-     * @param username The username of the commenter
-     * @param comment The comment text
-     */
+
     private fun addCommentBubble(commentSection: LinearLayout, username: String, comment: String) {
         val bubbleContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -241,21 +222,11 @@ class EventBottomSheetDialog(
         commentSection.addView(bubbleContainer)
     }
 
-    /**
-     * Format date string to a more user-friendly format
-     * @param dateString The date string to format
-     * @return Formatted date string
-     */
     private fun formatDate(dateString: String): String {
-        // This is a simple implementation that can be expanded based on your date format
         return dateString.replace("T", " ").replace(".000Z", "")
     }
 
-    /**
-     * Get the signed-in user's name from SharedPreferences
-     * @param context The context
-     * @return The user's name, or "Anonymous" if not signed in
-     */
+
     private fun getSignedInUserName(context: Context): String {
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userName", "Anonymous") ?: "Anonymous"
