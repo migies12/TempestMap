@@ -154,33 +154,43 @@ class EventBottomSheetDialog(
 
         // Set up add comment button
         addCommentButton.setOnClickListener {
-            // Check if user is signed in before allowing a comment
-            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
-            if (!isSignedIn) {
-                Toast.makeText(context, "Please sign in to comment", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            handleAddComment(commentSection, commentInput, event) // Pass event here
+        }
+    }
 
-            val newComment = commentInput.text.toString().trim()
-            if (newComment.isNotEmpty()) {
-                // Get user name from SharedPreferences
-                val userName = getSignedInUserName(context)
+    private fun handleAddComment(
+        commentSection: LinearLayout,
+        commentInput: EditText,
+        event: Event // Add event as a parameter
+    ) {
+        // Check if user is signed in before allowing a comment
+        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
 
-                // Post comment using a coroutine
-                CoroutineScope(Dispatchers.Main).launch {
-                    val success = viewModel.postComment(event.event_id, newComment, userName)
-                    if (success) {
-                        // Add the new comment bubble to the comment section
-                        addCommentBubble(commentSection, userName, newComment)
-                        commentInput.text.clear()
-                        Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show()
-                    }
-                }
+        if (!isSignedIn) {
+            Toast.makeText(context, "Please sign in to comment", Toast.LENGTH_SHORT).show()
+            return // Early return if the user is not signed in
+        }
+
+        val newComment = commentInput.text.toString().trim()
+        if (newComment.isEmpty()) {
+            Toast.makeText(context, "Please enter a comment", Toast.LENGTH_SHORT).show()
+            return // Early return if the comment is empty
+        }
+
+        // Get user name from SharedPreferences
+        val userName = getSignedInUserName(context)
+
+        // Post comment using a coroutine
+        CoroutineScope(Dispatchers.Main).launch {
+            val success = viewModel.postComment(event.event_id, newComment, userName) // Use event here
+            if (success) {
+                // Add the new comment bubble to the comment section
+                addCommentBubble(commentSection, userName, newComment)
+                commentInput.text.clear()
+                Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(context, "Please enter a comment", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show()
             }
         }
     }

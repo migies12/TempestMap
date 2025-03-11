@@ -77,11 +77,7 @@ class UserMarkerBottomSheetDialog(
         bottomSheetDialog.show()
     }
 
-    /**
-     * Set up marker details in the dialog
-     * @param dialogView The dialog view
-     * @param userMarker The user marker
-     */
+
     private fun setupMarkerDetails(dialogView: View, userMarker: UserMarker) {
         val eventTitle = dialogView.findViewById<TextView>(R.id.eventTitle)
         val eventWarning = dialogView.findViewById<TextView>(R.id.eventWarning)
@@ -118,11 +114,7 @@ class UserMarkerBottomSheetDialog(
         }
     }
 
-    /**
-     * Set up comment section in the dialog
-     * @param dialogView The dialog view
-     * @param userMarker The user marker
-     */
+
     private fun setupCommentSection(dialogView: View, userMarker: UserMarker) {
         val commentSection = dialogView.findViewById<LinearLayout>(R.id.commentSection)
         val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
@@ -159,12 +151,7 @@ class UserMarkerBottomSheetDialog(
         }
     }
 
-    /**
-     * Add a comment bubble to the comment section
-     * @param commentSection The LinearLayout to add the comment bubble to
-     * @param username The username of the commenter
-     * @param comment The comment text
-     */
+
     private fun addCommentBubble(commentSection: LinearLayout, username: String, comment: String) {
         val bubbleContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -200,11 +187,6 @@ class UserMarkerBottomSheetDialog(
         commentSection.addView(bubbleContainer)
     }
 
-    /**
-     * Get the signed-in user's name from SharedPreferences
-     * @param context The context
-     * @return The user's name, or "Anonymous" if not signed in
-     */
     private fun getSignedInUserName(context: Context): String {
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userName", "Anonymous") ?: "Anonymous"
