@@ -95,8 +95,13 @@ class FavoriteLocationManager(private val context: Context) {
             val json = gson.toJson(updated)
             sharedPreferences.edit().putString(KEY_FAVORITES, json).apply()
             return true
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON serialization errors
+            Log.e("FavoriteLocationManager", "Failed to serialize favorite locations to JSON", e)
+            return false
+        } catch (e: IllegalStateException) {
+            // Handle invalid state (e.g., SharedPreferences is not available)
+            Log.e("FavoriteLocationManager", "Invalid state while saving favorite locations", e)
             return false
         }
     }

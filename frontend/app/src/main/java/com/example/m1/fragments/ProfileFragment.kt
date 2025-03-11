@@ -26,6 +26,7 @@ import com.example.m1.MainActivity.Companion
 import com.example.m1.R
 import com.example.m1.data.remote.ApiService
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
@@ -150,23 +151,26 @@ class ProfileFragment : Fragment() {
 
     private fun fetchFcmToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@addOnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and save token
-            Log.d(TAG, "Token: $token")
-            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putString("registrationToken", token)
-                .apply()
+            handleFcmTokenTask(task)
         }
     }
 
+    private fun handleFcmTokenTask(task: Task<String>) {
+        if (!task.isSuccessful) {
+            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+            return
+        }
+
+        // Get new FCM registration token
+        val token = task.result
+
+        // Log and save token
+        Log.d(TAG, "Token: $token")
+        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putString("registrationToken", token)
+            .apply()
+    }
     private fun initializeViews(rootView: View) {
         profilePhoto = rootView.findViewById(R.id.profile_photo)
         fullNameEditText = rootView.findViewById(R.id.full_name_edit_text)

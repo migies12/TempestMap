@@ -141,8 +141,17 @@ class EventRepository {
                     }
                 })
             }
-        } catch (e: Exception) {
-            Log.e("EventRepository", "Exception posting comment: ${e.message}")
+        }catch (e: CancellationException) {
+            // Handle coroutine cancellation
+            Log.e("EventRepository", "Coroutine was cancelled while when posting comment", e)
+            false
+        } catch (e: IOException) {
+            // Handle network-related errors (e.g., no internet connection)
+            Log.e("EventRepository", "Network error while fetching when posting comment: ${e.message}", e)
+            false
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON parsing errors
+            Log.e("EventRepository", "JSON parsing error while fetching when posting comment: ${e.message}", e)
             false
         }
     }
@@ -172,8 +181,17 @@ class EventRepository {
                     }
                 })
             }
-        } catch (e: Exception) {
-            Log.e("EventRepository", "Exception fetching comments: ${e.message}")
+        } catch (e: CancellationException) {
+            // Handle coroutine cancellation
+            Log.e("EventRepository", "Coroutine was cancelled while fetching comments", e)
+            emptyList()
+        } catch (e: IOException) {
+            // Handle network-related errors (e.g., no internet connection)
+            Log.e("EventRepository", "Network error while fetching comments: ${e.message}", e)
+            emptyList()
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON parsing errors
+            Log.e("EventRepository", "JSON parsing error while fetching comments: ${e.message}", e)
             emptyList()
         }
     }

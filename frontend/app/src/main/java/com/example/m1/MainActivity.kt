@@ -32,6 +32,7 @@ import com.example.m1.fragments.MapboxFragment
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -146,21 +147,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchFcmToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@addOnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and save token
-            Log.d(TAG, "Token: $token")
-            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putString("registrationToken", token)
-                .apply()
+            handleFcmTokenTask(task)
         }
+    }
+
+    private fun handleFcmTokenTask(task: Task<String>) {
+        if (!task.isSuccessful) {
+            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+            return
+        }
+
+        // Get new FCM registration token
+        val token = task.result
+
+        // Log and save token
+        Log.d(TAG, "Token: $token")
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putString("registrationToken", token)
+            .apply()
     }
 
     private fun setupBottomNavigation() {
