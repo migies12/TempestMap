@@ -136,9 +136,7 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Fetches the client's public IP address using ipify api
-     */
+
     private suspend fun fetchClientPublicIp(): String? {
         return withContext(Dispatchers.IO) {
             try {

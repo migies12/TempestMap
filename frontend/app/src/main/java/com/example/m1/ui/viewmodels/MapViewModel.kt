@@ -61,7 +61,28 @@ class MapViewModel : ViewModel() {
     fun fetchEvents() {
         viewModelScope.launch {
             val fetchedEvents = repository.getEvents()
-            _events.value = fetchedEvents.take(50) // Limit to 50 events
+
+            // Sanitize the fetched events
+            val sanitizedEvents = fetchedEvents.map { event ->
+                Event(
+                    event_type = event.event_type ?: "unknown-type",
+                    date = event.date ?: "unknown-date",
+                    estimated_end_date = event.estimated_end_date ?: "unknown-end-date",
+                    lng = event.lng ?: 0.0,
+                    event_id = event.event_id ?: "unknown-id",
+                    comments = event.comments ?: emptyList(),
+                    lat = event.lat ?: 0.0,
+                    country_code = event.country_code ?: "unknown-country",
+                    created_time = event.created_time ?: "unknown-created-time",
+                    source_event_id = event.source_event_id ?: "unknown-source-id",
+                    continent = event.continent ?: "unknown-continent",
+                    event_name = event.event_name ?: "unknown-name",
+                    danger_level = event.danger_level ?: 0
+                )
+            }
+
+            // Limit to 50 events and update LiveData
+            _events.value = sanitizedEvents.take(50)
 
             // Fetch FIRMS data (logging/debug omitted)
             val firmsData = repository.getFIRMSData()
