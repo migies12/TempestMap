@@ -104,10 +104,6 @@ class DashboardActivity : AppCompatActivity() {
                 Log.e(TAG, "Coroutine cancelled while fetching dashboard data", e)
                 Toast.makeText(this@DashboardActivity, "Operation cancelled", Toast.LENGTH_SHORT).show()
 
-            } catch (e: Exception) {
-                // Catch any other unexpected exceptions
-                Log.e(TAG, "Unexpected error fetching dashboard data", e)
-                Toast.makeText(this@DashboardActivity, "Unexpected error: Please try again later", Toast.LENGTH_SHORT).show()
             }
         }
     }

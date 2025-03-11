@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.m1.FavoriteLocation
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 
@@ -63,8 +64,17 @@ class FavoriteLocationManager(private val context: Context) {
         val type = object : TypeToken<List<FavoriteLocation>>() {}.type
         return try {
             gson.fromJson(json, type)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON parsing errors (e.g., malformed JSON)
+            Log.e("FavoriteLocationManager", "Failed to parse favorite locations from JSON", e)
+            emptyList()
+        } catch (e: JsonParseException) {
+            // Handle JSON parsing errors (e.g., invalid JSON structure)
+            Log.e("FavoriteLocationManager", "Invalid JSON structure for favorite locations", e)
+            emptyList()
+        } catch (e: IllegalStateException) {
+            // Handle invalid state (e.g., Gson is not properly initialized)
+            Log.e("FavoriteLocationManager", "Invalid state while parsing favorite locations", e)
             emptyList()
         }
     }

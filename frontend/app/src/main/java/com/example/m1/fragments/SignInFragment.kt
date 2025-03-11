@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialInterruptedException
 import com.example.m1.BuildConfig
 import com.example.m1.R
 import com.example.m1.databinding.FragmentSignInBinding
@@ -81,16 +82,26 @@ class SignInFragment : Fragment() {
                 )
                 Log.d(TAG, "About to handleSignIn")
                 handleSignIn(result)
-            } catch (e: Exception) {
-                when (e) {
-                    is GetCredentialCancellationException -> {
-                        Log.d(TAG, "User canceled sign-in")
-                        Toast.makeText(context, "Please sign-in", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        handleFailure(e)
-                    }
-                }
+            } catch (e: GetCredentialCancellationException) {
+                // Handle user cancellation
+                Log.d(TAG, "User canceled sign-in", e)
+                Toast.makeText(context, "Sign-in canceled. Please try again.", Toast.LENGTH_SHORT).show()
+            } catch (e: GetCredentialInterruptedException) {
+                // Handle interruption (e.g., app backgrounded)
+                Log.e(TAG, "Sign-in process was interrupted", e)
+                Toast.makeText(context, "Sign-in process was interrupted. Please try again.", Toast.LENGTH_SHORT).show()
+            } catch (e: GetCredentialException) {
+                // Handle general credential retrieval errors
+                Log.e(TAG, "Failed to retrieve credentials", e)
+                Toast.makeText(context, "Failed to retrieve credentials. Please try again.", Toast.LENGTH_SHORT).show()
+            } catch (e: SecurityException) {
+                // Handle security-related errors (e.g., missing permissions)
+                Log.e(TAG, "Security exception during sign-in", e)
+                Toast.makeText(context, "Security error. Please check app permissions.", Toast.LENGTH_SHORT).show()
+            } catch (e: IllegalArgumentException) {
+                // Handle invalid arguments (e.g., invalid client ID or nonce)
+                Log.e(TAG, "Invalid arguments during sign-in", e)
+                Toast.makeText(context, "Invalid configuration. Please contact support.", Toast.LENGTH_SHORT).show()
             }
         }
     }

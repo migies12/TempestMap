@@ -63,10 +63,6 @@ class EventRepository {
             // Handle coroutine cancellation
             Log.e("EventRepository", "Coroutine cancelled while fetching events: ${e.message}")
             emptyList()
-        } catch (e: Exception) {
-            // Catch any other unexpected exceptions
-            Log.e("EventRepository", "Unexpected error fetching events: ${e.message}")
-            emptyList()
         }
     }
 
