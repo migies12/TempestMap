@@ -225,6 +225,7 @@ class MarkerManager(private val context: Context) {
         return bitmap
     }
 
+
     /**
      * Resize bitmap
      * @param bitmap The bitmap to resize

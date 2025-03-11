@@ -45,6 +45,7 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
@@ -112,7 +113,8 @@ class MapboxFragment : Fragment(), LocationListener {
         // Initialize helper classes
         locationHandler = LocationHandler(requireContext(), requireActivity(), this)
         markerManager = MarkerManager(requireContext())
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         favoriteLocationManager = FavoriteLocationManager(requireContext())
 
         // Set initial camera position
@@ -150,7 +152,8 @@ class MapboxFragment : Fragment(), LocationListener {
         // Start fetching events
         viewModel.startFetchingEvents()
 
-        val sharedPreferences = requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
         val currLocation = getLastKnownLocation()
         if (currLocation != null) {
             Log.d(TAG, "Adding Location, ${currLocation.latitude}, ${currLocation.longitude}")
@@ -216,80 +219,90 @@ class MapboxFragment : Fragment(), LocationListener {
     private fun setupClickListeners() {
         // Map click listener
         mapboxMap.addOnMapClickListener { point ->
-            if (markerPlacementMode) {
-                // Show marker creation dialog at this point
-                showCreateMarkerDialog(point)
-                // Exit marker placement mode
-                toggleMarkerPlacementMode()
-                return@addOnMapClickListener true
-            } else {
-                // Store the selected point
-                selectedPoint = point
-
-                // Add a marker for the selected point
-                addSelectedPointMarker(point)
-
-                // Show the save to favorites option
-                showSaveToFavoritesDialog(point)
-
-                return@addOnMapClickListener true
-            }
+            handleMapClick(point)
+            true // Return true to indicate the click event is consumed
         }
 
         // Event marker click listener
         eventAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
-                // If in marker placement mode, ignore marker clicks
-                if (markerPlacementMode) return@OnPointAnnotationClickListener true
-
-                // Find the event by coordinates
-                val event = viewModel.events.value?.find {
-                    it.lng == annotation.point.longitude() && it.lat == annotation.point.latitude()
-                }
-
-                event?.let {
-                    // Reload comments for the event by fetching the latest comments
-                    viewModel.fetchComments(it.event_id)
-
-                    // Store current camera position
-                    previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
-
-                    // Zoom to event
-                    mapboxMap.flyTo(
-                        CameraOptions.Builder()
-                            .center(annotation.point)
-                            .zoom(12.0)
-                            .build(),
-                        MapAnimationOptions.mapAnimationOptions {
-                            duration(2000)
-                        }
-                    )
-
-                    // Show event details (which should observe the updated comments LiveData)
-                    showEventDetailsDialog(it)
-                }
-                true
+                handleEventMarkerClick(annotation)
+                true // Return true to indicate the click event is consumed
             }
         )
 
         // User marker click listener
         userAnnotationManager.addClickListener(
             OnPointAnnotationClickListener { annotation ->
-                // If in marker placement mode, ignore marker clicks
-                if (markerPlacementMode) return@OnPointAnnotationClickListener true
-
-                // Find the user marker by coordinates
-                val userMarker = viewModel.userMarkers.value?.find {
-                    it.longitude == annotation.point.longitude() &&
-                            it.latitude == annotation.point.latitude()
-                }
-
-                userMarker?.let {
-                    showUserMarkerDetailsDialog(it)
-                }
-                true
+                handleUserMarkerClick(annotation)
+                true // Return true to indicate the click event is consumed
             }
         )
+    }
+
+    private fun handleMapClick(point: Point) {
+        if (markerPlacementMode) {
+            // Show marker creation dialog at this point
+            showCreateMarkerDialog(point)
+            // Exit marker placement mode
+            toggleMarkerPlacementMode()
+        } else {
+            // Store the selected point
+            selectedPoint = point
+
+            // Add a marker for the selected point
+            addSelectedPointMarker(point)
+
+            // Show the save to favorites option
+            showSaveToFavoritesDialog(point)
+        }
+    }
+
+    private fun handleEventMarkerClick(annotation: PointAnnotation) {
+        // If in marker placement mode, ignore marker clicks
+        if (markerPlacementMode) return
+
+        // Find the event by coordinates
+        val event = viewModel.events.value?.find {
+            it.lng == annotation.point.longitude() && it.lat == annotation.point.latitude()
+        }
+
+        event?.let {
+            // Reload comments for the event by fetching the latest comments
+            viewModel.fetchComments(it.event_id)
+
+            // Store current camera position
+            previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
+
+            // Zoom to event
+            mapboxMap.flyTo(
+                CameraOptions.Builder()
+                    .center(annotation.point)
+                    .zoom(12.0)
+                    .build(),
+                MapAnimationOptions.mapAnimationOptions {
+                    duration(2000)
+                }
+            )
+
+            // Show event details (which should observe the updated comments LiveData)
+            showEventDetailsDialog(it)
+        }
+    }
+
+    private fun handleUserMarkerClick(annotation: PointAnnotation) {
+        // If in marker placement mode, ignore marker clicks
+        if (markerPlacementMode) return
+
+        // Find the user marker by coordinates
+        val userMarker = viewModel.userMarkers.value?.find {
+            it.longitude == annotation.point.longitude() &&
+                    it.latitude == annotation.point.latitude()
+        }
+
+        userMarker?.let {
+            showUserMarkerDetailsDialog(it)
+        }
     }
 
     private fun toggleMarkerPlacementMode() {
@@ -414,7 +427,8 @@ class MapboxFragment : Fragment(), LocationListener {
 
         Log.d(TAG, "Location changed: $location")
 
-        val sharedPreferences = requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit()
             .putFloat("latitude", location.latitude.toFloat())
             .putFloat("longitude", location.longitude.toFloat())
@@ -452,24 +466,13 @@ class MapboxFragment : Fragment(), LocationListener {
 
         if (!isSignedIn) {
             // Show sign-in required dialog
-            AlertDialog.Builder(requireContext())
-                .setTitle("Sign In Required")
-                .setMessage("You must be logged in to save locations to favorites.")
-                .setPositiveButton("Sign In") { _, _ ->
-                    // Navigate to SignInFragment
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.container, SignInFragment())
-                        .addToBackStack(null)
-                        .commit()
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+            showSignInRequiredDialog()
             return
         }
 
         // If already a favorite, notify user
         if (favoriteLocationManager.isLocationFavorite(point.latitude(), point.longitude())) {
-            Toast.makeText(context, "This location is already in your favorites", Toast.LENGTH_SHORT).show()
+            showToast("This location is already in your favorites")
             return
         }
 
@@ -489,40 +492,67 @@ class MapboxFragment : Fragment(), LocationListener {
             .setView(dialogView)
             .create()
 
-        // Save button click listener
+        // Set save button click listener
         btnSaveLocation.setOnClickListener {
-            val locationName = etLocationName.text.toString().trim()
-            val description = etLocationDescription.text.toString().trim()
-
-            if (locationName.isEmpty()) {
-                etLocationName.error = "Please enter a name for this location"
-                return@setOnClickListener
-            }
-
-            // Create a new FavoriteLocation object
-            val favoriteLocation = FavoriteLocation(
-                name = locationName,
-                latitude = point.latitude(),
-                longitude = point.longitude(),
-                description = description
-            )
-
-            // Save to preferences
-            if (favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
-                Toast.makeText(context, "Location saved to Favorites", Toast.LENGTH_SHORT).show()
-
-                // Add a marker for this favorite location
-                addFavoriteLocationMarker(point)
-
-                dialog.dismiss()
-            } else {
-                Toast.makeText(context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
-            }
+            handleSaveLocationClick(point, etLocationName, etLocationDescription, dialog)
         }
 
         dialog.show()
     }
 
+    private fun showSignInRequiredDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Sign In Required")
+            .setMessage("You must be logged in to save locations to favorites.")
+            .setPositiveButton("Sign In") { _, _ ->
+                // Navigate to SignInFragment
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, SignInFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun handleSaveLocationClick(
+        point: Point,
+        etLocationName: EditText,
+        etLocationDescription: EditText,
+        dialog: AlertDialog
+    ) {
+        val locationName = etLocationName.text.toString().trim()
+        val description = etLocationDescription.text.toString().trim()
+
+        if (locationName.isEmpty()) {
+            etLocationName.error = "Please enter a name for this location"
+            return
+        }
+
+        // Create a new FavoriteLocation object
+        val favoriteLocation = FavoriteLocation(
+            name = locationName,
+            latitude = point.latitude(),
+            longitude = point.longitude(),
+            description = description
+        )
+
+        // Save to preferences
+        if (favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
+            showToast("Location saved to Favorites")
+
+            // Add a marker for this favorite location
+            addFavoriteLocationMarker(point)
+
+            dialog.dismiss()
+        } else {
+            showToast("Failed to save location. Please try again later.")
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
     private fun addSelectedPointMarker(point: Point) {
         // Clear any existing selected point markers
         selectedPointAnnotationManager?.deleteAll()
@@ -569,44 +599,4 @@ class MapboxFragment : Fragment(), LocationListener {
             .commit()
     }
 
-    // Helper to get the signed-in user's name from SharedPreferences
-    private fun getSignedInUserName(): String {
-        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("userName", "Anonymous") ?: "Anonymous"
-    }
-
-    // Add this to your onResume method
-    override fun onResume() {
-        super.onResume()
-
-        // Display favorite locations whenever the fragment resumes
-        displayFavoriteLocations()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        locationHandler.stopLocationUpdates()
-        fetchScope.cancel() // Cancel coroutine to prevent memory leaks
-    }
-
-    // Lifecycle methods
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
 }
