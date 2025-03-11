@@ -18,6 +18,7 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
+import java.net.MalformedURLException
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -129,8 +130,25 @@ class DashboardActivity : AppCompatActivity() {
                     Log.e(TAG, "HTTP error code: $responseCode for URL: $urlString")
                     null
                 }
+            } catch (e: MalformedURLException) {
+                // Handle invalid URL format
+                Log.e(TAG, "Malformed URL: $urlString", e)
+                null
+            } catch (e: IOException) {
+                // Handle network-related errors (e.g., no internet connection, timeouts)
+                Log.e(TAG, "Network error while fetching data from $urlString", e)
+                null
+            } catch (e: JSONException) {
+                // Handle JSON parsing errors
+                Log.e(TAG, "JSON parsing error while fetching data from $urlString", e)
+                null
+            } catch (e: SecurityException) {
+                // Handle security-related errors (e.g., missing network permissions)
+                Log.e(TAG, "Security exception while fetching data from $urlString", e)
+                null
             } catch (e: Exception) {
-                Log.e(TAG, "Exception while fetching data from $urlString", e)
+                // Catch any other unexpected exceptions
+                Log.e(TAG, "Unexpected error while fetching data from $urlString", e)
                 null
             }
         }
@@ -156,8 +174,25 @@ class DashboardActivity : AppCompatActivity() {
                     Log.e(TAG, "Failed to fetch public IP. HTTP code: $responseCode")
                     null
                 }
+            } catch (e: MalformedURLException) {
+                // Handle invalid URL format
+                Log.e(TAG, "Malformed URL while fetching public IP", e)
+                null
+            } catch (e: IOException) {
+                // Handle network-related errors (e.g., no internet connection, timeouts)
+                Log.e(TAG, "Network error while fetching public IP", e)
+                null
+            } catch (e: JSONException) {
+                // Handle JSON parsing errors
+                Log.e(TAG, "JSON parsing error while fetching public IP", e)
+                null
+            } catch (e: SecurityException) {
+                // Handle security-related errors (e.g., missing network permissions)
+                Log.e(TAG, "Security exception while fetching public IP", e)
+                null
             } catch (e: Exception) {
-                Log.e(TAG, "Exception while fetching public IP", e)
+                // Catch any other unexpected exceptions
+                Log.e(TAG, "Unexpected error while fetching public IP", e)
                 null
             }
         }

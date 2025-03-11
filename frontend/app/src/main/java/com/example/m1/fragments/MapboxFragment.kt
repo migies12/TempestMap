@@ -99,7 +99,6 @@ class MapboxFragment : Fragment(), LocationListener {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_mapbox, container, false)
-
         // Initialize ViewModel
         viewModel = ViewModelProvider(this)[MapViewModel::class.java]
 

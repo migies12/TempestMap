@@ -123,8 +123,18 @@ class SignInFragment : Fragment() {
 
                         Log.d(TAG, "Received Google ID token. User full name: $displayName")
                         loadProfileFrag()
+                    } catch (e: IllegalArgumentException) {
+                        // Handle invalid credential data
+                        Log.e(TAG, "Invalid Google ID token data", e)
+                    } catch (e: IllegalStateException) {
+                        // Handle invalid state (e.g., SharedPreferences is not available)
+                        Log.e(TAG, "Invalid state while saving user data", e)
+                    } catch (e: NullPointerException) {
+                        // Handle null pointer exceptions (e.g., if `displayName` is null)
+                        Log.e(TAG, "Null pointer exception while processing Google ID token", e)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Received an invalid google id token response", e)
+                        // Catch any other unexpected exceptions
+                        Log.e(TAG, "Unexpected error while processing Google ID token", e)
                     }
                 }
                 else {

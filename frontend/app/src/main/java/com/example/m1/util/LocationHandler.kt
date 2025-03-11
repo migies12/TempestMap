@@ -101,9 +101,6 @@ class LocationHandler(
         } catch (e: IllegalStateException) {
             // Handle illegal state (e.g., location provider not available)
             Log.e("LocationHandler", "IllegalStateException: ${e.message}", e)
-        } catch (e: Exception) {
-            // Catch any other unexpected exceptions
-            Log.e("LocationHandler", "Unexpected exception: ${e.message}", e)
         }
     }
 

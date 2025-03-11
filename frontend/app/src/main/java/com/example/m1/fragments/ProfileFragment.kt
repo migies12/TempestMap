@@ -131,24 +131,9 @@ class ProfileFragment : Fragment() {
         var token = sharedPreferencesTesting.getString("registrationToken", "No token")
         Log.d(TAG, "Token: $token")
 
+        // Fetch FCM token if not already available
         if (token == "No token") {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                    return@OnCompleteListener
-                }
-
-                // Get new FCM registration token
-                token = task.result
-
-                // Log and toast
-                //val msg = getString(R.string.msg_token_fmt, token)
-                Log.d(TAG, "Token: $token")
-                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit()
-                    .putString("registrationToken", token)
-                    .apply()
-            })
+            fetchFcmToken()
         }
 
         // Initialize views
@@ -161,6 +146,25 @@ class ProfileFragment : Fragment() {
         setupClickListeners()
 
         return rootView
+    }
+
+    private fun fetchFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and save token
+            Log.d(TAG, "Token: $token")
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit()
+                .putString("registrationToken", token)
+                .apply()
+        }
     }
 
     private fun initializeViews(rootView: View) {
@@ -438,9 +442,6 @@ class ProfileFragment : Fragment() {
 
     }
 
-    /**
-     * In a production app, this would communicate with your backend
-     */
     private fun updateProfileOnServer() {
         // Example implementation:
         // val retrofit = RetrofitClient.getInstance()

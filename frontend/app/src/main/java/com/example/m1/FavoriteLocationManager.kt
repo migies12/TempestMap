@@ -2,8 +2,10 @@ package com.example.m1
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.m1.FavoriteLocation
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 
 /**
@@ -24,16 +26,35 @@ class FavoriteLocationManager(private val context: Context) {
      * @return true if saved successfully, false otherwise
      */
     fun saveFavoriteLocation(location: FavoriteLocation): Boolean {
-        try {
+        return try {
+            // Get the current list of favorite locations
             val favorites = getFavoriteLocations().toMutableList()
+
+            // Add the new location to the list
             favorites.add(location)
 
+            // Convert the list to JSON
             val json = gson.toJson(favorites)
-            sharedPreferences.edit().putString(KEY_FAVORITES, json).apply()
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
+
+            // Save the JSON to SharedPreferences
+            sharedPreferences.edit()
+                .putString(KEY_FAVORITES, json)
+                .apply()
+
+            // Return true to indicate success
+            true
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON serialization errors
+            Log.e("FavoriteLocationManager", "Failed to serialize favorite locations to JSON", e)
+            false
+        } catch (e: IllegalStateException) {
+            // Handle invalid state (e.g., SharedPreferences is not available)
+            Log.e("FavoriteLocationManager", "Invalid state while saving favorite location", e)
+            false
+        } catch (e: NullPointerException) {
+            // Handle null pointer exceptions (e.g., if `location` is null)
+            Log.e("FavoriteLocationManager", "Null pointer exception while saving favorite location", e)
+            false
         }
     }
 

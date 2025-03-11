@@ -151,11 +151,7 @@ class MarkerManager(private val context: Context) {
         annotationManager.create(pointAnnotationOptions)
     }
 
-    /**
-     * Add wildfire marker to the map
-     * @param point The point to add the marker at
-     * @param annotationManager The annotation manager to add the marker to
-     */
+
     private fun addWildfireMarker(point: Point, annotationManager: PointAnnotationManager) {
         val pointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
@@ -164,11 +160,6 @@ class MarkerManager(private val context: Context) {
         annotationManager.create(pointAnnotationOptions)
     }
 
-    /**
-     * Add earthquake marker to the map
-     * @param point The point to add the marker at
-     * @param annotationManager The annotation manager to add the marker to
-     */
     private fun addEarthquakeMarker(point: Point, annotationManager: PointAnnotationManager) {
         val pointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)

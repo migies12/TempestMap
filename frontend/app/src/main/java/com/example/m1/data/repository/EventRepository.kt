@@ -7,6 +7,7 @@ import com.example.m1.data.models.Event
 import com.example.m1.data.models.EventResponse
 import com.example.m1.data.models.FIRMSData
 import com.example.m1.data.remote.RetrofitClient
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.IOException
@@ -74,24 +75,43 @@ class EventRepository {
             suspendCoroutine { continuation ->
                 apiService.getFIRMSData().enqueue(object : Callback<List<FIRMSData>> {
                     override fun onResponse(call: Call<List<FIRMSData>>, response: Response<List<FIRMSData>>) {
-                        if (response.isSuccessful) {
-                            val firmsData = response.body() ?: emptyList()
-                            Log.d("EventRepository", "Fetched FIRMS Data:${firmsData.size} FIRMS data points")
-                            continuation.resume(firmsData)
-                        } else {
-                            Log.e("EventRepository", "Response not successful: ${response.errorBody()?.string()}")
+                        try {
+                            if (response.isSuccessful) {
+                                val firmsData = response.body() ?: emptyList()
+                                Log.d("EventRepository", "Fetched FIRMS Data: ${firmsData.size} FIRMS data points")
+                                continuation.resume(firmsData)
+                            } else {
+                                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                Log.e("EventRepository", "Response not successful: $errorBody")
+                                continuation.resume(emptyList())
+                            }
+                        } catch (e: Exception) {
+                            Log.e("EventRepository", "Error processing FIRMS data response: ${e.message}", e)
                             continuation.resume(emptyList())
                         }
                     }
 
                     override fun onFailure(call: Call<List<FIRMSData>>, t: Throwable) {
-                        Log.e("EventRepository", "Failed to fetch FIRMS data: ${t.message}")
+                        Log.e("EventRepository", "Failed to fetch FIRMS data: ${t.message}", t)
                         continuation.resume(emptyList())
                     }
                 })
             }
+        } catch (e: CancellationException) {
+            // Handle coroutine cancellation
+            Log.e("EventRepository", "Coroutine was cancelled while fetching FIRMS data", e)
+            emptyList()
+        } catch (e: IOException) {
+            // Handle network-related errors (e.g., no internet connection)
+            Log.e("EventRepository", "Network error while fetching FIRMS data: ${e.message}", e)
+            emptyList()
+        } catch (e: JsonSyntaxException) {
+            // Handle JSON parsing errors
+            Log.e("EventRepository", "JSON parsing error while fetching FIRMS data: ${e.message}", e)
+            emptyList()
         } catch (e: Exception) {
-            Log.e("EventRepository", "Exception fetching FIRMS data: ${e.message}")
+            // Catch any other unexpected exceptions
+            Log.e("EventRepository", "Unexpected error while fetching FIRMS data: ${e.message}", e)
             emptyList()
         }
     }
