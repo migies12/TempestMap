@@ -129,12 +129,6 @@ class SignInFragment : Fragment() {
                     } catch (e: IllegalStateException) {
                         // Handle invalid state (e.g., SharedPreferences is not available)
                         Log.e(TAG, "Invalid state while saving user data", e)
-                    } catch (e: NullPointerException) {
-                        // Handle null pointer exceptions (e.g., if `displayName` is null)
-                        Log.e(TAG, "Null pointer exception while processing Google ID token", e)
-                    } catch (e: Exception) {
-                        // Catch any other unexpected exceptions
-                        Log.e(TAG, "Unexpected error while processing Google ID token", e)
                     }
                 }
                 else {

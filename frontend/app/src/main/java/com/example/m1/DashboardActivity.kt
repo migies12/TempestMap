@@ -146,10 +146,6 @@ class DashboardActivity : AppCompatActivity() {
                 // Handle security-related errors (e.g., missing network permissions)
                 Log.e(TAG, "Security exception while fetching data from $urlString", e)
                 null
-            } catch (e: Exception) {
-                // Catch any other unexpected exceptions
-                Log.e(TAG, "Unexpected error while fetching data from $urlString", e)
-                null
             }
         }
     }
@@ -189,10 +185,6 @@ class DashboardActivity : AppCompatActivity() {
             } catch (e: SecurityException) {
                 // Handle security-related errors (e.g., missing network permissions)
                 Log.e(TAG, "Security exception while fetching public IP", e)
-                null
-            } catch (e: Exception) {
-                // Catch any other unexpected exceptions
-                Log.e(TAG, "Unexpected error while fetching public IP", e)
                 null
             }
         }

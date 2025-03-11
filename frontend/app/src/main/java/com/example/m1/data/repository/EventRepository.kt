@@ -85,9 +85,15 @@ class EventRepository {
                                 Log.e("EventRepository", "Response not successful: $errorBody")
                                 continuation.resume(emptyList())
                             }
-                        } catch (e: Exception) {
-                            Log.e("EventRepository", "Error processing FIRMS data response: ${e.message}", e)
-                            continuation.resume(emptyList())
+                        } catch (e: CancellationException) {
+                            // Handle coroutine cancellation
+                            Log.e("EventRepository", "Coroutine was cancelled while fetching FIRMS data", e)
+                        } catch (e: IOException) {
+                            // Handle network-related errors (e.g., no internet connection)
+                            Log.e("EventRepository", "Network error while fetching FIRMS data: ${e.message}", e)
+                        } catch (e: JsonSyntaxException) {
+                            // Handle JSON parsing errors
+                            Log.e("EventRepository", "JSON parsing error while fetching FIRMS data: ${e.message}", e)
                         }
                     }
 
@@ -108,10 +114,6 @@ class EventRepository {
         } catch (e: JsonSyntaxException) {
             // Handle JSON parsing errors
             Log.e("EventRepository", "JSON parsing error while fetching FIRMS data: ${e.message}", e)
-            emptyList()
-        } catch (e: Exception) {
-            // Catch any other unexpected exceptions
-            Log.e("EventRepository", "Unexpected error while fetching FIRMS data: ${e.message}", e)
             emptyList()
         }
     }

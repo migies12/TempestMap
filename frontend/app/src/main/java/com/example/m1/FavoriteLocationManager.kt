@@ -51,10 +51,6 @@ class FavoriteLocationManager(private val context: Context) {
             // Handle invalid state (e.g., SharedPreferences is not available)
             Log.e("FavoriteLocationManager", "Invalid state while saving favorite location", e)
             false
-        } catch (e: NullPointerException) {
-            // Handle null pointer exceptions (e.g., if `location` is null)
-            Log.e("FavoriteLocationManager", "Null pointer exception while saving favorite location", e)
-            false
         }
     }
 
