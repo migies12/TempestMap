@@ -125,7 +125,7 @@ class MarkerManager(private val context: Context) {
         // Add markers for each user marker
         for (marker in userMarkers) {
             val point = Point.fromLngLat(marker.longitude, marker.latitude)
-            val iconId = getIconForType(marker.type)
+            val iconId = getIconID(marker.type)
 
             val pointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(point)
@@ -177,12 +177,8 @@ class MarkerManager(private val context: Context) {
         annotationManager.create(pointAnnotationOptions)
     }
 
-    /**
-     * Get icon ID for marker type
-     * @param type The marker type
-     * @return The icon ID
-     */
-    private fun getIconForType(type: String): String {
+
+    private fun getIconID(type: String): String {
         return when (type) {
             "Warning" -> WARNING_ICON_ID
             "Safehouse" -> SAFEHOUSE_ICON_ID

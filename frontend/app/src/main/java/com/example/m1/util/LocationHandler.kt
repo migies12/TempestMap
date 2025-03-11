@@ -59,33 +59,51 @@ class LocationHandler(
      * @param minDistanceM Minimum distance between updates, in meters
      */
     fun startLocationUpdates(minTimeMs: Long = 5000, minDistanceM: Float = 10f) {
-        if (hasLocationPermission()) {
-            try {
-                // Use checkSelfPermission again right before the call to be absolutely safe
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        minTimeMs,
-                        minDistanceM,
-                        locationListener
-                    )
-                }
-            } catch (e: SecurityException) {
-                // Log the exception
-                Log.e("LocationHandler", "SecurityException: ${e.message}")
-                // Request permissions again
+        try {
+            // Check if the app has location permissions
+            if (!hasLocationPermission()) {
                 requestLocationPermission()
+                return
             }
-        } else {
+
+            // Double-check permissions before requesting location updates
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Log the permission denial
+                Log.w("LocationHandler", "Location permissions not granted. Requesting permissions.")
+                requestLocationPermission()
+                return
+            }
+
+            // Request location updates
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                minTimeMs,
+                minDistanceM,
+                locationListener
+            )
+
+            Log.d("LocationHandler", "Location updates started successfully.")
+        } catch (e: SecurityException) {
+            // Handle SecurityException (e.g., permissions revoked at runtime)
+            Log.e("LocationHandler", "SecurityException: ${e.message}", e)
             requestLocationPermission()
+        } catch (e: IllegalArgumentException) {
+            // Handle invalid arguments (e.g., invalid minTimeMs or minDistanceM)
+            Log.e("LocationHandler", "IllegalArgumentException: ${e.message}", e)
+        } catch (e: IllegalStateException) {
+            // Handle illegal state (e.g., location provider not available)
+            Log.e("LocationHandler", "IllegalStateException: ${e.message}", e)
+        } catch (e: Exception) {
+            // Catch any other unexpected exceptions
+            Log.e("LocationHandler", "Unexpected exception: ${e.message}", e)
         }
     }
 
@@ -96,38 +114,4 @@ class LocationHandler(
         locationManager.removeUpdates(locationListener)
     }
 
-    /**
-     * Get the last known location
-     * @return The last known location, or null if not available
-     */
-    fun getLastKnownLocation(): Location? {
-        if (hasLocationPermission()) {
-            try {
-                // Try GPS provider first with explicit permission check
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-                        return it
-                    }
-                }
-
-                // Try network provider with explicit permission check
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                }
-            } catch (e: SecurityException) {
-                Log.e("LocationHandler", "SecurityException: ${e.message}")
-            } catch (e: Exception) {
-                Log.e("LocationHandler", "Error getting location: ${e.message}")
-            }
-        }
-        return null
-    }
 }

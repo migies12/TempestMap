@@ -95,10 +95,7 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Calculate danger levels for events based on user's location
-     * @param userLocation The user's current location
-     */
+
     private fun updateEventDangerLevels(userLocation: Location) {
         val currentEvents = _events.value ?: return
         val updatedEvents = DangerLevelCalculator.updateEventDangerLevels(currentEvents, userLocation)

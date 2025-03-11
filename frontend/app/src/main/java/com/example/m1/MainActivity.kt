@@ -136,27 +136,37 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadFragment(HomeFragment())
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+
+        // Fetch FCM token
+        fetchFcmToken()
+
+        // Set up bottom navigation
+        setupBottomNavigation()
+    }
+
+    private fun fetchFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
+                return@addOnCompleteListener
             }
 
             // Get new FCM registration token
             val token = task.result
 
-            // Log and toast
-            //val msg = getString(R.string.msg_token_fmt, token)
+            // Log and save token
             Log.d(TAG, "Token: $token")
-            val sharedPreferences = this.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             sharedPreferences.edit()
                 .putString("registrationToken", token)
                 .apply()
-        })
+        }
+    }
 
-        bottomNav = findViewById(R.id.bottomNav) as BottomNavigationView
-        bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
+    private fun setupBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        bottomNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.nav_home -> {
                     loadFragment(HomeFragment())
                     true
@@ -170,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                     val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
 
                     val fragment = if (isSignedIn) ProfileFragment() else SignInFragment()
-                    Log.d(TAG, "Fragment: " + fragment)
+                    Log.d(TAG, "Fragment: $fragment")
                     loadFragment(fragment)
                     true
                 }
@@ -182,4 +192,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }

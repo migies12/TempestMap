@@ -574,7 +574,6 @@ class MapboxFragment : Fragment(), LocationListener {
         favoriteMarkerAnnotationManager?.create(pointAnnotationOptions)
     }
 
-    // Add this method to display all favorite locations on the map
     private fun displayFavoriteLocations() {
         val favorites = favoriteLocationManager.getFavoriteLocations()
 
