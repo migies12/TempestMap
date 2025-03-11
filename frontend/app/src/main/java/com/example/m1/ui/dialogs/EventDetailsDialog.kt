@@ -64,16 +64,13 @@ class EventDetailsDialog(
         val eventDangerLevel = dialogView.findViewById<TextView>(R.id.eventDangerLevel)
         val eventFooter = dialogView.findViewById<TextView>(R.id.eventFooter)
 
-        // Set event details
         eventTitle.text = event.event_name
         eventWarning.text = "Warning: ${event.event_type} detected on ${event.date}"
         eventEndDate.text = "Expected end: ${event.estimated_end_date}"
 
-        // Set danger level with appropriate color indicator
         val dangerLevel = event.danger_level
         eventDangerLevel.text = "Danger Level: $dangerLevel / 100 based on your proximity."
 
-        // Set text color based on danger level
         when {
             dangerLevel >= 75 -> eventDangerLevel.setTextColor(
                 ContextCompat.getColor(
@@ -117,24 +114,19 @@ class EventDetailsDialog(
         val commentInput = dialogView.findViewById<EditText>(R.id.commentInput)
         val addCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
 
-        // Populate existing comments
         event.comments.forEach { comment ->
             addCommentBubble(commentSection, comment.user, comment.text)
         }
 
-        // Set up add comment button
         addCommentButton.setOnClickListener {
             val newComment = commentInput.text.toString().trim()
             if (newComment.isNotEmpty()) {
-                // Get user name from shared preferences
                 val userName = getSignedInUserName(context)
 
-                // Post comment
                 CoroutineScope(Dispatchers.Main).launch {
                     val success = viewModel.postComment(event.event_id, newComment, userName)
 
                     if (success) {
-                        // Add comment bubble
                         addCommentBubble(commentSection, userName, newComment)
                         commentInput.text.clear()
                         Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
@@ -175,7 +167,6 @@ class EventDetailsDialog(
         val commentTextView = TextView(context).apply {
             text = comment
 
-            // Set the background depending on the user
             val bubbleDrawable = if (username == getSignedInUserName(context)) {
                 R.drawable.comment_bubble_background_light_blue
             } else {
