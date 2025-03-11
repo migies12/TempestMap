@@ -9,9 +9,12 @@ import com.example.m1.data.models.FIRMSData
 import com.example.m1.data.remote.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okio.IOException
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -47,8 +50,21 @@ class EventRepository {
                     }
                 })
             }
+        } catch (e: IOException) {
+            // Handle network-related errors (e.g., no internet, server unreachable)
+            Log.e("EventRepository", "Network error fetching events: ${e.message}")
+            emptyList()
+        } catch (e: HttpException) {
+            // Handle HTTP errors (e.g., 404, 500)
+            Log.e("EventRepository", "HTTP error fetching events: ${e.message}")
+            emptyList()
+        } catch (e: CancellationException) {
+            // Handle coroutine cancellation
+            Log.e("EventRepository", "Coroutine cancelled while fetching events: ${e.message}")
+            emptyList()
         } catch (e: Exception) {
-            Log.e("EventRepository", "Exception fetching events: ${e.message}")
+            // Catch any other unexpected exceptions
+            Log.e("EventRepository", "Unexpected error fetching events: ${e.message}")
             emptyList()
         }
     }

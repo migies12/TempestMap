@@ -12,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okio.IOException
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -19,6 +21,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.cancellation.CancellationException
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -60,21 +63,21 @@ class DashboardActivity : AppCompatActivity() {
             try {
 
                 // Fetch Server IP
-                val serverIp = fetchData("$BACKEND_URL/server_ip")?.getString("ip") ?: "N/A"
+                val serverIp = fetchEC2Data("$BACKEND_URL/server_ip")?.getString("ip") ?: "N/A"
                 serverIpValue.text = serverIp
 
                 // Fetch Server Local Time
-                val serverTime = fetchData("$BACKEND_URL/local_time")?.getString("time") ?: "N/A"
+                val serverTime = fetchEC2Data("$BACKEND_URL/local_time")?.getString("time") ?: "N/A"
                 serverTimeValue.text = serverTime
 
                 // Fetch Backend User Name
-                val backendNameJson = fetchData("$BACKEND_URL/name")
+                val backendNameJson = fetchEC2Data("$BACKEND_URL/name")
                 val backendFirstName = backendNameJson?.getString("firstName") ?: "N/A"
                 val backendLastName = backendNameJson?.getString("lastName") ?: ""
                 backendNameValue.text = "$backendFirstName $backendLastName"
 
                 // Fetch Client Public IP
-                val clientPublicIp = fetchPublicIp() ?: "N/A"
+                val clientPublicIp = fetchClientPublicIp() ?: "N/A"
                 clientIpValue.text = clientPublicIp
 
                 // Get Client Local Time in GMT
@@ -85,17 +88,30 @@ class DashboardActivity : AppCompatActivity() {
                 val loggedInUserName = getLoggedInUserName()
                 loggedInUserValue.text = loggedInUserName
 
+            } catch (e: IOException) {
+                // Handle network-related errors (e.g., no internet, server unreachable)
+                Log.e(TAG, "Network error fetching dashboard data", e)
+                Toast.makeText(this@DashboardActivity, "Network error: Please check your connection", Toast.LENGTH_SHORT).show()
+
+            } catch (e: JSONException) {
+                // Handle JSON parsing errors (e.g., malformed JSON response)
+                Log.e(TAG, "JSON parsing error fetching dashboard data", e)
+                Toast.makeText(this@DashboardActivity, "Data format error: Please try again later", Toast.LENGTH_SHORT).show()
+
+            } catch (e: CancellationException) {
+                // Handle coroutine cancellation (e.g., if the scope is cancelled)
+                Log.e(TAG, "Coroutine cancelled while fetching dashboard data", e)
+                Toast.makeText(this@DashboardActivity, "Operation cancelled", Toast.LENGTH_SHORT).show()
+
             } catch (e: Exception) {
-                Log.e(TAG, "Error fetching dashboard data", e)
-                Toast.makeText(this@DashboardActivity, "Error fetching data", Toast.LENGTH_SHORT).show()
+                // Catch any other unexpected exceptions
+                Log.e(TAG, "Unexpected error fetching dashboard data", e)
+                Toast.makeText(this@DashboardActivity, "Unexpected error: Please try again later", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    /**
-     * Fetches JSON data from the Backend Hosted on EC2
-     */
-    private suspend fun fetchData(urlString: String): JSONObject? {
+    private suspend fun fetchEC2Data(urlString: String): JSONObject? {
         return withContext(Dispatchers.IO) {
             try {
                 val url = URL(urlString)
@@ -123,7 +139,7 @@ class DashboardActivity : AppCompatActivity() {
     /**
      * Fetches the client's public IP address using ipify api
      */
-    private suspend fun fetchPublicIp(): String? {
+    private suspend fun fetchClientPublicIp(): String? {
         return withContext(Dispatchers.IO) {
             try {
                 val url = URL("https://api.ipify.org?format=json")
@@ -149,9 +165,7 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Retrieves the client's local time in GMT using Calendar
-     */
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getClientLocalTime(): String {
         val now = Calendar.getInstance()
@@ -160,10 +174,7 @@ class DashboardActivity : AppCompatActivity() {
         return sdf.format(now.time)
     }
 
-    /**
-     * Since the user signs in before navigating to the DashBoard Activity. Retrieves the logged-in user's name
-     * from the intent extras in HandleSignIn() in MainAcitivity.kt
-     */
+
     private fun getLoggedInUserName(): String {
         val firstName = intent.getStringExtra("firstName") ?: "N/A"
         val lastName = intent.getStringExtra("lastName") ?: ""
