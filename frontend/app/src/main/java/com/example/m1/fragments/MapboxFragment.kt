@@ -103,7 +103,52 @@ class MapboxFragment : Fragment(), LocationListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_mapbox, container, false)
+
+        initGlobalsAndListeners(view)
+
+        val sharedPreferences =
+            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+        val currLocation = locationHandler.getLastKnownLocation(requireContext(), locationManager)
+        if (currLocation != null) {
+            Log.d(TAG, "Adding Location, ${currLocation.latitude}, ${currLocation.longitude}")
+            sharedPreferences.edit()
+                .putFloat("latitude", currLocation.latitude.toFloat())
+                .putFloat("longitude", currLocation.longitude.toFloat())
+                .apply()
+        }
+
+        // Check for any passed location from FavoritesFragment
+        arguments?.let {
+            val latitude = it.getDouble("latitude", 0.0)
+            val longitude = it.getDouble("longitude", 0.0)
+            val locationName = it.getString("locationName")
+
+            if (latitude != 0.0 && longitude != 0.0) {
+                // Navigate to this location
+                val point = Point.fromLngLat(longitude, latitude)
+                mapView.mapboxMap.setCamera(
+                    CameraOptions.Builder()
+                        .center(point)
+                        .zoom(15.0)
+                        .build()
+                )
+
+                // Add a marker at this location
+                markerUtils.addFavoriteLocationMarker(point, favoriteMarkerAnnotationManager)
+
+                // Show a toast with the location name
+                locationName?.let { name ->
+                    Toast.makeText(context, "Viewing: $name", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        return view
+    }
+
+    private fun initGlobalsAndListeners(view: View) {
         // Initialize ViewModel
         viewModel = ViewModelProvider(this)[MapViewModel::class.java]
 
@@ -148,52 +193,16 @@ class MapboxFragment : Fragment(), LocationListener {
         setupObservers()
 
         // Load map style
-        loadMapStyle()
+        mapboxMap.loadStyle(Style.DARK) { style ->
+            // Load marker icons
+            markerManager.loadMarkerIcons(style)
+        }
 
         // Start location updates
         locationHandler.startLocationUpdates()
 
         // Start fetching events
         viewModel.startFetchingEvents()
-
-        val sharedPreferences =
-            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
-        val currLocation = locationHandler.getLastKnownLocation(requireContext(), locationManager)
-        if (currLocation != null) {
-            Log.d(TAG, "Adding Location, ${currLocation.latitude}, ${currLocation.longitude}")
-            sharedPreferences.edit()
-                .putFloat("latitude", currLocation.latitude.toFloat())
-                .putFloat("longitude", currLocation.longitude.toFloat())
-                .apply()
-        }
-
-        // Check for any passed location from FavoritesFragment
-        arguments?.let {
-            val latitude = it.getDouble("latitude", 0.0)
-            val longitude = it.getDouble("longitude", 0.0)
-            val locationName = it.getString("locationName")
-
-            if (latitude != 0.0 && longitude != 0.0) {
-                // Navigate to this location
-                val point = Point.fromLngLat(longitude, latitude)
-                mapView.mapboxMap.setCamera(
-                    CameraOptions.Builder()
-                        .center(point)
-                        .zoom(15.0)
-                        .build()
-                )
-
-                // Add a marker at this location
-                markerUtils.addFavoriteLocationMarker(point, favoriteMarkerAnnotationManager)
-
-                // Show a toast with the location name
-                locationName?.let { name ->
-                    Toast.makeText(context, "Viewing: $name", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        return view
     }
 
 
@@ -325,12 +334,7 @@ class MapboxFragment : Fragment(), LocationListener {
         }
     }
 
-    private fun loadMapStyle() {
-        mapboxMap.loadStyle(Style.DARK) { style ->
-            // Load marker icons
-            markerManager.loadMarkerIcons(style)
-        }
-    }
+
 
 
 
