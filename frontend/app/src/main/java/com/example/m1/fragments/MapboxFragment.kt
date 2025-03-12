@@ -447,46 +447,6 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
 
-    private fun handleSaveLocationClick(
-        point: Point,
-        etLocationName: EditText,
-        etLocationDescription: EditText,
-        dialog: AlertDialog
-    ) {
-        val locationName = etLocationName.text.toString().trim()
-        val description = etLocationDescription.text.toString().trim()
-
-        if (locationName.isEmpty()) {
-            etLocationName.error = "Please enter a name for this location"
-            return
-        }
-
-        // Create a new FavoriteLocation object
-        val favoriteLocation = FavoriteLocation(
-            name = locationName,
-            latitude = point.latitude(),
-            longitude = point.longitude(),
-            description = description
-        )
-
-        // Save to preferences
-        if (favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
-            showToast("Location saved to Favorites")
-
-            // Add a marker for this favorite location
-            markerUtils.addFavoriteLocationMarker(point, favoriteMarkerAnnotationManager)
-
-            dialog.dismiss()
-        } else {
-            showToast("Failed to save location. Please try again later.")
-        }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
-
     private fun navigateToFavoritesFragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, FavoritesFragment())

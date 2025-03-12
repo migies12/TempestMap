@@ -12,6 +12,15 @@ import com.example.m1.FavoriteLocationManager
 import com.example.m1.R
 import com.mapbox.geojson.Point
 
+data class SaveLocationDialogState(
+    val context: Context,
+    val point: Point,
+    val favoriteLocationManager: FavoriteLocationManager,
+    val dialog: AlertDialog,
+    val etLocationName: EditText,
+    val etLocationDescription: EditText
+)
+
 class DialogUtils {
 
     fun showSaveToFavoritesDialog(
@@ -35,53 +44,49 @@ class DialogUtils {
             .setView(dialogView)
             .create()
 
+        // Create the dialog state
+        val dialogState = SaveLocationDialogState(
+            context = context,
+            point = point,
+            favoriteLocationManager = favoriteLocationManager,
+            dialog = dialog,
+            etLocationName = etLocationName,
+            etLocationDescription = etLocationDescription
+        )
+
         // Set the click listener for the save button
         btnSaveLocation.setOnClickListener {
-            handleSaveLocationClick(
-                context,
-                point,
-                etLocationName,
-                etLocationDescription,
-                favoriteLocationManager,
-                dialog
-            )
+            handleSaveLocationClick(dialogState)
         }
 
         // Show the dialog
         dialog.show()
     }
 
-    private fun handleSaveLocationClick(
-        context: Context,
-        point: Point,
-        etLocationName: EditText,
-        etLocationDescription: EditText,
-        favoriteLocationManager: FavoriteLocationManager,
-        dialog: AlertDialog
-    ) {
-        val locationName = etLocationName.text.toString().trim()
-        val description = etLocationDescription.text.toString().trim()
+    private fun handleSaveLocationClick(dialogState: SaveLocationDialogState) {
+        val locationName = dialogState.etLocationName.text.toString().trim()
+        val description = dialogState.etLocationDescription.text.toString().trim()
 
         // Validate the location name
         if (locationName.isEmpty()) {
-            etLocationName.error = "Please enter a name for this location"
+            dialogState.etLocationName.error = "Please enter a name for this location"
             return
         }
 
         // Create a new FavoriteLocation object
         val favoriteLocation = FavoriteLocation(
             name = locationName,
-            latitude = point.latitude(),
-            longitude = point.longitude(),
+            latitude = dialogState.point.latitude(),
+            longitude = dialogState.point.longitude(),
             description = description
         )
 
         // Save the location and handle the result
-        if (favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
-            Toast.makeText(context, "Location saved to Favorites", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
+        if (dialogState.favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
+            Toast.makeText(dialogState.context, "Location saved to Favorites", Toast.LENGTH_SHORT).show()
+            dialogState.dialog.dismiss()
         } else {
-            Toast.makeText(context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(dialogState.context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
         }
     }
 
