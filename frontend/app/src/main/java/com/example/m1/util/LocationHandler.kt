@@ -53,6 +53,22 @@ class LocationHandler(
         )
     }
 
+    fun getLastKnownLocation(context: Context, locationManager: LocationManager): Location? {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return null
+        } else {
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
+    }
+
     /**
      * Start location updates
      * @param minTimeMs Minimum time between updates, in milliseconds
