@@ -1,5 +1,4 @@
-name: Run Jest Backend Test
-
+name: Jest Backend
 on:
   push:
     branches:

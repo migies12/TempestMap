@@ -1,4 +1,4 @@
-name: Deploy to EC2 - Secret
+name: Deploy to EC2
 
 on:
   push:
@@ -21,6 +21,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /TempestMap
+            cd TempestMap
             git pull
             pm2 restart tempest
