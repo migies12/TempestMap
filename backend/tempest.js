@@ -278,7 +278,7 @@ app.post('/user', async (req, res) => {
   console.log(`latitude: ${latitude}, longitude: ${longitude}`)
 
   if (user_id == null) {
-    user_id == uuidv4();
+    user_id = uuidv4();
   }
   
   const newUser = {
