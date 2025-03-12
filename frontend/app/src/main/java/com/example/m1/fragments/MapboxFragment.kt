@@ -103,58 +103,12 @@ class MapboxFragment : Fragment(), LocationListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_mapbox, container, false)
+
         // Initialize ViewModel
         viewModel = ViewModelProvider(this)[MapViewModel::class.java]
 
-        // Initialize UI components
-        mapView = view.findViewById(R.id.mapView)
-        fabAddMarker = view.findViewById(R.id.fabAddMarker)
+        initGlobalsAndListeners(inflater, container)
 
-        // Get the MapboxMap instance
-        mapboxMap = mapView.mapboxMap
-
-        // Initialize helper classes
-        locationHandler = LocationHandler(requireContext(), requireActivity(), this)
-        markerManager = MarkerManager(requireContext())
-        locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        favoriteLocationManager = FavoriteLocationManager(requireContext())
-
-        // Set initial camera position
-        mapboxMap.setCamera(
-            CameraOptions.Builder()
-                .center(Point.fromLngLat(-95.7129, 37.0902)) // Center on North America
-                .zoom(2.0)
-                .build()
-        )
-
-        // Initialize annotation managers
-        eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
-        userAnnotationManager = mapView.annotations.createPointAnnotationManager()
-        homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
-        selectedPointAnnotationManager = mapView.annotations.createPointAnnotationManager()
-        favoriteMarkerAnnotationManager = mapView.annotations.createPointAnnotationManager()
-
-        // Setup FAB click listener
-        fabAddMarker.setOnClickListener {
-            showOptionsDialog()
-        }
-
-        // Setup other event listeners
-        setupClickListeners()
-
-        // Setup observers
-        setupObservers()
-
-        // Load map style
-        loadMapStyle()
-
-        // Start location updates
-        startLocationUpdates()
-
-        // Start fetching events
-        viewModel.startFetchingEvents()
 
         val sharedPreferences =
             requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
@@ -196,6 +150,64 @@ class MapboxFragment : Fragment(), LocationListener {
         return view
     }
 
+    private fun initGlobalsAndListeners(inflater: LayoutInflater, container: ViewGroup?){
+        val view = inflater.inflate(R.layout.fragment_mapbox, container, false)
+
+        // Initialize UI components
+        mapView = view.findViewById(R.id.mapView)
+        fabAddMarker = view.findViewById(R.id.fabAddMarker)
+
+        // Get the MapboxMap instance
+        mapboxMap = mapView.mapboxMap
+
+        // Initialize helper classes
+        locationHandler = LocationHandler(requireContext(), requireActivity(), this)
+        markerManager = MarkerManager(requireContext())
+        locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        favoriteLocationManager = FavoriteLocationManager(requireContext())
+
+        // Set initial camera position
+        mapboxMap.setCamera(
+            CameraOptions.Builder()
+                .center(Point.fromLngLat(-95.7129, 37.0902)) // Center on North America
+                .zoom(2.0)
+                .build()
+        )
+
+        // Initialize annotation managers
+        eventAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        userAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        homeAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        selectedPointAnnotationManager = mapView.annotations.createPointAnnotationManager()
+        favoriteMarkerAnnotationManager = mapView.annotations.createPointAnnotationManager()
+
+
+        // Setup FAB click listener
+        fabAddMarker.setOnClickListener {
+            showOptionsDialog()
+        }
+
+        // Setup other event listeners
+        setupClickListeners()
+
+        // Setup observers
+        setupObservers()
+
+        // Load map style
+        mapboxMap.loadStyle(Style.DARK) { style ->
+            // Load marker icons
+            markerManager.loadMarkerIcons(style)
+        }
+
+        // Start location updates
+        locationHandler.startLocationUpdates()
+
+        // Start fetching events
+        viewModel.startFetchingEvents()
+
+    }
+
 
     private fun setupClickListeners() {
         // Map click listener
@@ -224,7 +236,10 @@ class MapboxFragment : Fragment(), LocationListener {
     private fun handleMapClick(point: Point) {
         if (markerPlacementMode) {
             // Show marker creation dialog at this point
-            showCreateMarkerDialog(point)
+            CreateMarkerDialog(requireContext(), viewModel) {
+                // Marker created callback - no extra action needed as ViewModel handles it
+                Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
+            }.show(point)
             // Exit marker placement mode
             toggleMarkerPlacementMode()
         } else {
@@ -322,24 +337,6 @@ class MapboxFragment : Fragment(), LocationListener {
         }
     }
 
-    private fun loadMapStyle() {
-        mapboxMap.loadStyle(Style.DARK) { style ->
-            // Load marker icons
-            markerManager.loadMarkerIcons(style)
-        }
-    }
-
-    private fun startLocationUpdates() {
-        locationHandler.startLocationUpdates()
-    }
-
-    private fun showCreateMarkerDialog(point: Point) {
-        CreateMarkerDialog(requireContext(), viewModel) { marker ->
-            // Marker created callback - no extra action needed as ViewModel handles it
-            Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
-        }.show(point)
-    }
-
     private fun showEventDetailsDialog(event: Event) {
         EventBottomSheetDialog(requireContext(), viewModel) {
             // On dismiss - restore camera position
@@ -397,7 +394,7 @@ class MapboxFragment : Fragment(), LocationListener {
         viewModel.fetchEvents()
 
 
-        //don't update map if the fragment is not attached. This will crash system if removed as setCamera requires context
+        //don't update map if the fragment is not attached. This will crash system, requires context
         if (!isAdded || isDetached) {
             return
         }
