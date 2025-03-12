@@ -1,6 +1,8 @@
 module.exports = {
     testEnvironment: 'node',
     collectCoverage: true,
-    collectCoverageFrom: ['backend'],
+    collectCoverageFrom: [
+      'backend/*.{js,jsx}',
+    ],
     coverageDirectory: 'coverage',
   };
