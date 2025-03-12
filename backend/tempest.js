@@ -263,7 +263,7 @@ app.delete('/comment/:event_id', async (req, res) => {
 
 app.post('/user', async (req, res) => {
 
-  const user_id = req.body.user_id || req.query.user_id;
+  var user_id = req.body.user_id || req.query.user_id;
   const name = req.body.name || req.query.name;
   const location = req.body.location || req.query.location;
   const latitude = req.body.latitude || req.query.latitude;
