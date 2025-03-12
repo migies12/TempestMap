@@ -17,6 +17,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.m1.databinding.ActivityMapsBinding
+import com.example.m1.fragments.MapboxFragment
+import com.example.m1.fragments.MapboxFragment.Companion
+import com.example.m1.util.LocationHandler
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
@@ -55,7 +58,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10_000, 0f, this)
         Log.d(TAG, "Location permissions granted");
     }
 

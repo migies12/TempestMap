@@ -85,7 +85,7 @@ class SignInFragment : Fragment() {
             } catch (e: GetCredentialCancellationException) {
                 // Handle user cancellation
                 Log.d(TAG, "User canceled sign-in", e)
-                Toast.makeText(context, "Sign-in canceled. Please try again.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Please create a profile to personalize your experience.", Toast.LENGTH_SHORT).show()
             } catch (e: GetCredentialInterruptedException) {
                 // Handle interruption (e.g., app backgrounded)
                 Log.e(TAG, "Sign-in process was interrupted", e)
@@ -93,7 +93,7 @@ class SignInFragment : Fragment() {
             } catch (e: GetCredentialException) {
                 // Handle general credential retrieval errors
                 Log.e(TAG, "Failed to retrieve credentials", e)
-                Toast.makeText(context, "Failed to retrieve credentials. Please try again.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "There was an issue verifying your credentials. Please try again later.", Toast.LENGTH_SHORT).show()
             } catch (e: SecurityException) {
                 // Handle security-related errors (e.g., missing permissions)
                 Log.e(TAG, "Security exception during sign-in", e)
