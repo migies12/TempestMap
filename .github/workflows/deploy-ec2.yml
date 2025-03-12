@@ -1,4 +1,4 @@
-name: Deploy to EC2 - Secrets
+name: Deploy to EC2 - Secret
 
 on:
   push:
