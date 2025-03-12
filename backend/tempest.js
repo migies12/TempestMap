@@ -21,11 +21,13 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 
 /* --- API Routes --- */
+
 app.get('/', async (req, res) => {
   try {
     res.status(200).json({message: "Success"});
   } catch (error) {
     console.error('Error', error);
+    
     res.status(500).json({ error: 'Error' });
   }
 });
@@ -37,7 +39,8 @@ app.post('/test_cron', async (req, res) => {
     await fetchDisasterData();
     res.status(200).json({ message: "Disaster data fetched successfully!" });
   } catch (error) {
-    console.error('Error in fetchDisasterData:', error);
+    //console.error('Error in fetchDisasterData:', error);
+    console.log("axios.get in test:", axios.get);
     res.status(500).json({ error: "Error fetching disaster data" });
   }
 });
@@ -501,6 +504,7 @@ const fetchDisasterData = async () => {
     }
   } catch (error) {
     console.error('Error fetching weather/disaster data:', error);
+    throw error;
   }
 };
 
@@ -611,10 +615,13 @@ const dangerLevelCalc = function(lat1, lon1, lat2, lon2, disasterType) {
 
 };
 
-
 // Schedule the job to run at the start of every hour
 // cron.schedule('0 0 * * *', fetchDisasterData);
 
-app.listen(80, () => {
-  console.log("Tempest Backend: Server running on port 80");
-});
+if (require.main === module) {
+  app.listen(80, () => {
+    console.log("Tempest Backend: Server running on port 80");
+  });
+}
+
+module.exports = app;

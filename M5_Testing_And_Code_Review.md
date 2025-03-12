@@ -14,12 +14,19 @@
 
 #### 2.1.1. Tests
 
-| **Interface**                 | **Describe Group Location, No Mocks**                | **Describe Group Location, With Mocks**            | **Mocked Components**              |
-| ----------------------------- | ---------------------------------------------------- | -------------------------------------------------- | ---------------------------------- |
-| **POST /user/login**          | [`tests/unmocked/authenticationLogin.test.js#L1`](#) | [`tests/mocked/authenticationLogin.test.js#L1`](#) | Google Authentication API, User DB |
-| **POST /study-groups/create** | ...                                                  | ...                                                | Study Group DB                     |
-| ...                           | ...                                                  | ...                                                | ...                                |
-| ...                           | ...                                                  | ...                                                | ...                                |
+| **Interface**                 | **Group Location (No Mocks)**                          | **Group Location (With Mocks)**                        | **Mocked Components**                           |
+| ----------------------------- | ------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------- |
+| **GET /**                    |  [`tests/unmocked/backend.test.js`](#)                |          [`tests/mock/backend.test.js`](#)             | None                                            |
+| **POST /test_cron**          |                |                      | axios, External Disaster API                    |
+| **GET /event**               |                |                      | DynamoDB scan                                   |
+| **POST /event/custom**       |                |                      | DynamoDB put, uuid generation                   |
+| **GET /event/firms**         |                |                      | axios, csv-parser                               |
+| **POST /comment/:event_id**  |                |                      | DynamoDB update, uuid generation                |
+| **GET /comment/:event_id**   |                |                      | DynamoDB get                                    |
+| **DELETE /comment/:event_id**|                |                      | DynamoDB delete & update operations             |
+| **POST /user**               |                |                      | DynamoDB put, Firebase Messaging                |
+| **GET /user/:user_id**       |                |                      | DynamoDB get                                    |
+| **POST /user/locations**     |                |                      | DynamoDB update                                 
 
 #### 2.1.2. Commit Hash Where Tests Run
 

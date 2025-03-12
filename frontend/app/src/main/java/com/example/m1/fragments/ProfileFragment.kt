@@ -446,31 +446,5 @@ class ProfileFragment : Fragment() {
 
     }
 
-    private fun updateProfileOnServer() {
-        // Example implementation:
-        // val retrofit = RetrofitClient.getInstance()
-        // val apiService = retrofit.create(ApiService::class.java)
 
-        // Create profile data object
-        // val profileData = UserProfile(
-        //     userId = sharedPreferences.getString(KEY_USER_ID, ""),
-        //     name = fullNameEditText.text.toString(),
-        //     email = emailEditText.text.toString(),
-        //     ...
-        // )
-
-        // Launch coroutine to make API call
-        // lifecycleScope.launch {
-        //     try {
-        //         val response = apiService.updateProfile(profileData)
-        //         if (response.isSuccessful) {
-        //             Toast.makeText(context, "Profile updated on server", Toast.LENGTH_SHORT).show()
-        //         } else {
-        //             Toast.makeText(context, "Server error: ${response.message()}", Toast.LENGTH_LONG).show()
-        //         }
-        //     } catch (e: Exception) {
-        //         Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
-        //     }
-        // }
-    }
 }

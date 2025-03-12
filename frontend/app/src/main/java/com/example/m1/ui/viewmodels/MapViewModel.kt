@@ -161,4 +161,6 @@ class MapViewModel : ViewModel() {
         super.onCleared()
         fetchJob?.cancel()
     }
+
+
 }
