@@ -61,11 +61,11 @@ _(Placeholder for Jest coverage screenshot without mocks)_
 
 ### 3.1. Test Locations in Git
 
-| **Non-Functional Requirement**  | **Location in Git**                                                                                                                                                                                                           |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Performance (Response Time)** | [`tests/nonfunctional/response_time.test.js`](#)                                                                                                                                                                              |
-| **Chat Data Security**          | [`tests/nonfunctional/chat_security.test.js`](#)                                                                                                                                                                              |
-| **Accessibility Compliance**    | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt) |
+| **Non-Functional Requirement**   | **Location in Git**                                                                                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Performance (Response Time)**  | [`tests/nonfunctional/response_time.test.js`](#)                                                                                                                                                                                |
+| **Accessibility Compliance**     | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt)   |
+| **Ease of Use (Error Handling)** | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/ErrorHandlingTests.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/ErrorHandlingTests.kt) |
 
 ### 3.2. Test Verification and Logs
 
@@ -73,25 +73,14 @@ _(Placeholder for Jest coverage screenshot without mocks)_
 
   - **Verification:** This test suite simulates multiple concurrent API calls using Jest along with a load-testing utility to mimic real-world user behavior. The focus is on key endpoints such as user login and study group search to ensure that each call completes within the target response time of 2 seconds under normal load. The test logs capture metrics such as average response time, maximum response time, and error rates. These logs are then analyzed to identify any performance bottlenecks, ensuring the system can handle expected traffic without degradation in user experience.
   - **Log Output**
-    In Logcat:
     ```
     [Placeholder for log]
     ```
 
-- **Chat Data Security**
-
-  - **Verification:** ...
-  - **Log Output**
-    ```
-    [Placeholder for chat security test logs]
-    ```
-
 - **Accessibility Compliance**
 
-  - **Verification:** This test suite verifies compliance with [WCAG 2.1 Level AA accessibility standards](https://www.w3.org/TR/WCAG21/) using automated testing with Espresso and AccessibilityChecks. The tests validate three key aspects of accessibility: (1) proper content descriptions for screen reader compatibility, (2) color contrast ratios that meet minimum thresholds, and (3) touch target sizes of at least 44dp to ensure usability for individuals with motor impairments. The comprehensive logging system records detailed metrics for each test, including exact color values, contrast ratios, element dimensions, and content description presence.
+  - **Verification:** This test suite verifies compliance with [WCAG 2.1 Level AA accessibility standards](https://www.w3.org/TR/WCAG21/) using automated testing with Espresso and AccessibilityChecks. The tests validate three key aspects of accessibility: (1) proper content descriptions for screen reader compatibility, (2) color contrast ratios that meet minimum thresholds, and (3) touch target sizes of at least 44dp to ensure usability for individuals with motor impairments. The logs record detailed metrics for each test, including exact color values, contrast ratios, element dimensions, and content description presence. Since there is a clear measurable metric that is measured during the test process, if at any point the measure violates the accessibility standards, the test will fail, and the exact measure will be indicated in the log accordingly.
   - **Log Output**
-
-    In Logcat:
 
     ```
     ---------------------------- PROCESS STARTED (29766) for package com.example.m1 ----------------------------
@@ -143,6 +132,10 @@ _(Placeholder for Jest coverage screenshot without mocks)_
     2025-03-12 17:14:33.659 29766-29796 TestRunner              com.example.m1                       I  finished: testContentDescriptions(com.example.m1.nonfunctional.AccessibilityTest)
     ---------------------------- PROCESS ENDED (29766) for package com.example.m1 ----------------------------
     ```
+
+- **Ease of Use (Error Handling)**
+  - **Verification:**
+  - **Log Output**
 
 ---
 

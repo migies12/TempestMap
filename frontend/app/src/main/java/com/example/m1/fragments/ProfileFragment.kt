@@ -25,6 +25,7 @@ import com.example.m1.MainActivity
 import com.example.m1.MainActivity.Companion
 import com.example.m1.R
 import com.example.m1.data.remote.ApiService
+import com.example.m1.util.NetworkUtils
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
@@ -194,13 +195,17 @@ class ProfileFragment : Fragment() {
             Toast.makeText(context, "Profile photo upload coming soon", Toast.LENGTH_SHORT).show()
         }
 
-        // Save button click listener
         saveButton.setOnClickListener {
-            if (validateInput()) {
-                saveProfileData()
-                // In a real app, you would also update the server
-                // updateProfileOnServer()
-                //Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+            if (!NetworkUtils.isNetworkAvailable(requireContext())) {
+                NetworkUtils.showNetworkErrorDialog(requireContext()) {
+                    if (validateInput()) {
+                        saveProfileData()
+                    }
+                }
+            } else {
+                if (validateInput()) {
+                    saveProfileData()
+                }
             }
         }
 
