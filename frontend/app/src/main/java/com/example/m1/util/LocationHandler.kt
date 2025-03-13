@@ -43,6 +43,8 @@ class LocationHandler(
      * Request location permissions
      */
     fun requestLocationPermission() {
+        Log.d("LocationHandler", "Requesting location permissions...")
+
         ActivityCompat.requestPermissions(
             activity,
             arrayOf(
@@ -51,6 +53,7 @@ class LocationHandler(
             ),
             LOCATION_PERMISSION_REQUEST_CODE
         )
+
     }
 
     fun getLastKnownLocation(context: Context, locationManager: LocationManager): Location? {

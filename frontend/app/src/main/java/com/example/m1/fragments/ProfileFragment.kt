@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -21,11 +22,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.example.m1.MainActivity
 import com.example.m1.MainActivity.Companion
 import com.example.m1.R
 import com.example.m1.data.remote.ApiService
 import com.example.m1.util.NetworkUtils
+import com.example.m1.util.LocationHandler
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
@@ -195,6 +198,7 @@ class ProfileFragment : Fragment() {
             Toast.makeText(context, "Profile photo upload coming soon", Toast.LENGTH_SHORT).show()
         }
 
+        // Save button click listener
         saveButton.setOnClickListener {
             if (!NetworkUtils.isNetworkAvailable(requireContext())) {
                 NetworkUtils.showNetworkErrorDialog(requireContext()) {
@@ -215,15 +219,28 @@ class ProfileFragment : Fragment() {
         }
 
         notiButton.setOnClickListener {
-            val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val name = sharedPreferences.getString(KEY_FULL_NAME, null)
-            if (name != null){
+            notificationButton()
+        }
+    }
+
+    private fun notificationButton() {
+        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val name = sharedPreferences.getString(KEY_FULL_NAME, null)
+        if (name != null){
+            checkLocationPermissions()
+            if(ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED) {
                 askNotificationPermission()
             }
             else {
-                Toast.makeText(requireContext(), "Please save profile information before enabling notifications.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
             }
-
+        }
+        else {
+            Toast.makeText(requireContext(), "Please save profile information before enabling notifications.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -238,7 +255,6 @@ class ProfileFragment : Fragment() {
                 .apply()
             sendProfileToServer()
         } else {
-            // TODO: Inform user that that your app will not show notifications.
             Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
             val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             sharedPreferences.edit()
@@ -408,7 +424,7 @@ class ProfileFragment : Fragment() {
         val user_longitude = sharedPreferences.getFloat("longitude", 0f).toDouble()
         val user_email = sharedPreferences.getString(KEY_EMAIL, null)
         val user_regToken = otherSharedPreferences.getString("registrationToken", null)
-        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", true)
+        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
 
         val user = User(
             user_id = user_user_id,
@@ -447,6 +463,56 @@ class ProfileFragment : Fragment() {
             }
         })
 
+    }
+
+    private fun checkLocationPermissions() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Location permissions granted")
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        Log.d(TAG, "Request permission rationale true")
+                        showLocationPermissionRationale()
+            }
+
+            else -> {
+                Log.d(TAG, "Requesting location permissions")
+                requestLocationPermissions()
+            }
+        }
+    }
+
+    private fun requestLocationPermissions() {
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            0
+        )
+    }
+
+    private fun showLocationPermissionRationale() {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Enable Location Permissions?")
+            .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
+            .setPositiveButton("Yes") { dialog, _ ->
+                // Request permissions
+                dialog.dismiss()
+                requestLocationPermissions()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss() // Just close the dialog
+            }
+            .create()
+
+        alertDialog.show()
     }
 
 
