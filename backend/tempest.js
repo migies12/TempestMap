@@ -546,6 +546,9 @@ const notifyUsers = async () => {
   }
 
   for (const user of users) {
+    if (!user.notifications) {
+      continue;
+    }
     for (const event of events) {
       const dangerLevel = dangerLevelCalc(event.lat, event.lng, user.latitude, user.longitude, event.event_type);
       if (dangerLevel > 25) {
