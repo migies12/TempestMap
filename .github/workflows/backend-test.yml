@@ -7,7 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -17,11 +16,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies in backend
-        working-directory: ./backend
+      - name: Clean npm cache
+        run: npm cache clean --force
+
+      - name: Install dependencies
         run: npm install
 
       - name: Run Jest tests
-        run: |
-          cd backend
-          npm test
+        run: npm test
