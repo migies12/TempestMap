@@ -14,19 +14,19 @@
 
 #### 2.1.1. Tests
 
-| **Interface**                 | **Group Location (No Mocks)**                          | **Group Location (With Mocks)**                        | **Mocked Components**                           |
-| ----------------------------- | ------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------- |
-| **GET /**                    |  [`tests/unmocked/backend.test.js`](#)                |          [`tests/mock/backend.test.js`](#)             | None                                            |
-| **POST /test_cron**          |                |                      | axios, External Disaster API                    |
-| **GET /event**               |                |                      | DynamoDB scan                                   |
-| **POST /event/custom**       |                |                      | DynamoDB put, uuid generation                   |
-| **GET /event/firms**         |                |                      | axios, csv-parser                               |
-| **POST /comment/:event_id**  |                |                      | DynamoDB update, uuid generation                |
-| **GET /comment/:event_id**   |                |                      | DynamoDB get                                    |
-| **DELETE /comment/:event_id**|                |                      | DynamoDB delete & update operations             |
-| **POST /user**               |                |                      | DynamoDB put, Firebase Messaging                |
-| **GET /user/:user_id**       |                |                      | DynamoDB get                                    |
-| **POST /user/locations**     |                |                      | DynamoDB update                                 
+| **Interface**                 | **Group Location (No Mocks)**         | **Group Location (With Mocks)**   | **Mocked Components**               |
+| ----------------------------- | ------------------------------------- | --------------------------------- | ----------------------------------- |
+| **GET /**                     | [`tests/unmocked/backend.test.js`](#) | [`tests/mock/backend.test.js`](#) | None                                |
+| **POST /test_cron**           |                                       |                                   | axios, External Disaster API        |
+| **GET /event**                |                                       |                                   | DynamoDB scan                       |
+| **POST /event/custom**        |                                       |                                   | DynamoDB put, uuid generation       |
+| **GET /event/firms**          |                                       |                                   | axios, csv-parser                   |
+| **POST /comment/:event_id**   |                                       |                                   | DynamoDB update, uuid generation    |
+| **GET /comment/:event_id**    |                                       |                                   | DynamoDB get                        |
+| **DELETE /comment/:event_id** |                                       |                                   | DynamoDB delete & update operations |
+| **POST /user**                |                                       |                                   | DynamoDB put, Firebase Messaging    |
+| **GET /user/:user_id**        |                                       |                                   | DynamoDB get                        |
+| **POST /user/locations**      |                                       |                                   | DynamoDB update                     |
 
 #### 2.1.2. Commit Hash Where Tests Run
 
@@ -72,8 +72,24 @@ _(Placeholder for Jest coverage screenshot without mocks)_
 
   - **Verification:** This test suite simulates multiple concurrent API calls using Jest along with a load-testing utility to mimic real-world user behavior. The focus is on key endpoints such as user login and study group search to ensure that each call completes within the target response time of 2 seconds under normal load. The test logs capture metrics such as average response time, maximum response time, and error rates. These logs are then analyzed to identify any performance bottlenecks, ensuring the system can handle expected traffic without degradation in user experience.
   - **Log Output**
+    In Logcat:
     ```
-    [Placeholder for response time test logs]
+    2025-03-12 17:01:23.505 28561-28593 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:01:23.507 28561-28593 AccessibilityTest       com.example.m1                       D  Starting Accessibility Test
+    2025-03-12 17:01:23.509 28561-28593 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:01:23.511 28561-28593 AccessibilityTest       com.example.m1                       D  Using existing log file at /storage/emulated/0/Android/data/com.example.m1/cache/accessibility_test_log.txt
+    2025-03-12 17:01:23.513 28561-28593 AccessibilityTest       com.example.m1                       D  Accessibility checks enabled
+    2025-03-12 17:01:23.514 28561-28593 AccessibilityTest       com.example.m1                       D  Starting content descriptions test
+    2025-03-12 17:01:23.721 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Home Navigation (ID: 2131362175)
+    2025-03-12 17:01:23.724 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_home: "Home" - PASS
+    2025-03-12 17:01:23.727 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Map Navigation (ID: 2131362177)
+    2025-03-12 17:01:23.729 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_map: "Map" - PASS
+    2025-03-12 17:01:23.730 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Profile Navigation (ID: 2131362178)
+    2025-03-12 17:01:23.733 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_profile: "Profile" - PASS
+    2025-03-12 17:01:23.734 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Alerts Navigation (ID: 2131362173)
+    2025-03-12 17:01:23.736 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_alerts: "Alerts" - PASS
+    2025-03-12 17:01:23.737 28561-28593 AccessibilityTest       com.example.m1                       D  Content descriptions test completed
+    2025-03-12 17:01:23.739 28561-28593 TestRunner              com.example.m1                       I  finished: testContentDescriptions(com.example.m1.nonfunctional.AccessibilityTest)
     ```
 
 - **Chat Data Security**
@@ -100,7 +116,7 @@ _(Placeholder for Jest coverage screenshot without mocks)_
     | ------------------ | ------------------- |
     | 1. The user opens â€œAdd Todo Itemsâ€ screen. | Open â€œAdd Todo Itemsâ€ screen. |
     | 2. The app shows an input text field and an â€œAddâ€ button. The add button is disabled. | Check that the text field is present on screen.<br>Check that the button labelled â€œAddâ€ is present on screen.<br>Check that the â€œAddâ€ button is disabled. |
-    | 3a. The user inputs an ill-formatted string. | Input â€œ_^_^^OQ#$â€ in the text field. |
+    | 3a. The user inputs an ill-formatted string. | Input â€œ*^*^^OQ#$â€ in the text field. |
     | 3a1. The app displays an error message prompting the user for the expected format. | Check that a dialog is opened with the text: â€œPlease use only alphanumeric charactersâ€. |
     | 3. The user inputs a new item for the list and the add button becomes enabled. | Input â€œbuy milkâ€ in the text field.<br>Check that the button labelled â€œaddâ€ is enabled. |
     | 4. The user presses the â€œAddâ€ button. | Click the button labelled â€œaddâ€. |
@@ -109,7 +125,7 @@ _(Placeholder for Jest coverage screenshot without mocks)_
 
   - **Test Logs:**
     ```
-    [Placeholder for Espresso test execution logs]
+    [Placeholder]
     ```
 
 - **Use Case: ...**

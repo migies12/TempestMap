@@ -75,6 +75,8 @@ dependencies {
     implementation("com.google.android.material:material:1.4.0")
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.uiautomator)
+    implementation(libs.androidx.espresso.accessibility)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -108,5 +110,7 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+
 
 }
