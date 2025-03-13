@@ -1,4 +1,4 @@
-name: Backend (Jest) Test
+name: Backend Test
 on:
   push:
     branches:
@@ -17,8 +17,10 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install dependencies
+      - name: Install dependencies in backend
+        working-directory: ./backend
         run: npm install
+        
 
       - name: Run Jest tests
         run: |
