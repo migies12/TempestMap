@@ -61,10 +61,11 @@ _(Placeholder for Jest coverage screenshot without mocks)_
 
 ### 3.1. Test Locations in Git
 
-| **Non-Functional Requirement**  | **Location in Git**                              |
-| ------------------------------- | ------------------------------------------------ |
-| **Performance (Response Time)** | [`tests/nonfunctional/response_time.test.js`](#) |
-| **Chat Data Security**          | [`tests/nonfunctional/chat_security.test.js`](#) |
+| **Non-Functional Requirement**  | **Location in Git**                                                                                                                                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Performance (Response Time)** | [`tests/nonfunctional/response_time.test.js`](#)                                                                                                                                                                              |
+| **Chat Data Security**          | [`tests/nonfunctional/chat_security.test.js`](#)                                                                                                                                                                              |
+| **Accessibility Compliance**    | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt) |
 
 ### 3.2. Test Verification and Logs
 
