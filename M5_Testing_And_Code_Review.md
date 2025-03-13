@@ -74,29 +74,73 @@ _(Placeholder for Jest coverage screenshot without mocks)_
   - **Log Output**
     In Logcat:
     ```
-    2025-03-12 17:01:23.505 28561-28593 AccessibilityTest       com.example.m1                       D  ================================
-    2025-03-12 17:01:23.507 28561-28593 AccessibilityTest       com.example.m1                       D  Starting Accessibility Test
-    2025-03-12 17:01:23.509 28561-28593 AccessibilityTest       com.example.m1                       D  ================================
-    2025-03-12 17:01:23.511 28561-28593 AccessibilityTest       com.example.m1                       D  Using existing log file at /storage/emulated/0/Android/data/com.example.m1/cache/accessibility_test_log.txt
-    2025-03-12 17:01:23.513 28561-28593 AccessibilityTest       com.example.m1                       D  Accessibility checks enabled
-    2025-03-12 17:01:23.514 28561-28593 AccessibilityTest       com.example.m1                       D  Starting content descriptions test
-    2025-03-12 17:01:23.721 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Home Navigation (ID: 2131362175)
-    2025-03-12 17:01:23.724 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_home: "Home" - PASS
-    2025-03-12 17:01:23.727 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Map Navigation (ID: 2131362177)
-    2025-03-12 17:01:23.729 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_map: "Map" - PASS
-    2025-03-12 17:01:23.730 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Profile Navigation (ID: 2131362178)
-    2025-03-12 17:01:23.733 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_profile: "Profile" - PASS
-    2025-03-12 17:01:23.734 28561-28593 AccessibilityTest       com.example.m1                       D  Checking content description for Alerts Navigation (ID: 2131362173)
-    2025-03-12 17:01:23.736 28561-28561 AccessibilityTest       com.example.m1                       D  Content description check for nav_alerts: "Alerts" - PASS
-    2025-03-12 17:01:23.737 28561-28593 AccessibilityTest       com.example.m1                       D  Content descriptions test completed
-    2025-03-12 17:01:23.739 28561-28593 TestRunner              com.example.m1                       I  finished: testContentDescriptions(com.example.m1.nonfunctional.AccessibilityTest)
+    [Placeholder for log]
     ```
 
 - **Chat Data Security**
+
   - **Verification:** ...
   - **Log Output**
     ```
     [Placeholder for chat security test logs]
+    ```
+
+- **Accessibility Compliance**
+
+  - **Verification:** This test suite verifies compliance with [WCAG 2.1 Level AA accessibility standards](https://www.w3.org/TR/WCAG21/) using automated testing with Espresso and AccessibilityChecks. The tests validate three key aspects of accessibility: (1) proper content descriptions for screen reader compatibility, (2) color contrast ratios that meet minimum thresholds, and (3) touch target sizes of at least 44dp to ensure usability for individuals with motor impairments. The comprehensive logging system records detailed metrics for each test, including exact color values, contrast ratios, element dimensions, and content description presence.
+  - **Log Output**
+
+    In Logcat:
+
+    ```
+    ---------------------------- PROCESS STARTED (29766) for package com.example.m1 ----------------------------
+    2025-03-12 17:14:30.782 29766-29796 TestRunner              com.example.m1                       I  started: testTouchTargetSize(com.example.m1.nonfunctional.AccessibilityTest)
+    2025-03-12 17:14:31.407 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:31.430 29766-29796 AccessibilityTest       com.example.m1                       D  Starting Accessibility Test
+    2025-03-12 17:14:31.432 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:31.438 29766-29796 AccessibilityTest       com.example.m1                       D  Accessibility checks enabled
+    2025-03-12 17:14:31.442 29766-29796 AccessibilityTest       com.example.m1                       D  Starting touch target size test
+    2025-03-12 17:14:31.659 29766-29796 AccessibilityTest       com.example.m1                       D  Navigating to map screen
+    2025-03-12 17:14:32.389 29766-29796 AccessibilityTest       com.example.m1                       D  Checking touch target size for add marker button
+    2025-03-12 17:14:32.393 29766-29766 AccessibilityTest       com.example.m1                       D  Touch target size check for fabAddMarker: width=147px, height=147px, min required=115.5px - PASS
+    2025-03-12 17:14:32.395 29766-29796 AccessibilityTest       com.example.m1                       D  Touch target size test completed
+    2025-03-12 17:14:32.397 29766-29796 TestRunner              com.example.m1                       I  finished: testTouchTargetSize(com.example.m1.nonfunctional.AccessibilityTest)
+    2025-03-12 17:14:32.607 29766-29796 TestRunner              com.example.m1                       I  started: testTextContrast(com.example.m1.nonfunctional.AccessibilityTest)
+    2025-03-12 17:14:32.838 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:32.840 29766-29796 AccessibilityTest       com.example.m1                       D  Starting Accessibility Test
+    2025-03-12 17:14:32.841 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:32.843 29766-29796 AccessibilityTest       com.example.m1                       D  Accessibility checks enabled
+    2025-03-12 17:14:32.844 29766-29796 AccessibilityTest       com.example.m1                       D  Starting text contrast test
+    2025-03-12 17:14:33.044 29766-29766 AccessibilityTest       com.example.m1                       D  Scanning view hierarchy for text contrast issues
+    2025-03-12 17:14:33.046 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: View(MaterialTextView@81924395) - text color: #FF49454F, bg color: #FFFFFBFE, size: 14.095238dp, ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.047 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_small_label_view - text color: #FF1C1B1F, bg color: #FFFFFBFE, size: 12.190476dp, ratio: 16.71, required: 4.5 - PASS
+    2025-03-12 17:14:33.049 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_large_label_view - text color: #FF1C1B1F, bg color: #FFFFFBFE, size: 12.190476dp (bold), ratio: 16.71, required: 4.5 - PASS
+    2025-03-12 17:14:33.050 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_small_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp, ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.052 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_large_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp (bold), ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.056 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_small_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp, ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.058 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_large_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp (bold), ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.059 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_small_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp, ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.060 29766-29766 AccessibilityTest       com.example.m1                       D  TextView contrast check: navigation_bar_item_large_label_view - text color: #FF49454F, bg color: #FFFFFBFE, size: 12.190476dp (bold), ratio: 9.11, required: 4.5 - PASS
+    2025-03-12 17:14:33.062 29766-29766 AccessibilityTest       com.example.m1                       D  Text contrast check completed. Passing views: 9, Failing views: 0
+    2025-03-12 17:14:33.064 29766-29796 AccessibilityTest       com.example.m1                       D  Text contrast test completed
+    2025-03-12 17:14:33.065 29766-29796 TestRunner              com.example.m1                       I  finished: testTextContrast(com.example.m1.nonfunctional.AccessibilityTest)
+    2025-03-12 17:14:33.174 29766-29796 TestRunner              com.example.m1                       I  started: testContentDescriptions(com.example.m1.nonfunctional.AccessibilityTest)
+    2025-03-12 17:14:33.406 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:33.409 29766-29796 AccessibilityTest       com.example.m1                       D  Starting Accessibility Test
+    2025-03-12 17:14:33.414 29766-29796 AccessibilityTest       com.example.m1                       D  ================================
+    2025-03-12 17:14:33.419 29766-29796 AccessibilityTest       com.example.m1                       D  Accessibility checks enabled
+    2025-03-12 17:14:33.421 29766-29796 AccessibilityTest       com.example.m1                       D  Starting content descriptions test
+    2025-03-12 17:14:33.637 29766-29796 AccessibilityTest       com.example.m1                       D  Checking content description for Home Navigation (ID: 2131362175)
+    2025-03-12 17:14:33.641 29766-29766 AccessibilityTest       com.example.m1                       D  Content description check for nav_home: "Home" - PASS
+    2025-03-12 17:14:33.642 29766-29796 AccessibilityTest       com.example.m1                       D  Checking content description for Map Navigation (ID: 2131362177)
+    2025-03-12 17:14:33.648 29766-29766 AccessibilityTest       com.example.m1                       D  Content description check for nav_map: "Map" - PASS
+    2025-03-12 17:14:33.649 29766-29796 AccessibilityTest       com.example.m1                       D  Checking content description for Profile Navigation (ID: 2131362178)
+    2025-03-12 17:14:33.652 29766-29766 AccessibilityTest       com.example.m1                       D  Content description check for nav_profile: "Profile" - PASS
+    2025-03-12 17:14:33.653 29766-29796 AccessibilityTest       com.example.m1                       D  Checking content description for Alerts Navigation (ID: 2131362173)
+    2025-03-12 17:14:33.656 29766-29766 AccessibilityTest       com.example.m1                       D  Content description check for nav_alerts: "Alerts" - PASS
+    2025-03-12 17:14:33.658 29766-29796 AccessibilityTest       com.example.m1                       D  Content descriptions test completed
+    2025-03-12 17:14:33.659 29766-29796 TestRunner              com.example.m1                       I  finished: testContentDescriptions(com.example.m1.nonfunctional.AccessibilityTest)
+    ---------------------------- PROCESS ENDED (29766) for package com.example.m1 ----------------------------
     ```
 
 ---

@@ -151,20 +151,6 @@ class AccessibilityTest {
         logEvent("Starting Accessibility Test")
         logEvent("================================")
 
-        // Initialize log file
-        try {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            val logFile = File(context.externalCacheDir, LOG_FILE_NAME)
-            if (!logFile.exists()) {
-                logFile.createNewFile()
-                logEvent("Created new log file at ${logFile.absolutePath}")
-            } else {
-                logEvent("Using existing log file at ${logFile.absolutePath}")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize log file: ${e.message}")
-        }
-
         // Enable accessibility checks
         AccessibilityChecks.enable()
         logEvent("Accessibility checks enabled")
