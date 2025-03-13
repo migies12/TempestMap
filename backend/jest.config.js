@@ -3,7 +3,7 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
       '*.{js,jsx}',
-      '!jest.config.js'
+      '!*.config.js'
     ],
     coverageDirectory: 'coverage',
   };

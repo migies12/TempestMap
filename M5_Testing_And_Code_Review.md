@@ -14,19 +14,19 @@
 
 #### 2.1.1. Tests
 
-| **Interface**                 | **Group Location (No Mocks)**         | **Group Location (With Mocks)**   | **Mocked Components**               |
-| ----------------------------- | ------------------------------------- | --------------------------------- | ----------------------------------- |
-| **GET /**                     | [`tests/unmocked/backend.test.js`](#) | [`tests/mock/backend.test.js`](#) | None                                |
-| **POST /test_cron**           |                                       |                                   | axios, External Disaster API        |
-| **GET /event**                |                                       |                                   | DynamoDB scan                       |
-| **POST /event/custom**        |                                       |                                   | DynamoDB put, uuid generation       |
-| **GET /event/firms**          |                                       |                                   | axios, csv-parser                   |
-| **POST /comment/:event_id**   |                                       |                                   | DynamoDB update, uuid generation    |
-| **GET /comment/:event_id**    |                                       |                                   | DynamoDB get                        |
-| **DELETE /comment/:event_id** |                                       |                                   | DynamoDB delete & update operations |
-| **POST /user**                |                                       |                                   | DynamoDB put, Firebase Messaging    |
-| **GET /user/:user_id**        |                                       |                                   | DynamoDB get                        |
-| **POST /user/locations**      |                                       |                                   | DynamoDB update                     |
+| **Interface**                 | **Group Location (No Mocks)**          | **Group Location (With Mocks)**       | **Mocked Components**                       |
+| ----------------------------- | -------------------------------------- | ------------------------------------- | ------------------------------------------- |
+| **GET /**                     | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | None                                        |
+| **POST /test_cron**           | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | axios, External Disaster API                |
+| **GET /event**                | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB scan                               |
+| **POST /event/custom**        | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB put, uuid generation               |
+| **GET /event/firms**          | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | axios, csv-parser                           |
+| **POST /comment/:event_id**   | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB update, uuid generation            |
+| **GET /comment/:event_id**    | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB get                                |
+| **DELETE /comment/:event_id** | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB delete & update operations         |
+| **POST /user**                | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB put, Firebase Messaging            |
+| **GET /user/:user_id**        | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB get                                |
+| **POST /user/locations**      | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB update                             |
 
 #### 2.1.2. Commit Hash Where Tests Run
 
@@ -34,26 +34,52 @@
 
 #### 2.1.3. Explanation on How to Run the Tests
 
-1. **Clone the Repository**:
+**Clone the Repository**:
 
    - Open your terminal and run:
      ```
      git clone https://github.com/migies12/TempestMap.git
      cd Tempest/Backend
+     ```
+   - For General (Mock + Unmock)
+     ```
      npm test
      ```
-
-2. **...**
+   - For Mock ONLY
+     ```
+     npm run test-mock
+     ```
+   - For Unmock ONLY
+     ```
+     npm run test-unmock
+     ```
 
 ### 2.2. GitHub Actions Configuration Location
 
 `~/.github/workflows/backend-test.yml`
 
 ### 2.3. Jest Coverage Report Screenshots With Mocks
+The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-451,500,521,529-575,584-616,624-625. Many of these uncovered lines include coverage mistake from jest, untestable routes such as server side errors, and omission of helper function testing. Find below more information on the rationale. 
+
+| **Uncover Lines** | **Context**                                                                                             | **Rationale**                                                                                                                      |
+|-------------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| 29-30             | **GET /**, returns `500` on error.                                                                      | Unable to simulate a server-side error in Jest tests for the `/` endpoint           |
+| 130-131           | **POST /test_cron**, returns `500` on failure calling `fetchDisasterData()`.                           | Unable to fail the csv parsing as it is a library function                      |
+| 189               | **GET /event/:eventid**, returns `400` on missing event_id                                                   | Jest fail to cover, despite tested in backend.test.js:216         |
+| 283               | **POST /user**                | Line to replace user_id with uuidv() if not passed                                                |
+| 342               | **GET /user/:user_id**, returns `500` on DB retrieval error.                                       | Jest fail to cover, despite tested in backend.test.js:434         |                    |
+| 410-418           | **Helper Function:deleteEvents**            |                                 |
+| 428-451           | **Helper Function:appendEvents**     |                                |
+| 529-575           | **Helper Function:notifyUsers`** |            |
+| 584-616           |  **Helper Function:dangerLevelCalc**     |       |
+| 624-625           | **Server startup**, `app.listen`.                                                           | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered.    |
+
+
 
 _(Placeholder for Jest coverage screenshot with mocks enabled)_
 
 ### 2.4. Jest Coverage Report Screenshots Without Mocks
+
 
 _(Placeholder for Jest coverage screenshot without mocks)_
 

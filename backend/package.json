@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "m1.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test-mock": "jest --config=jest.mock.config.js",
+    "test-unmock": "jest --config=jest.unmock.config.js"
   },
   "keywords": [],
   "author": "",
