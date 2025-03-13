@@ -36,7 +36,6 @@ describe('Backend Tests', () => {
     });
   
     beforeEach(() => {
-      // Reset all the mocks before each test
       jest.clearAllMocks();
     });
 
@@ -44,7 +43,7 @@ describe('Backend Tests', () => {
    *  GET /
    * -------------------------- */
   describe('GET /', () => {
-    it('should return 200 with a success message', async () => {
+    it('200 with a success message', async () => {
       const response = await request(app).get('/');
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: "Success" });
@@ -54,30 +53,26 @@ describe('Backend Tests', () => {
   /* --------------------------
    *  POST /test_cron
    * -------------------------- */
+
   describe('POST /test_cron', () => {
     it('should call fetchDisasterData and return 200', async () => {
-      // We know fetchDisasterData calls axios.get under the hood, so let's mock it:
-      axios.get.mockResolvedValueOnce({ data: { result: [] } }); // For "default"
-      axios.get.mockResolvedValueOnce({ data: { result: [] } }); // For "WF"
+      
+      axios.get.mockResolvedValueOnce({ data: { result: [] } }); // "default"
+      axios.get.mockResolvedValueOnce({ data: { result: [] } }); // "WF"
 
-      // Because fetchDisasterData also calls deleteAllEvents, which calls scan + delete,
-      // let's mock that chain. Typically, it scans for items, so we mock out the result:
       docClient.scan.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({ Items: [], LastEvaluatedKey: null }),
       });
 
-      // Make the request
       const response = await request(app).post('/test_cron');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: "Disaster data fetched successfully!" });
 
-      // Verify axios was called at least once
       expect(axios.get).toHaveBeenCalled();
     });
 
     it('should return 500 if an error occurs', async () => {
-      // Force an error in axios
       axios.get.mockRejectedValue(new Error('Some fetch error'));
 
       const response = await request(app).post('/test_cron');
@@ -91,7 +86,6 @@ describe('Backend Tests', () => {
    * -------------------------- */
   describe('GET /event', () => {
     it('should return 200 and the events', async () => {
-      // Mock the scan results from DynamoDB
       docClient.scan.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({
           Items: [{ event_id: '123', event_name: 'Test Event' }],
@@ -122,7 +116,7 @@ describe('Backend Tests', () => {
    * -------------------------- */
   describe('POST /event/custom', () => {
     it('should create a custom event and return 201', async () => {
-      // Mock the put call
+
       docClient.put.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({})
       });
@@ -170,8 +164,7 @@ describe('Backend Tests', () => {
    * -------------------------- */
   describe('GET /event/firms', () => {
     it('should return 200 and JSON from CSV', async () => {
-      // We can simulate a stream by using Node’s built-in stream libraries or mocking the `.pipe(csv())`
-      // For simplicity, let's do a minimal mock where we manually call the `.on` callbacks.
+
       const mockedStream = {
         pipe: () => mockedStream,
         on: (event, handler) => {
@@ -188,7 +181,7 @@ describe('Backend Tests', () => {
       axios.get.mockResolvedValueOnce({ data: mockedStream });
       const response = await request(app).get('/event/firms');
       expect(response.status).toBe(200);
-      // The result should be the array of parsed CSV rows
+
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body).toMatchObject([{ testField: 'value' }]);
     });
@@ -221,7 +214,6 @@ describe('Backend Tests', () => {
     });
 
     it('should return 400 if missing event_id or comment', async () => {
-      // No comment in body
       const response = await request(app).post('/comment/123').send({});
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('error', 'Missing event_id or comment in request body');
@@ -258,8 +250,6 @@ describe('Backend Tests', () => {
 
     it('should return 400 if event_id is missing', async () => {
       const response = await request(app).get('/comment/');
-      // The route itself expects `/comment/:event_id`, so this is invalid.
-      // In typical Express usage this might 404, but you can adapt the test to your structure.
       expect(response.status).toBeGreaterThanOrEqual(400);
     });
 
@@ -289,13 +279,13 @@ describe('Backend Tests', () => {
    * -------------------------- */
   describe('DELETE /comment/:event_id', () => {
     it('should delete a comment', async () => {
-      // First get call:
+
       docClient.get.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({
           Item: { comments: [{ comment_id: 'abc123', text: 'Hi' }] }
         })
       });
-      // Then update call:
+      
       docClient.update.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({ Attributes: { comments: [] } })
       });
@@ -345,13 +335,12 @@ describe('Backend Tests', () => {
     });
 
     it('should return 500 if update fails', async () => {
-      // Get call works
       docClient.get.mockReturnValueOnce({
         promise: jest.fn().mockResolvedValue({
           Item: { comments: [{ comment_id: 'abc123', text: 'Hi' }] }
         })
       });
-      // Update call fails
+
       docClient.update.mockReturnValueOnce({
         promise: jest.fn().mockRejectedValue(new Error('DynamoDB update error'))
       });

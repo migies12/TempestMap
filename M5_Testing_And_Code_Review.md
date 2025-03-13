@@ -38,14 +38,16 @@
 
    - Open your terminal and run:
      ```
-     git clone https://github.com/example/your-project.git
+     git clone https://github.com/migies12/TempestMap.git
+     cd Tempest/Backend
+     npm test
      ```
 
 2. **...**
 
 ### 2.2. GitHub Actions Configuration Location
 
-`~/.github/workflows/backend-tests.yml`
+`~/.github/workflows/backend-test.yml`
 
 ### 2.3. Jest Coverage Report Screenshots With Mocks
 

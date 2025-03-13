@@ -2,7 +2,8 @@ module.exports = {
     testEnvironment: 'node',
     collectCoverage: true,
     collectCoverageFrom: [
-      'backend/*.{js,jsx}',
+      '*.{js,jsx}',
+      '!jest.config.js'
     ],
     coverageDirectory: 'coverage',
   };

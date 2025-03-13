@@ -1,4 +1,4 @@
-name: Jest Backend
+name: Backend (Jest) Test
 on:
   push:
     branches:
@@ -21,4 +21,6 @@ jobs:
         run: npm install
 
       - name: Run Jest tests
-        run: npm test
+        run: |
+          cd backend
+          npm test
