@@ -8,6 +8,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.m1.R
 import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.viewmodels.MapViewModel
@@ -67,6 +68,7 @@ class CreateMarkerDialog(
         longitude: Double,
         dialog: AlertDialog
     ) {
+
         val markerType = spinnerMarkerType.selectedItem.toString()
         val description = etDescription.text.toString().trim()
 

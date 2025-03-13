@@ -178,6 +178,13 @@ class EventBottomSheetDialog(
             return // Early return if the comment is empty
         }
 
+        val profaneWords = listOf("fuck", "shit", "ass", "bitch")
+        val lowercaseComment = newComment.lowercase()
+        if (profaneWords.any {it in lowercaseComment}) {
+            Toast.makeText(context, "Comment contains inappropriate content. Please revise.", Toast.LENGTH_SHORT).show()
+            return // Early return if comment contains profanity
+        }
+
         // Get user name from SharedPreferences
         val userName = getSignedInUserName(context)
 

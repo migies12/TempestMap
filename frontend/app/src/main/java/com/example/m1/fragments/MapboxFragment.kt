@@ -231,6 +231,16 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
     private fun handleMapClick(point: Point) {
+        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
+        if (!isSignedin) {
+            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, SignInFragment())
+                .commit()
+            return
+        }
+
         if (markerPlacementMode) {
             // Show marker creation dialog at this point
             CreateMarkerDialog(requireContext(), viewModel) {
@@ -421,6 +431,16 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
     private fun showOptionsDialog() {
+        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
+        if (!isSignedin) {
+            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, SignInFragment())
+                .commit()
+            return
+        }
+
         val options = arrayOf("Create Marker", "Save Current Location", "View Favorites")
 
         AlertDialog.Builder(requireContext())

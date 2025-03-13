@@ -200,7 +200,7 @@ class ProfileFragment : Fragment() {
                 saveProfileData()
                 // In a real app, you would also update the server
                 // updateProfileOnServer()
-                Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -256,10 +256,6 @@ class ProfileFragment : Fragment() {
                 sendProfileToServer()
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
                 showNotificationPermissionDialog()
             } else {
                 // Directly ask for the permission
@@ -433,8 +429,10 @@ class ProfileFragment : Fragment() {
                             .putString(KEY_USER_ID, userResponse.user.user_id)
                             .apply()
                     }
+                    Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
 
                 } else {
+                    Toast.makeText(requireContext(), "Account creation failed. Please try again later.", Toast.LENGTH_SHORT).show()
                     Log.e("Retrofit", "Error: ${response.code()} ${response.errorBody()}")
                 }
             }
