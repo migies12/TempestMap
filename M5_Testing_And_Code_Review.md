@@ -75,13 +75,16 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
 | 624-625           | **Server startup**, `app.listen`.                                                           | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered.    |
 
 
-
-_(Placeholder for Jest coverage screenshot with mocks enabled)_
+![image](documentation/images/jest/mock.png)
 
 ### 2.4. Jest Coverage Report Screenshots Without Mocks
 
 
-_(Placeholder for Jest coverage screenshot without mocks)_
+![image](documentation/images/jest/unmock.png)
+
+### 2.5. Jest Coverage Report Screenshots with and without Mocks
+
+![image](documentation/images/jest/mock_unmock.png)
 
 ---
 

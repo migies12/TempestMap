@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1741846507553" clover="3.2.0">
-  <project timestamp="1741846507554" name="All files">
+<coverage generated="1741846628067" clover="3.2.0">
+  <project timestamp="1741846628067" name="All files">
     <metrics statements="236" coveredstatements="181" conditionals="84" coveredconditionals="70" methods="24" coveredmethods="17" elements="344" coveredelements="268" complexity="0" loc="236" ncloc="236" packages="1" files="1" classes="1"/>
     <file name="tempest.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/tempest.js">
       <metrics statements="236" coveredstatements="181" conditionals="84" coveredconditionals="70" methods="24" coveredmethods="17"/>
