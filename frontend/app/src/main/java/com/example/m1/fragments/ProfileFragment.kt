@@ -137,9 +137,9 @@ class ProfileFragment : Fragment() {
         Log.d(TAG, "Token: $token")
 
         // Fetch FCM token if not already available
-        if (token == "No token") {
-            fetchFcmToken()
-        }
+//        if (token == "No token") {
+//            fetchFcmToken()
+//        }
 
         // Initialize views
         initializeViews(rootView)
@@ -153,28 +153,28 @@ class ProfileFragment : Fragment() {
         return rootView
     }
 
-    private fun fetchFcmToken() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            handleFcmTokenTask(task)
-        }
-    }
+//    private fun fetchFcmToken() {
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            handleFcmTokenTask(task)
+//        }
+//    }
 
-    private fun handleFcmTokenTask(task: Task<String>) {
-        if (!task.isSuccessful) {
-            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-            return
-        }
-
-        // Get new FCM registration token
-        val token = task.result
-
-        // Log and save token
-        Log.d(TAG, "Token: $token")
-        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit()
-            .putString("registrationToken", token)
-            .apply()
-    }
+//    private fun handleFcmTokenTask(task: Task<String>) {
+//        if (!task.isSuccessful) {
+//            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+//            return
+//        }
+//
+//        // Get new FCM registration token
+//        val token = task.result
+//
+//        // Log and save token
+//        Log.d(TAG, "Token: $token")
+//        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+//        sharedPreferences.edit()
+//            .putString("registrationToken", token)
+//            .apply()
+//    }
     private fun initializeViews(rootView: View) {
         profilePhoto = rootView.findViewById(R.id.profile_photo)
         fullNameEditText = rootView.findViewById(R.id.full_name_edit_text)
