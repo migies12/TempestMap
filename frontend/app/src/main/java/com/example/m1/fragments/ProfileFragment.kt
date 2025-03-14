@@ -70,17 +70,17 @@ data class ApiResponse(
     val message: String,
     val user: UserResponse
 )
-interface ApiService {
-    @POST("prod/user")
-    fun postUser(@Body user:User): Call<ApiResponse>
-
-    /* @PUT("prod/user/{userID}")  Add if using put
-    fun putUser(
-        @Path("userID") userID: String,
-        @Query("comment") comment: String,
-        @Query("user") user: String
-    ): Call<Void> */
-}
+//interface ApiService {
+//    @POST("prod/user")
+//    fun postUser(@Body user:User): Call<ApiResponse>
+//
+//    /* @PUT("prod/user/{userID}")  Add if using put
+//    fun putUser(
+//        @Path("userID") userID: String,
+//        @Query("comment") comment: String,
+//        @Query("user") user: String
+//    ): Call<Void> */
+//}
 
 object RetrofitClient {
     private const val BASE_URL = "https://tocuul9kqj.execute-api.us-west-1.amazonaws.com/"

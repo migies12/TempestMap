@@ -4,5 +4,5 @@ backend/m1.js
 node_modules
 backend/coverage/lcov-report/base.css
 backend/coverage/lcov-report/prettify.css
-backend/coverage/mock/lcov-report/prettify.js
+backend/coverage/mock/lcov-report/prettify.css
 backend/coverage/mock/lcov-report/base.css
