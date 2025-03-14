@@ -87,16 +87,16 @@ object RetrofitClient {
 class ProfileFragment : Fragment() {
 
     companion object {
-        private const val TAG = "ProfileFragment"
-        private const val PREFS_NAME = "UserProfilePrefs"
-        private const val KEY_FULL_NAME = "fullName"
-        private const val KEY_EMAIL = "email"
-        private const val KEY_PHONE = "phone"
-        private const val KEY_LOCATION = "location"
-        private const val KEY_SEVERE_WEATHER = "severeWeatherAlerts"
-        private const val KEY_DAILY_WEATHER = "dailyWeatherUpdates"
-        private const val KEY_SPECIAL_WEATHER = "specialWeatherEvents"
-        private const val KEY_USER_ID = "userId" // For API communication
+         const val TAG = "ProfileFragment"
+         const val PREFS_NAME = "UserProfilePrefs"
+         const val KEY_FULL_NAME = "fullName"
+         const val KEY_EMAIL = "email"
+         const val KEY_PHONE = "phone"
+         const val KEY_LOCATION = "location"
+         const val KEY_SEVERE_WEATHER = "severeWeatherAlerts"
+         const val KEY_DAILY_WEATHER = "dailyWeatherUpdates"
+         const val KEY_SPECIAL_WEATHER = "specialWeatherEvents"
+         const val KEY_USER_ID = "userId" // For API communication
     }
 
     private lateinit var profilePhoto: ImageView
@@ -108,7 +108,7 @@ class ProfileFragment : Fragment() {
     private lateinit var dailyWeatherCheck: CheckBox
     private lateinit var specialWeatherCheck: CheckBox
     private lateinit var saveButton: Button
-    private lateinit var signOutButton: Button  // <-- New sign out button
+    private lateinit var signOutButton: Button
     private lateinit var notiButton: Button
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -117,208 +117,85 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        // Initialize SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val sharedPreferencesTesting = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        var token = sharedPreferencesTesting.getString("registrationToken", "No token")
-        Log.d(TAG, "Token: $token")
-
-        // Fetch FCM token if not already available
-        if (token == "No token") {
-            fetchFcmToken()
-        }
-
-        // Initialize views
-        initializeViews(rootView)
-
-        // Load existing profile data
+        setupUI(rootView)
         loadProfileData()
-
-        // Set click listeners
-        setupClickListeners()
-
         return rootView
     }
 
-    private fun fetchFcmToken() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            handleFcmTokenTask(task)
-        }
-    }
-
-    private fun handleFcmTokenTask(task: Task<String>) {
-        if (!task.isSuccessful) {
-            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-            return
-        }
-
-        // Get new FCM registration token
-        val token = task.result
-
-        // Log and save token
-        Log.d(TAG, "Token: $token")
-        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit()
-            .putString("registrationToken", token)
-            .apply()
-    }
-    private fun initializeViews(rootView: View) {
+    private fun setupUI(rootView: View) {
         profilePhoto = rootView.findViewById(R.id.profile_photo)
         fullNameEditText = rootView.findViewById(R.id.full_name_edit_text)
         emailEditText = rootView.findViewById(R.id.email_edit_text)
         phoneEditText = rootView.findViewById(R.id.phone_edit_text)
         locationEditText = rootView.findViewById(R.id.location_edit_text)
-
         severeWeatherCheck = rootView.findViewById(R.id.severe_weather_checkbox)
         dailyWeatherCheck = rootView.findViewById(R.id.daily_weather_checkbox)
         specialWeatherCheck = rootView.findViewById(R.id.special_weather_checkbox)
-
         saveButton = rootView.findViewById(R.id.save_button)
-        signOutButton = rootView.findViewById(R.id.sign_out_button) // Initialize sign out button
-        notiButton = rootView.findViewById(R.id.notification_button) // New noti button
-    }
+        signOutButton = rootView.findViewById(R.id.sign_out_button)
+        notiButton = rootView.findViewById(R.id.notification_button)
 
-    private fun setupClickListeners() {
-        // Profile photo click listener
         profilePhoto.setOnClickListener {
-            // In a real app, you would launch an image picker here
             Toast.makeText(context, "Profile photo upload coming soon", Toast.LENGTH_SHORT).show()
         }
 
-        // Save button click listener
         saveButton.setOnClickListener {
-            if (!NetworkUtils.isNetworkAvailable(requireContext())) {
-                NetworkUtils.showNetworkErrorDialog(requireContext()) {
-                    if (validateInput()) {
-                        saveProfileData()
-                    }
-                }
-            } else {
-                if (validateInput()) {
-                    saveProfileData()
-                }
+            if (validateAndSaveProfile()) {
+                ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
             }
         }
 
-        // Sign out button click listener
         signOutButton.setOnClickListener {
             signOut()
         }
 
         notiButton.setOnClickListener {
-            notificationButton()
+            handleNotificationPermissions()
         }
     }
 
-    private fun notificationButton() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val name = sharedPreferences.getString(KEY_FULL_NAME, null)
-        if (name != null){
-            checkLocationPermissions()
-            if(ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED) {
-                askNotificationPermission()
-            }
-            else {
-                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
-            }
-        }
-        else {
-            Toast.makeText(requireContext(), "Please save profile information before enabling notifications.", Toast.LENGTH_SHORT).show()
-        }
+    private fun loadProfileData() {
+        fullNameEditText.setText(sharedPreferences.getString(KEY_FULL_NAME, ""))
+        emailEditText.setText(sharedPreferences.getString(KEY_EMAIL, ""))
+        phoneEditText.setText(sharedPreferences.getString(KEY_PHONE, ""))
+        locationEditText.setText(sharedPreferences.getString(KEY_LOCATION, ""))
+        severeWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_SEVERE_WEATHER, true)
+        dailyWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_DAILY_WEATHER, false)
+        specialWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_SPECIAL_WEATHER, false)
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // FCM SDK (and your app) can post notifications.
-            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putBoolean("notificationsEnabled", true)
-                .apply()
-            sendProfileToServer()
-        } else {
-            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
-            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putBoolean("notificationsEnabled", false)
-                .apply()
-        }
-    }
+    private fun validateAndSaveProfile(): Boolean {
+        if (!validateInput()) return false
 
-    private fun askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.d(TAG, "permission already granted")
-                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit()
-                    .putBoolean("notificationsEnabled", true)
-                    .apply()
-                sendProfileToServer()
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                showNotificationPermissionDialog()
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
-            Log.d(TAG, "API < 33, >= 31, permission not required")
-            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putBoolean("notificationsEnabled", true)
-                .apply()
-        }
-    }
+        val fullName = fullNameEditText.text.toString().trim()
+        val email = emailEditText.text.toString().trim()
+        val phone = phoneEditText.text.toString().trim()
+        val location = locationEditText.text.toString().trim()
 
-    private fun showNotificationPermissionDialog() {
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Enable Notifications?")
-            .setMessage("Notifications allow you to get information on natural disasters quickly." +
-                    " It is highly suggested notifications are enabled.")
-            .setPositiveButton("Yes") { dialog, _ ->
-                // Update UserPrefs sharedPreferences
-                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit()
-                    .putBoolean("notificationsEnabled", true)
-                    .apply()
-                dialog.dismiss()
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            .setNegativeButton("No") { dialog, _ ->
-                val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit()
-                    .putBoolean("notificationsEnabled", false)
-                    .apply()
-                dialog.dismiss() // Just close the dialog
-            }
-            .create()
+        sharedPreferences.edit().apply {
+            putString(KEY_FULL_NAME, fullName)
+            putString(KEY_EMAIL, email)
+            putString(KEY_PHONE, phone)
+            putString(KEY_LOCATION, location)
+            putBoolean(KEY_SEVERE_WEATHER, severeWeatherCheck.isChecked)
+            putBoolean(KEY_DAILY_WEATHER, dailyWeatherCheck.isChecked)
+            putBoolean(KEY_SPECIAL_WEATHER, specialWeatherCheck.isChecked)
+            apply()
+        }
 
-        alertDialog.show()
+        return true
     }
 
     private fun validateInput(): Boolean {
         var isValid = true
 
-        // Basic validation for full name
         if (fullNameEditText.text.toString().trim().isEmpty()) {
             fullNameEditText.error = "Name is required"
             isValid = false
         }
 
-        // Email validation
         val email = emailEditText.text.toString().trim()
         if (email.isEmpty()) {
             emailEditText.error = "Email is required"
@@ -328,14 +205,12 @@ class ProfileFragment : Fragment() {
             isValid = false
         }
 
-        // Phone validation (optional)
         val phone = phoneEditText.text.toString().trim()
         if (phone.isNotEmpty() && !android.util.Patterns.PHONE.matcher(phone).matches()) {
             phoneEditText.error = "Please enter a valid phone number"
             isValid = false
         }
 
-        // Location validation
         if (locationEditText.text.toString().trim().isEmpty()) {
             locationEditText.error = "Location is required for weather alerts"
             isValid = false
@@ -344,166 +219,91 @@ class ProfileFragment : Fragment() {
         return isValid
     }
 
-    private fun loadProfileData() {
-        // Load user data from SharedPreferences
-        fullNameEditText.setText(sharedPreferences.getString(KEY_FULL_NAME, ""))
-        emailEditText.setText(sharedPreferences.getString(KEY_EMAIL, ""))
-        phoneEditText.setText(sharedPreferences.getString(KEY_PHONE, ""))
-        locationEditText.setText(sharedPreferences.getString(KEY_LOCATION, ""))
-
-        // Load notification preferences
-        severeWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_SEVERE_WEATHER, true)
-        dailyWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_DAILY_WEATHER, false)
-        specialWeatherCheck.isChecked = sharedPreferences.getBoolean(KEY_SPECIAL_WEATHER, false)
+    private fun handleNotificationPermissions() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            askNotificationPermission()
+        } else {
+            Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun saveProfileData() {
-        // Get values from UI
-        val fullName = fullNameEditText.text.toString().trim()
-        val email = emailEditText.text.toString().trim()
-        val phone = phoneEditText.text.toString().trim()
-        val location = locationEditText.text.toString().trim()
-
-        val severeWeatherEnabled = severeWeatherCheck.isChecked
-        val dailyWeatherEnabled = dailyWeatherCheck.isChecked
-        val specialWeatherEnabled = specialWeatherCheck.isChecked
-
-        // Get or create user ID
-        var userId = sharedPreferences.getString(KEY_USER_ID, null)
-        /* if (userId == null) {
-            userId = UUID.randomUUID().toString()
-        } */
-
-        // Save to SharedPreferences
-        sharedPreferences.edit().apply {
-            putString(KEY_FULL_NAME, fullName)
-            putString(KEY_EMAIL, email)
-            putString(KEY_PHONE, phone)
-            putString(KEY_LOCATION, location)
-            putBoolean(KEY_SEVERE_WEATHER, severeWeatherEnabled)
-            putBoolean(KEY_DAILY_WEATHER, dailyWeatherEnabled)
-            putBoolean(KEY_SPECIAL_WEATHER, specialWeatherEnabled)
-            putString(KEY_USER_ID, userId)
-            apply()
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
         }
-
-        sendProfileToServer()
-
-        Log.d(TAG, "Profile saved: $fullName, $email, $location")
     }
 
     private fun signOut() {
-        // Clear sign-in credentials stored in "UserPrefs"
         val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         signInPrefs.edit().clear().apply()
         Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
-        // Navigate back to the SignInFragment
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, SignInFragment())
             .commit()
     }
 
-    private fun sendProfileToServer() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val otherSharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString(KEY_FULL_NAME, null)
-        val user_user_id = sharedPreferences.getString(KEY_USER_ID, null)
-        val user_location = sharedPreferences.getString(KEY_LOCATION, null)
-        val user_account_type = "base"
-        val user_latitude = sharedPreferences.getFloat("latitude", 0f).toDouble()
-        val user_longitude = sharedPreferences.getFloat("longitude", 0f).toDouble()
-        val user_email = sharedPreferences.getString(KEY_EMAIL, null)
-        val user_regToken = otherSharedPreferences.getString("registrationToken", null)
-        val user_notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
-
-        val user = User(
-            user_id = user_user_id,
-            name = username,
-            location = user_location,
-            latitude = user_latitude,
-            longitude = user_longitude,
-            account_type = user_account_type,
-            email = user_email,
-            regToken = user_regToken,
-            notifications = user_notifications
-        )
-
-        Log.d(TAG, "name: $username, location $user_location, account: $user_account_type, email: $user_email, regToken: $user_regToken, noti: $user_notifications")
-
-        RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                if (response.isSuccessful) {
-                    val userResponse = response.body()
-                    Log.d("Retrofit", "User created: ${userResponse?.user?.name}")
-                    if (userResponse != null) {
-                        sharedPreferences.edit()
-                            .putString(KEY_USER_ID, userResponse.user.user_id)
-                            .apply()
-                    }
-                    Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
-
-                } else {
-                    Toast.makeText(requireContext(), "Account creation failed. Please try again later.", Toast.LENGTH_SHORT).show()
-                    Log.e("Retrofit", "Error: ${response.code()} ${response.errorBody()}")
-                }
-            }
-
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                Log.e("Retrofit", "Request failed: ${t.message}")
-            }
-        })
-
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
+        } else {
+            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+        }
     }
+}
 
-    private fun checkLocationPermissions() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                Log.d(TAG, "Location permissions granted")
-            }
 
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ||
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        Log.d(TAG, "Request permission rationale true")
-                        showLocationPermissionRationale()
-            }
+    object ProfileApiHelper {
+        fun sendProfileToServer(sharedPreferences: SharedPreferences, context: Context) {
+            val user = createUserFromPreferences(sharedPreferences, context)
+            RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Account creation failed. Please try again later.", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
-            else -> {
-                Log.d(TAG, "Requesting location permissions")
-                requestLocationPermissions()
-            }
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("Retrofit", "Request failed: ${t.message}")
+                }
+            })
+        }
+
+        private fun createUserFromPreferences(sharedPreferences: SharedPreferences, context: Context): User {
+            val otherSharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            return User(
+                user_id = sharedPreferences.getString(ProfileFragment.KEY_USER_ID, null),
+                name = sharedPreferences.getString(ProfileFragment.KEY_FULL_NAME, null),
+                location = sharedPreferences.getString(ProfileFragment.KEY_LOCATION, null),
+                latitude = sharedPreferences.getFloat("latitude", 0f).toDouble(),
+                longitude = sharedPreferences.getFloat("longitude", 0f).toDouble(),
+                account_type = "base",
+                email = sharedPreferences.getString(ProfileFragment.KEY_EMAIL, null),
+                regToken = otherSharedPreferences.getString("registrationToken", null),
+                notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
+            )
         }
     }
 
-    private fun requestLocationPermissions() {
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            0
-        )
-    }
 
-    private fun showLocationPermissionRationale() {
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Enable Location Permissions?")
-            .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
-            .setPositiveButton("Yes") { dialog, _ ->
-                // Request permissions
-                dialog.dismiss()
-                requestLocationPermissions()
+object FcmTokenHandler {
+    fun fetchFcmToken(context: Context) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString("registrationToken", token).apply()
+            } else {
+                Log.w("FcmTokenHandler", "Fetching FCM registration token failed", task.exception)
             }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss() // Just close the dialog
-            }
-            .create()
-
-        alertDialog.show()
+        }
     }
-
-
 }
+
+
