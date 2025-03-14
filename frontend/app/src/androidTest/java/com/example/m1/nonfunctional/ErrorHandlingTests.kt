@@ -244,15 +244,11 @@ class ErrorHandlingTests {
         } catch (e: IOException) {
             // Handle IO-related exceptions (e.g., issues with executing shell commands)
             Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to IO error", e)
-        } catch (e: InterruptedException) {
-            // Handle interruption of the sleep thread
-            Log.e("ErrorHandlingTests", "Thread interrupted while waiting: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to thread interruption", e)
+            throw IOException("Failed to disable network connectivity due to IO error", e)
         } catch (e: SecurityException) {
             // Handle cases where the app doesn't have permission to execute shell commands
             Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to security restrictions", e)
+            throw SecurityException("Failed to disable network connectivity due to security restrictions", e)
         } 
     }
 
@@ -264,15 +260,11 @@ class ErrorHandlingTests {
         } catch (e: IOException) {
             // Handle IO-related exceptions (e.g., issues with executing shell commands)
             Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to IO error", e)
-        } catch (e: InterruptedException) {
-            // Handle interruption of the sleep thread
-            Log.e("ErrorHandlingTests", "Thread interrupted while waiting: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to thread interruption", e)
+            throw IOException("Failed to disable network connectivity due to IO error", e)
         } catch (e: SecurityException) {
             // Handle cases where the app doesn't have permission to execute shell commands
             Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity due to security restrictions", e)
+            throw SecurityException("Failed to disable network connectivity due to security restrictions", e)
         } 
     }
 
