@@ -2,7 +2,7 @@
 backend/node_modules
 backend/m1.js
 node_modules
-backend/lcov-report/base.css
-backend/lcov-report/prettify.css
-backend/mock/lcov-report/prettify.js
-backend/mock/lcov-report/base.css
+backend/coverage/lcov-report/base.css
+backend/coverage/lcov-report/prettify.css
+backend/coverage/mock/lcov-report/prettify.js
+backend/coverage/mock/lcov-report/base.css
