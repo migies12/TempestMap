@@ -35,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import android.util.Log
+import java.io.IOException
 
 /*
  * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
@@ -240,10 +241,19 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc wifi disable")
             uiDevice.executeShellCommand("svc data disable")
             Thread.sleep(3000)
-        } catch (e: Exception) {
-            Log.e("ErrorHandlingTests", "Error disabling network: ${e.message}", e)
-            throw RuntimeException("Failed to disable network connectivity", e)
-        }
+        } catch (e: IOException) {
+            // Handle IO-related exceptions (e.g., issues with executing shell commands)
+            Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to IO error", e)
+        } catch (e: InterruptedException) {
+            // Handle interruption of the sleep thread
+            Log.e("ErrorHandlingTests", "Thread interrupted while waiting: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to thread interruption", e)
+        } catch (e: SecurityException) {
+            // Handle cases where the app doesn't have permission to execute shell commands
+            Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to security restrictions", e)
+        } 
     }
 
     private fun restoreNetwork() {
@@ -251,10 +261,19 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc wifi enable")
             uiDevice.executeShellCommand("svc data enable")
             Thread.sleep(3000)
-        } catch (e: Exception) {
-            Log.e("ErrorHandlingTests", "Error enabling network: ${e.message}", e)
-            throw RuntimeException("Failed to restore network connectivity", e)
-        }
+        } catch (e: IOException) {
+            // Handle IO-related exceptions (e.g., issues with executing shell commands)
+            Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to IO error", e)
+        } catch (e: InterruptedException) {
+            // Handle interruption of the sleep thread
+            Log.e("ErrorHandlingTests", "Thread interrupted while waiting: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to thread interruption", e)
+        } catch (e: SecurityException) {
+            // Handle cases where the app doesn't have permission to execute shell commands
+            Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
+            throw RuntimeException("Failed to disable network connectivity due to security restrictions", e)
+        } 
     }
 
     private fun waitFor(millis: Long): ViewAction {

@@ -140,4 +140,6 @@ class DialogUtils {
             Toast.makeText(context, "Current location not available", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }
