@@ -183,7 +183,7 @@ class MapboxFragment : Fragment(), LocationListener {
 
         // Setup FAB click listener
         fabAddMarker.setOnClickListener {
-            showOptionsDialog()
+            dialogUtils.showOptionsDialog(requireContext(), favoriteLocationManager, this::toggleMarkerPlacementMode, this::navigateToFavoritesFragment, lastKnownLocation)
         }
 
         // Setup other event listeners
@@ -204,7 +204,6 @@ class MapboxFragment : Fragment(), LocationListener {
         // Start fetching events
         viewModel.startFetchingEvents()
     }
-
 
     private fun setupClickListeners() {
         // Map click listener
@@ -289,7 +288,17 @@ class MapboxFragment : Fragment(), LocationListener {
             )
 
             // Show event details (which should observe the updated comments LiveData)
-            showEventDetailsDialog(it)
+            EventBottomSheetDialog(requireContext(), viewModel) {
+                // On dismiss - restore camera position
+                previousCameraOptions?.let { prevCamera ->
+                    mapboxMap.flyTo(
+                        prevCamera,
+                        MapAnimationOptions.mapAnimationOptions {
+                            duration(2000)
+                        }
+                    )
+                }
+            }.show(event)
         }
     }
 
@@ -304,7 +313,34 @@ class MapboxFragment : Fragment(), LocationListener {
         }
 
         userMarker?.let {
-            showUserMarkerDetailsDialog(it)
+            // Store current camera position before showing dialog
+            previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
+
+            // Zoom to the marker location
+            val markerPoint = Point.fromLngLat(userMarker.longitude, userMarker.latitude)
+            mapboxMap.flyTo(
+                CameraOptions.Builder()
+                    .center(markerPoint)
+                    .zoom(14.0) // Slightly higher zoom for markers since they're more precise
+                    .build(),
+                MapAnimationOptions.mapAnimationOptions {
+                    duration(1500)
+                }
+            )
+
+            // Show the bottom sheet dialog
+            UserMarkerBottomSheetDialog(requireContext(), viewModel) {
+                // On dismiss - restore camera position
+                previousCameraOptions?.let { prevCamera ->
+                    mapboxMap.flyTo(
+                        prevCamera,
+                        MapAnimationOptions.mapAnimationOptions {
+                            duration(1500)
+                        }
+                    )
+                }
+            }.show(userMarker)
+
         }
     }
 
@@ -344,57 +380,7 @@ class MapboxFragment : Fragment(), LocationListener {
         }
     }
 
-
-
-
-
-    private fun showEventDetailsDialog(event: Event) {
-        EventBottomSheetDialog(requireContext(), viewModel) {
-            // On dismiss - restore camera position
-            previousCameraOptions?.let { prevCamera ->
-                mapboxMap.flyTo(
-                    prevCamera,
-                    MapAnimationOptions.mapAnimationOptions {
-                        duration(2000)
-                    }
-                )
-            }
-        }.show(event)
-    }
-
-    private fun showUserMarkerDetailsDialog(userMarker: UserMarker) {
-        // Store current camera position before showing dialog
-        previousCameraOptions = mapboxMap.cameraState.toCameraOptions()
-
-        // Zoom to the marker location
-        val markerPoint = Point.fromLngLat(userMarker.longitude, userMarker.latitude)
-        mapboxMap.flyTo(
-            CameraOptions.Builder()
-                .center(markerPoint)
-                .zoom(14.0) // Slightly higher zoom for markers since they're more precise
-                .build(),
-            MapAnimationOptions.mapAnimationOptions {
-                duration(1500)
-            }
-        )
-
-        // Show the bottom sheet dialog
-        UserMarkerBottomSheetDialog(requireContext(), viewModel) {
-            // On dismiss - restore camera position
-            previousCameraOptions?.let { prevCamera ->
-                mapboxMap.flyTo(
-                    prevCamera,
-                    MapAnimationOptions.mapAnimationOptions {
-                        duration(1500)
-                    }
-                )
-            }
-        }.show(userMarker)
-    }
-
-    // LocationListener implementation
     override fun onLocationChanged(location: Location) {
-
         // Store last known location
         lastKnownLocation = location
 
@@ -403,7 +389,6 @@ class MapboxFragment : Fragment(), LocationListener {
 
         // Recalculate danger levels based on new location
         viewModel.fetchEvents()
-
 
         //don't update map if the fragment is not attached. This will crash system, requires context
         if (!isAdded || isDetached) {
@@ -430,46 +415,10 @@ class MapboxFragment : Fragment(), LocationListener {
             .apply()
     }
 
-    private fun showOptionsDialog() {
-        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
-        if (!isSignedin) {
-            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, SignInFragment())
-                .commit()
-            return
-        }
-
-        val options = arrayOf("Create Marker", "Save Current Location", "View Favorites")
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Map Options")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> toggleMarkerPlacementMode() // Enable marker placement mode
-                    1 -> showSaveCurrentLocationDialog()
-                    2 -> navigateToFavoritesFragment()
-                }
-            }
-            .show()
-    }
-
-    private fun showSaveCurrentLocationDialog() {
-        lastKnownLocation?.let { location ->
-            val point = Point.fromLngLat(location.longitude, location.latitude)
-            dialogUtils.showSaveToFavoritesDialog(requireContext(), point, favoriteLocationManager)
-        } ?: run {
-            Toast.makeText(context, "Current location not available", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
     private fun navigateToFavoritesFragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, FavoritesFragment())
             .addToBackStack(null)
             .commit()
     }
-
 }

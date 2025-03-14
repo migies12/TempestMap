@@ -1,6 +1,7 @@
 package com.example.m1.util
 
 import android.content.Context
+import android.location.Location
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
@@ -97,5 +98,46 @@ class DialogUtils {
             .setPositiveButton("Sign In") { _, _ -> onSignIn() }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    fun showOptionsDialog(
+        context: Context,
+        favoriteLocationManager: FavoriteLocationManager,
+        toggleMarkerPlacementMode: () -> Unit,
+        navigateToFavoritesFragment: () -> Unit,
+        lastKnownLocation: Location?
+    ) {
+        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
+        if (!isSignedin) {
+            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val options = arrayOf("Create Marker", "Save Current Location", "View Favorites")
+
+        AlertDialog.Builder(context)
+            .setTitle("Map Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> toggleMarkerPlacementMode() // Enable marker placement mode
+                    1 -> showSaveCurrentLocationDialog(context, favoriteLocationManager, lastKnownLocation)
+                    2 -> navigateToFavoritesFragment()
+                }
+            }
+            .show()
+    }
+
+    private fun showSaveCurrentLocationDialog(
+        context: Context,
+        favoriteLocationManager: FavoriteLocationManager,
+        lastKnownLocation: Location?
+    ) {
+        lastKnownLocation?.let { location ->
+            val point = Point.fromLngLat(location.longitude, location.latitude)
+            showSaveToFavoritesDialog(context, point, favoriteLocationManager)
+        } ?: run {
+            Toast.makeText(context, "Current location not available", Toast.LENGTH_SHORT).show()
+        }
     }
 }
