@@ -37,6 +37,10 @@ import java.util.Date
 import java.util.Locale
 
 /*
+ * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
+ */
+
+/*
  * NFR 3: Accessibility Compliance
  * The app must comply with WCAG 2.1 Level AA accessibility standards,
  * ensuring it is usable by individuals with disabilities

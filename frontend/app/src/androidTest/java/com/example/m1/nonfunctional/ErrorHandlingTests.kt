@@ -36,6 +36,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import android.util.Log
 
+/*
+ * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
+ */
+
+
 @RunWith(AndroidJUnit4::class)
 class ErrorHandlingTests {
 
