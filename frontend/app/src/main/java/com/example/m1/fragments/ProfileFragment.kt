@@ -257,53 +257,5 @@ class ProfileFragment : Fragment() {
 }
 
 
-    object ProfileApiHelper {
-        fun sendProfileToServer(sharedPreferences: SharedPreferences, context: Context) {
-            val user = createUserFromPreferences(sharedPreferences, context)
-            RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Account creation failed. Please try again later.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                    Log.e("Retrofit", "Request failed: ${t.message}")
-                }
-            })
-        }
-
-        private fun createUserFromPreferences(sharedPreferences: SharedPreferences, context: Context): User {
-            val otherSharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            return User(
-                user_id = sharedPreferences.getString(ProfileFragment.KEY_USER_ID, null),
-                name = sharedPreferences.getString(ProfileFragment.KEY_FULL_NAME, null),
-                location = sharedPreferences.getString(ProfileFragment.KEY_LOCATION, null),
-                latitude = sharedPreferences.getFloat("latitude", 0f).toDouble(),
-                longitude = sharedPreferences.getFloat("longitude", 0f).toDouble(),
-                account_type = "base",
-                email = sharedPreferences.getString(ProfileFragment.KEY_EMAIL, null),
-                regToken = otherSharedPreferences.getString("registrationToken", null),
-                notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
-            )
-        }
-    }
-
-
-object FcmTokenHandler {
-    fun fetchFcmToken(context: Context) {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit().putString("registrationToken", token).apply()
-            } else {
-                Log.w("FcmTokenHandler", "Fetching FCM registration token failed", task.exception)
-            }
-        }
-    }
-}
 
 

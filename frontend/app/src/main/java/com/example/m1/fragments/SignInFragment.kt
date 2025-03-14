@@ -1,6 +1,7 @@
 package com.example.m1.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.credentials.CredentialManager
 import android.credentials.GetCredentialException
 import android.credentials.GetCredentialRequest
@@ -29,6 +30,9 @@ import java.util.UUID
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * A simple [Fragment] subclass.
@@ -169,4 +173,39 @@ class SignInFragment : Fragment() {
             .commit()
     }
 
+}
+
+
+object ProfileApiHelper {
+    fun sendProfileToServer(sharedPreferences: SharedPreferences, context: Context) {
+        val user = createUserFromPreferences(sharedPreferences, context)
+        RetrofitClient.apiService.postUser(user).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Account creation failed. Please try again later.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.e("Retrofit", "Request failed: ${t.message}")
+            }
+        })
+    }
+
+    private fun createUserFromPreferences(sharedPreferences: SharedPreferences, context: Context): User {
+        val otherSharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        return User(
+            user_id = sharedPreferences.getString(ProfileFragment.KEY_USER_ID, null),
+            name = sharedPreferences.getString(ProfileFragment.KEY_FULL_NAME, null),
+            location = sharedPreferences.getString(ProfileFragment.KEY_LOCATION, null),
+            latitude = sharedPreferences.getFloat("latitude", 0f).toDouble(),
+            longitude = sharedPreferences.getFloat("longitude", 0f).toDouble(),
+            account_type = "base",
+            email = sharedPreferences.getString(ProfileFragment.KEY_EMAIL, null),
+            regToken = otherSharedPreferences.getString("registrationToken", null),
+            notifications = otherSharedPreferences.getBoolean("notificationsEnabled", false)
+        )
+    }
 }
