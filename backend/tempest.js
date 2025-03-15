@@ -270,7 +270,7 @@ app.post('/user', async (req, res) => {
   const account_type = req.body.account_type || req.query.account_type;
   const email = req.body.email || req.query.email
   const regToken = req.body.regToken || req.query.regToken
-  const notifications = req.body.notifications || req.query.notifications
+  const notifications = req.body.notifications
   
   if (!name || !location || !account_type || !email || !regToken || notifications == null) {
     console.log("Bad params", req.body);
