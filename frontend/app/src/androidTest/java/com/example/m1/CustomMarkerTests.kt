@@ -126,6 +126,7 @@ class CustomMarkerTests {
 
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }
+
 }
 
 /*

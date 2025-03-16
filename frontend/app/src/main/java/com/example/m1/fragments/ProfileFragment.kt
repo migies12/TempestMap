@@ -148,7 +148,13 @@ class ProfileFragment : Fragment() {
         }
 
         signOutButton.setOnClickListener {
-            signOut()
+            // Replace with signOut() if bugs
+            val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            signInPrefs.edit().clear().apply()
+            Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, SignInFragment())
+                .commit()
         }
 
         notiButton.setOnClickListener {
@@ -227,35 +233,53 @@ class ProfileFragment : Fragment() {
     private fun handleNotificationPermissions() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            askNotificationPermission()
+            // Replace if else with askNotificationsPermission if something breaks.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            else {
+                Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
         }
     }
 
-    private fun askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
-        }
-    }
+//    private fun askNotificationPermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+//        } else {
+//            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
-    private fun signOut() {
-        val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        signInPrefs.edit().clear().apply()
-        Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, SignInFragment())
-            .commit()
-    }
+//    private fun signOut() {
+//        val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+//        signInPrefs.edit().clear().apply()
+//        Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.container, SignInFragment())
+//            .commit()
+//    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
             ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
         } else {
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", false)
+                .apply()
             Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -274,7 +298,22 @@ class ProfileFragment : Fragment() {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ||
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 Log.d(TAG, "Request permission rationale true")
-                showLocationPermissionRationale()
+                //Replace with showLocationPermissionRationale if bugs
+                val alertDialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Enable Location Permissions?")
+                    .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        // Request permissions
+                        dialog.dismiss()
+                        requestLocationPermissions()
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss() // Just close the dialog
+                        Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+                    }
+                    .create()
+
+                alertDialog.show()
             }
 
             else -> {
@@ -287,7 +326,7 @@ class ProfileFragment : Fragment() {
     private val requestLocationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-            val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+            // We only care about fineLocation
 
             if (fineLocationGranted) {
                 handleNotificationPermissions()
@@ -307,23 +346,23 @@ class ProfileFragment : Fragment() {
         )
     }
 
-    private fun showLocationPermissionRationale() {
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Enable Location Permissions?")
-            .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
-            .setPositiveButton("Yes") { dialog, _ ->
-                // Request permissions
-                dialog.dismiss()
-                requestLocationPermissions()
-            }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss() // Just close the dialog
-                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
-            }
-            .create()
-
-        alertDialog.show()
-    }
+//    private fun showLocationPermissionRationale() {
+//        val alertDialog = AlertDialog.Builder(requireContext())
+//            .setTitle("Enable Location Permissions?")
+//            .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
+//            .setPositiveButton("Yes") { dialog, _ ->
+//                // Request permissions
+//                dialog.dismiss()
+//                requestLocationPermissions()
+//            }
+//            .setNegativeButton("No") { dialog, _ ->
+//                dialog.dismiss() // Just close the dialog
+//                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+//            }
+//            .create()
+//
+//        alertDialog.show()
+//    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
