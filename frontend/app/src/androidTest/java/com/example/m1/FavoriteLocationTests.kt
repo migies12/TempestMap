@@ -1,9 +1,13 @@
 package com.example.m1
 
 import android.content.Context
+import android.location.Location
+import android.os.IBinder
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Root
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
@@ -19,10 +23,15 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import com.google.gson.JsonSyntaxException
+import junit.framework.TestCase.assertFalse
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.Description
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.UUID
 
 /*
  * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
@@ -61,8 +70,16 @@ class FavoriteLocationTests {
                 val y = screenPos[1] + 100// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0))
+                        MotionEvent.obtain(
+                            0,
+                            0,
+                            MotionEvent.ACTION_DOWN,
+                            x.toFloat(),
+                            y.toFloat(),
+                            0
+                        ),
+                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0)
+                    )
                 )
             }
         })
@@ -109,8 +126,16 @@ class FavoriteLocationTests {
                 val y = screenPos[1] + 100// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0))
+                        MotionEvent.obtain(
+                            0,
+                            0,
+                            MotionEvent.ACTION_DOWN,
+                            x.toFloat(),
+                            y.toFloat(),
+                            0
+                        ),
+                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0)
+                    )
                 )
             }
         })
@@ -118,4 +143,5 @@ class FavoriteLocationTests {
         Thread.sleep(1000) // Necessary delay for trans
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }
+
 }
