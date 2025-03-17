@@ -3,6 +3,7 @@ package com.example.m1
 import android.content.Context
 import android.location.Location
 import android.os.IBinder
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -112,6 +113,7 @@ class FavoriteLocationTests {
 
         onView(allOf(withId(R.id.tvLocationName), withText("Test Favorite Location")))
             .check(matches(isDisplayed()))
+
     }
 
     @Test
