@@ -70,191 +70,171 @@ class NotificationTests {
     }
 
     @Test
-    fun fullTest() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext // User signed-in
-        val sharedPrefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        sharedPrefs.edit()
-            .putBoolean("isSignedIn", true)
-            .commit()
-        var shouldShowButton: UiObject
-        var denyLocationButton: UiObject
-        var allowLocationButton: UiObject
-        var allowNotiButton: UiObject
-        var denyNotiButton: UiObject
+fun fullTest() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    setupSharedPreferences(context, true, null) // User signed-in, unfinished profile
 
-        // ======================================
-        // User with unfinished profile
-        // ======================================
-        val nameSharedPrefs = context.getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
-        nameSharedPrefs.edit()
-            .putString(ProfileFragment.KEY_FULL_NAME, null)
-            .commit()
+    // ======================================
+    // User with unfinished profile
+    // ======================================
+    testUnfinishedProfile(context)
 
-        onView(withId(R.id.nav_profile)).perform(click()) // Navigate to profile page
+    // ======================================
+    // User that has completed their profile, but rejects location permissions
+    // ======================================
+    setupSharedPreferences(context, true, "testName") // Complete profile
+    testRejectLocationPermissions(context)
 
-        scrollToNotiButton()
+    // ======================================
+    // User that has completed their profile, but rejects notification permissions
+    // ======================================
+    testRejectNotificationPermissions(context)
 
-        onView(withId(R.id.notification_button))
-            .check(matches(isDisplayed())) // Verify the button is displayed
+    // ======================================
+    // User that has completed their profile, has location permissions accepted, and accepts notification permission
+    // ======================================
+    testAcceptAllPermissions(context)
+}
 
-        onView(withId(R.id.notification_button)).perform(click())
+// ======================================
+// Private Subfunctions
+// ======================================
 
-        Thread.sleep(1000)
+private fun setupSharedPreferences(context: Context, isSignedIn: Boolean, fullName: String?) {
+    val sharedPrefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+    sharedPrefs.edit().putBoolean("isSignedIn", isSignedIn).commit()
 
-        // Ensure prompt appears
-        onView(withText("Please complete profile creation first"))
-            .check(matches(isCompletelyDisplayed()))
+    val nameSharedPrefs = context.getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
+    nameSharedPrefs.edit().putString(ProfileFragment.KEY_FULL_NAME, fullName).commit()
+}
 
-        Thread.sleep(1000)
+private fun testUnfinishedProfile(context: Context) {
+    onView(withId(R.id.nav_profile)).perform(click()) // Navigate to profile page
+    scrollToNotiButton()
 
-        // Ensure no dialogs appear
-        shouldShowButton = device.findObject(UiSelector().textContains("Yes"))
-        if (shouldShowButton.exists()) {
-            throw AssertionError("No dialog button should be present.")
-        }
+    onView(withId(R.id.notification_button))
+        .check(matches(isDisplayed())) // Verify the button is displayed
+    onView(withId(R.id.notification_button)).perform(click())
 
-        allowLocationButton = device.findObject(UiSelector().text("While using the app"))
-        if (allowLocationButton.exists()){
-            throw AssertionError("No dialog button should be present.")
-        }
+    Thread.sleep(1000)
+    onView(withText("Please complete profile creation first"))
+        .check(matches(isCompletelyDisplayed()))
 
-        // Neither permission should be granted.
-        assertTrue("Location permissions should be denied", checkLocationPermissions(false))
-        assertTrue("Notification permissions should be denied, and sharedPrefs should reflect this", checkNotificationPermissions(false))
+    Thread.sleep(1000)
+    assertNoDialogsPresent()
+    assertPermissionsDenied(context)
+}
 
-        // ======================================
-        // User that has completed their profile, but rejects location permissions
-        // ======================================
-        nameSharedPrefs.edit()
-            .putString(ProfileFragment.KEY_FULL_NAME, "testName")
-            .commit()
+private fun testRejectLocationPermissions(context: Context) {
+    onView(withId(R.id.notification_button))
+        .check(matches(isDisplayed())) // Verify the button is displayed
+    onView(withId(R.id.notification_button)).perform(click())
 
-        Thread.sleep(2000)
+    Thread.sleep(2000)
+    handleRationaleDialog()
 
-        onView(withId(R.id.notification_button))
-            .check(matches(isDisplayed())) // Verify the button is displayed
-
-        onView(withId(R.id.notification_button)).perform(click())
-
-        Thread.sleep(2000)
-
-        shouldShowButton = device.findObject(UiSelector().textContains("Yes")) // Accept rationale dialog if present
-        if (shouldShowButton.exists()) {
-            shouldShowButton.click()
-            Thread.sleep(2000)
-        }
-
-        denyLocationButton = device.findObject(UiSelector().textContains("Don")) // Reject location
-        if (denyLocationButton.exists()) {
-            denyLocationButton.click()
-        }
-        else {
-            throw AssertionError("The 'Don't Allow' location button was not found.")
-        }
-
-        Thread.sleep(1000)
-
-        // Ensure prompt appears
-        onView(withText("Location services are required for notifications"))
-            .check(matches(isCompletelyDisplayed()))
-
-        Thread.sleep(1000)
-
-        allowNotiButton = device.findObject(UiSelector().text("Allow"))
-        if (allowNotiButton.exists()){
-            throw AssertionError("Notification prompt showing when location permissions rejected")
-        }
-        else {
-            onView(withId(R.id.notification_button)).check(matches(isDisplayed()))
-        }
-
-        // Neither permission should be granted.
-        assertTrue("Location permissions should be denied", checkLocationPermissions(false))
-        assertTrue("Notification permissions should be denied, and sharedPrefs should reflect this", checkNotificationPermissions(false))
-
-        Thread.sleep(2000)
-
-        // ======================================
-        // User that has completed their profile, but rejects notification permissions
-        // ======================================
-        onView(withId(R.id.notification_button))
-            .check(matches(isDisplayed())) // Verify the button is displayed
-
-        onView(withId(R.id.notification_button)).perform(click())
-
-        Thread.sleep(2000)
-
-        shouldShowButton = device.findObject(UiSelector().textContains("Yes")) // Accept rationale dialog if present
-        if (shouldShowButton.exists()) {
-            shouldShowButton.click()
-            Thread.sleep(2000)
-        }
-
-        allowLocationButton = device.findObject(UiSelector().textContains("While")) // Accept location
-        if (allowLocationButton.exists()) {
-            allowLocationButton.click()
-        }
-        else {
-            throw AssertionError("The location permission dialog was not found")
-        }
-
-        Thread.sleep(2000)
-
-        denyNotiButton = device.findObject(UiSelector().textContains("Don"))
-        if (denyNotiButton.exists()){
-            denyNotiButton.click()
-        }
-        else {
-            throw AssertionError("Notification dialog not found")
-        }
-
-        Thread.sleep(1000)
-
-        // Ensure prompt appears
-        onView(withText("Please enable notifications for up to date weather info"))
-            .check(matches(isCompletelyDisplayed()))
-
-        // Only location permission should be granted.
-        assertTrue("Location permissions should be granted", checkLocationPermissions(true))
-        assertTrue("Notification permissions should be denied, and sharedPrefs should reflect this", checkNotificationPermissions(false))
-
-        Thread.sleep(2000)
-
-        // ======================================
-        // User that has completed their profile, has location permissions accepted, and accepts notification permission
-        // ======================================
-        onView(withId(R.id.notification_button))
-            .check(matches(isDisplayed())) // Verify the button is displayed
-
-        onView(withId(R.id.notification_button)).perform(click())
-
-        Thread.sleep(2000)
-
-        shouldShowButton = device.findObject(UiSelector().textContains("Yes")) // Accept rationale dialog if present
-        if (shouldShowButton.exists()) {
-            shouldShowButton.click()
-            Thread.sleep(2000)
-        }
-
-        // Skip location permission dialog, already accepted
-
-        allowNotiButton = device.findObject(UiSelector().text("Allow"))
-        if (allowNotiButton.exists()){
-            allowNotiButton.click()
-        }
-        else {
-            throw AssertionError("The 'Allow' notification button was not found.")
-        }
-
-        // Ensure prompt appears
-        onView(withText("Notifications enabled"))
-            .check(matches(isCompletelyDisplayed()))
-
-        // Both permissions should be granted.
-        assertTrue("Location permissions should be granted", checkLocationPermissions(true))
-        assertTrue("Notification permissions should be granted, and sharedPrefs should reflect this", checkNotificationPermissions(true))
-
+    val denyLocationButton = device.findObject(UiSelector().textContains("Don")) // Reject location
+    if (denyLocationButton.exists()) {
+        denyLocationButton.click()
+    } else {
+        throw AssertionError("The 'Don't Allow' location button was not found.")
     }
+
+    Thread.sleep(1000)
+    onView(withText("Location services are required for notifications"))
+        .check(matches(isCompletelyDisplayed()))
+
+    Thread.sleep(1000)
+    assertNoNotificationPrompt()
+    assertPermissionsDenied(context)
+}
+
+private fun testRejectNotificationPermissions(context: Context) {
+    onView(withId(R.id.notification_button))
+        .check(matches(isDisplayed())) // Verify the button is displayed
+    onView(withId(R.id.notification_button)).perform(click())
+
+    Thread.sleep(2000)
+    handleRationaleDialog()
+
+    val allowLocationButton = device.findObject(UiSelector().textContains("While")) // Accept location
+    if (allowLocationButton.exists()) {
+        allowLocationButton.click()
+    } else {
+        throw AssertionError("The location permission dialog was not found")
+    }
+
+    Thread.sleep(2000)
+    val denyNotiButton = device.findObject(UiSelector().textContains("Don"))
+    if (denyNotiButton.exists()) {
+        denyNotiButton.click()
+    } else {
+        throw AssertionError("Notification dialog not found")
+    }
+
+    Thread.sleep(1000)
+    onView(withText("Please enable notifications for up to date weather info"))
+        .check(matches(isCompletelyDisplayed()))
+
+    assertTrue("Location permissions should be granted", checkLocationPermissions(true))
+    assertTrue("Notification permissions should be denied", checkNotificationPermissions(false))
+}
+
+private fun testAcceptAllPermissions(context: Context) {
+    onView(withId(R.id.notification_button))
+        .check(matches(isDisplayed())) // Verify the button is displayed
+    onView(withId(R.id.notification_button)).perform(click())
+
+    Thread.sleep(2000)
+    handleRationaleDialog()
+
+    val allowNotiButton = device.findObject(UiSelector().text("Allow"))
+    if (allowNotiButton.exists()) {
+        allowNotiButton.click()
+    } else {
+        throw AssertionError("The 'Allow' notification button was not found.")
+    }
+
+    onView(withText("Notifications enabled"))
+        .check(matches(isCompletelyDisplayed()))
+
+    assertTrue("Location permissions should be granted", checkLocationPermissions(true))
+    assertTrue("Notification permissions should be granted", checkNotificationPermissions(true))
+}
+
+private fun handleRationaleDialog() {
+    val shouldShowButton = device.findObject(UiSelector().textContains("Yes")) // Accept rationale dialog if present
+    if (shouldShowButton.exists()) {
+        shouldShowButton.click()
+        Thread.sleep(2000)
+    }
+}
+
+private fun assertNoDialogsPresent() {
+    val shouldShowButton = device.findObject(UiSelector().textContains("Yes"))
+    if (shouldShowButton.exists()) {
+        throw AssertionError("No dialog button should be present.")
+    }
+
+    val allowLocationButton = device.findObject(UiSelector().text("While using the app"))
+    if (allowLocationButton.exists()) {
+        throw AssertionError("No dialog button should be present.")
+    }
+}
+
+private fun assertNoNotificationPrompt() {
+    val allowNotiButton = device.findObject(UiSelector().text("Allow"))
+    if (allowNotiButton.exists()) {
+        throw AssertionError("Notification prompt showing when location permissions rejected")
+    } else {
+        onView(withId(R.id.notification_button)).check(matches(isDisplayed()))
+    }
+}
+
+private fun assertPermissionsDenied(context: Context) {
+    assertTrue("Location permissions should be denied", checkLocationPermissions(false))
+    assertTrue("Notification permissions should be denied", checkNotificationPermissions(false))
+}
 
 
     private fun scrollToNotiButton() {

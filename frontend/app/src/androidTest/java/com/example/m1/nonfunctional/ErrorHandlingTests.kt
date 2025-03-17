@@ -34,6 +34,10 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.io.IOException
+
+class NetworkSimulationException(message: String, cause: Throwable) : Exception(message, cause)
+
 
 /*
  * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
@@ -283,9 +287,12 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc data disable")
             Thread.sleep(3000)
             logEvent("simulateNoNetwork executed")
-        } catch (e: Exception) {
-            logEvent("simulateNoNetwork error: ${e.message}")
-            throw RuntimeException("Disable network failed", e)
+        } catch (e: InterruptedException) {
+            logEvent("simulateNoNetwork error: Thread interrupted - ${e.message}")
+            throw NetworkSimulationException("Network simulation interrupted", e)
+        } catch (e: IOException) {
+            logEvent("simulateNoNetwork error: IO operation failed - ${e.message}")
+            throw NetworkSimulationException("Failed to execute shell command", e)
         }
     }
 
@@ -295,9 +302,15 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc data enable")
             Thread.sleep(3000)
             logEvent("restoreNetwork executed")
+        } catch (e: InterruptedException) {
+            logEvent("simulateNoNetwork error: Thread interrupted - ${e.message}")
+            throw NetworkSimulationException("Network simulation interrupted", e)
+        } catch (e: IOException) {
+            logEvent("simulateNoNetwork error: IO operation failed - ${e.message}")
+            throw NetworkSimulationException("Failed to execute shell command", e)
         } catch (e: Exception) {
-            logEvent("restoreNetwork error: ${e.message}")
-            throw RuntimeException("Restore network failed", e)
+            logEvent("simulateNoNetwork error: Unexpected error - ${e.message}")
+            throw NetworkSimulationException("Unexpected error during network simulation", e)
         }
     }
 
