@@ -125,7 +125,7 @@ class CustomMarkerTests {
 
         onView(withId(R.id.fabAddMarker)).perform(click())
 
-        onView(withText("Sign In Required")).check(matches(isDisplayed()))
+        onView(withText("Sign In Required")).check(matches(isDisplayed())) // Confirm 1a dialog exists
 
         onView(withText("YES")).perform(click())
 
