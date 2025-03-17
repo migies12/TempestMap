@@ -41,7 +41,7 @@ import java.util.Locale
  */
 
 /*
- * NFR 3: Accessibility Compliance
+ * NFR 1: Accessibility Compliance
  * The app must comply with WCAG 2.1 Level AA accessibility standards,
  * ensuring it is usable by individuals with disabilities
  * (e.g., screen reader compatibility, color contrast, keyboard navigation).

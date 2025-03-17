@@ -2,6 +2,7 @@ package com.example.m1
 
 import android.content.Context
 import android.os.IBinder
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -19,6 +20,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -27,6 +29,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
@@ -76,8 +79,8 @@ class CustomMarkerTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 250 // Adjust X position
-                val y = screenPos[1] + 100// Adjust Y position
+                val x = screenPos[0] + 450 // Adjust X position
+                val y = screenPos[1] + 200// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
                         MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
@@ -94,6 +97,10 @@ class CustomMarkerTests {
             .inRoot(isDialog())
             .perform(click(), replaceText("This is a test"), closeSoftKeyboard())
 
+        onView(allOf(withText("Create Marker"), isClickable())).perform(click())
+
+        Thread.sleep(2000)
+
         onView(isRoot()).perform(object : ViewAction {
             override fun getConstraints() = isDisplayed()
 
@@ -102,8 +109,8 @@ class CustomMarkerTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 250 // Adjust X position
-                val y = screenPos[1] + 100// Adjust Y position
+                val x = screenPos[0] + 450 // Adjust X position
+                val y = screenPos[1] + 200// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
                         MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
@@ -112,7 +119,10 @@ class CustomMarkerTests {
             }
         })
 
+        Thread.sleep(2000)
+
         onView(withText("This is a test")).check(matches(isDisplayed()))
+
     }
 
     @Test
@@ -134,6 +144,7 @@ class CustomMarkerTests {
         onView(withText("YES")).perform(click())
 
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
+
     }
 
 }
