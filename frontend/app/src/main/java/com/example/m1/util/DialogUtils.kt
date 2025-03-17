@@ -1,5 +1,6 @@
 package com.example.m1.util
 
+import android.app.Activity
 import android.content.Context
 import android.location.Location
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.m1.FavoriteLocation
 import com.example.m1.FavoriteLocationManager
@@ -57,7 +59,7 @@ class DialogUtils {
             favoriteLocationManager = favoriteLocationManager,
             dialog = dialog,
             etLocationName = etLocationName,
-            etLocationDescription = etLocationDescription
+            etLocationDescription = etLocationDescription,
         )
 
         // Set the click listener for the save button
@@ -89,10 +91,14 @@ class DialogUtils {
 
         // Save the location and handle the result
         if (dialogState.favoriteLocationManager.saveFavoriteLocation(favoriteLocation)) {
-            Toast.makeText(dialogState.context, "Location saved to Favorites", Toast.LENGTH_SHORT).show()
+            if (dialogState.context is Activity) {
+                Snackbar.make(dialogState.context.findViewById(android.R.id.content), "Location saved to Favorites", Snackbar.LENGTH_SHORT).show()
+            }
             dialogState.dialog.dismiss()
         } else {
-            Toast.makeText(dialogState.context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
+            if (dialogState.context is Activity) {
+                Snackbar.make(dialogState.context.findViewById(android.R.id.content), "Failed to save location. Please try again later.", Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 

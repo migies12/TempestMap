@@ -6,7 +6,9 @@ import android.os.IBinder
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.Root
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -15,6 +17,7 @@ import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -58,6 +61,8 @@ class FavoriteLocationTests {
 
         onView(withId(R.id.nav_map)).perform(click())
 
+        Thread.sleep(5000) // Let map load
+
         onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
 
@@ -94,6 +99,11 @@ class FavoriteLocationTests {
 
         onView(withText("Save to Favorites")).perform(click())
 
+        Thread.sleep(1000)
+
+        onView(withText("Location saved to Favorites"))
+            .check(matches(isCompletelyDisplayed())) // ensure prompt appears
+
         onView(withId(R.id.fabAddMarker)).perform(click())
 
         onView(withText("Map Options")).check(matches(isDisplayed()))
@@ -113,6 +123,8 @@ class FavoriteLocationTests {
             .commit()
 
         onView(withId(R.id.nav_map)).perform(click())
+
+        Thread.sleep(5000)
 
         onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
@@ -141,6 +153,11 @@ class FavoriteLocationTests {
         })
 
         Thread.sleep(1000) // Necessary delay for trans
+
+        onView(withText("Sign In Required")).check(matches(isDisplayed())) // Verify dialog
+
+        onView(withText("YES")).perform(click())
+
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }
 

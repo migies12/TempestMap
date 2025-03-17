@@ -160,7 +160,7 @@ class ProfileFragment : Fragment() {
 
         notiButton.setOnClickListener {
             if(sharedPreferences.getString(KEY_FULL_NAME, null) == null) {
-                Toast.makeText(context, "Please complete profile creation first.", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Please complete profile creation first", Snackbar.LENGTH_SHORT).show()
             }
             else {
                 checkLocationPermissions()
@@ -239,33 +239,16 @@ class ProfileFragment : Fragment() {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
             else {
-                Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Notifications enabled", Snackbar.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Location permissions required for notifications", Snackbar.LENGTH_SHORT).show()
             val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             sharedPrefs.edit()
                 .putBoolean("notificationsEnabled", true)
                 .apply()
         }
     }
-
-//    private fun askNotificationPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-//        } else {
-//            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-//    private fun signOut() {
-//        val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-//        signInPrefs.edit().clear().apply()
-//        Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
-//        parentFragmentManager.beginTransaction()
-//            .replace(R.id.container, SignInFragment())
-//            .commit()
-//    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -275,13 +258,16 @@ class ProfileFragment : Fragment() {
             sharedPrefs.edit()
                 .putBoolean("notificationsEnabled", true)
                 .apply()
+
+            Snackbar.make(requireView(), "Notifications enabled", Snackbar.LENGTH_SHORT).show()
+
             ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
         } else {
             val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             sharedPrefs.edit()
                 .putBoolean("notificationsEnabled", false)
                 .apply()
-            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Please enable notifications for up to date weather info", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -310,7 +296,7 @@ class ProfileFragment : Fragment() {
                     }
                     .setNegativeButton("No") { dialog, _ ->
                         dialog.dismiss() // Just close the dialog
-                        Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
                     }
                     .create()
 
@@ -333,7 +319,7 @@ class ProfileFragment : Fragment() {
                 handleNotificationPermissions()
                 Log.d("Permission", "Location permission granted")
             } else {
-                Toast.makeText(context, "Location permissions are required to enable notifications.", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
                 Log.d("Permission", "Location permission denied")
             }
         }
@@ -347,24 +333,6 @@ class ProfileFragment : Fragment() {
         )
     }
 
-//    private fun showLocationPermissionRationale() {
-//        val alertDialog = AlertDialog.Builder(requireContext())
-//            .setTitle("Enable Location Permissions?")
-//            .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
-//            .setPositiveButton("Yes") { dialog, _ ->
-//                // Request permissions
-//                dialog.dismiss()
-//                requestLocationPermissions()
-//            }
-//            .setNegativeButton("No") { dialog, _ ->
-//                dialog.dismiss() // Just close the dialog
-//                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
-//            }
-//            .create()
-//
-//        alertDialog.show()
-//    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -375,7 +343,7 @@ class ProfileFragment : Fragment() {
                 Log.d("Permission", "Location permission granted")
             } else {
                 // Permission denied
-                Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
                 Log.d("Permission", "Location permission denied")
             }
         }

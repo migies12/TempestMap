@@ -228,7 +228,26 @@ class MapboxFragment : Fragment(), LocationListener {
     private fun setupClickListeners() {
         // Map click listener
         mapboxMap.addOnMapClickListener { point ->
-            handleMapClick(point)
+            val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
+            if (!isSignedin) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Sign In Required")
+                    .setMessage("To add custom markers, we require users to be signed-in, would you like to sign-in now?")
+                    .setPositiveButton("YES") { _, _ ->
+                        // Replace the fragment after the dialog is dismissed
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.container, SignInFragment())
+                            .commit()
+                    }
+                    .setNegativeButton("NO") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+            else {
+                handleMapClick(point)
+            }
             true // Return true to indicate the click event is consumed
         }
 
@@ -250,15 +269,6 @@ class MapboxFragment : Fragment(), LocationListener {
     }
 
     private fun handleMapClick(point: Point) {
-        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
-        if (!isSignedin) {
-            Snackbar.make(requireView(), "You must be logged in to add markers.", Snackbar.LENGTH_SHORT).show()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, SignInFragment())
-                .commit()
-            return
-        }
 
         if (markerPlacementMode) {
             // Show marker creation dialog at this point

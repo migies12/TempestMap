@@ -25,6 +25,7 @@ import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
@@ -98,8 +99,15 @@ class NotificationTests {
 
         onView(withId(R.id.notification_button)).perform(click())
 
-        Thread.sleep(2000)
+        Thread.sleep(1000)
 
+        // Ensure prompt appears
+        onView(withText("Please complete profile creation first"))
+            .check(matches(isCompletelyDisplayed()))
+
+        Thread.sleep(1000)
+
+        // Ensure no dialogs appear
         shouldShowButton = device.findObject(UiSelector().textContains("Yes"))
         if (shouldShowButton.exists()) {
             throw AssertionError("No dialog button should be present.")
@@ -144,7 +152,13 @@ class NotificationTests {
             throw AssertionError("The 'Don't Allow' location button was not found.")
         }
 
-        Thread.sleep(2000)
+        Thread.sleep(1000)
+
+        // Ensure prompt appears
+        onView(withText("Location services are required for notifications"))
+            .check(matches(isCompletelyDisplayed()))
+
+        Thread.sleep(1000)
 
         allowNotiButton = device.findObject(UiSelector().text("Allow"))
         if (allowNotiButton.exists()){
@@ -194,6 +208,12 @@ class NotificationTests {
             throw AssertionError("Notification dialog not found")
         }
 
+        Thread.sleep(1000)
+
+        // Ensure prompt appears
+        onView(withText("Please enable notifications for up to date weather info"))
+            .check(matches(isCompletelyDisplayed()))
+
         // Only location permission should be granted.
         assertTrue("Location permissions should be granted", checkLocationPermissions(true))
         assertTrue("Notification permissions should be denied, and sharedPrefs should reflect this", checkNotificationPermissions(false))
@@ -225,6 +245,10 @@ class NotificationTests {
         else {
             throw AssertionError("The 'Allow' notification button was not found.")
         }
+
+        // Ensure prompt appears
+        onView(withText("Notifications enabled"))
+            .check(matches(isCompletelyDisplayed()))
 
         // Both permissions should be granted.
         assertTrue("Location permissions should be granted", checkLocationPermissions(true))
