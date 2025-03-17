@@ -27,6 +27,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
@@ -124,7 +125,9 @@ class CustomMarkerTests {
 
         onView(withId(R.id.fabAddMarker)).perform(click())
 
-        onView(withText("You must be logged in to add markers.")).check(matches(isDisplayed()))
+        onView(withText("Sign In Required")).check(matches(isDisplayed()))
+
+        onView(withText("YES")).perform(click())
 
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }

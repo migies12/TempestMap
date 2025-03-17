@@ -3,6 +3,7 @@ package com.example.m1.util
 import android.content.Context
 import android.location.Location
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,6 +15,7 @@ import com.example.m1.FavoriteLocationManager
 import com.example.m1.R
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.geojson.Point
 
 data class SaveLocationDialogState(
@@ -108,18 +110,8 @@ class DialogUtils {
         favoriteLocationManager: FavoriteLocationManager,
         toggleMarkerPlacementMode: () -> Unit,
         navigateToFavoritesFragment: () -> Unit,
-        lastKnownLocation: Location?,
-        parentFragmentManager: FragmentManager
+        lastKnownLocation: Location?
     ) {
-        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
-        if (!isSignedin) {
-            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, SignInFragment())
-                .commit()
-            return
-        }
 
         val options = arrayOf("Create Marker", "Save Current Location", "View Favorites")
 
