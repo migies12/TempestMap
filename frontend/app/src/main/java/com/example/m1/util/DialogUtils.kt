@@ -8,9 +8,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.FragmentManager
 import com.example.m1.FavoriteLocation
 import com.example.m1.FavoriteLocationManager
 import com.example.m1.R
+import com.example.m1.fragments.ProfileFragment
+import com.example.m1.fragments.SignInFragment
 import com.mapbox.geojson.Point
 
 data class SaveLocationDialogState(
@@ -105,12 +108,16 @@ class DialogUtils {
         favoriteLocationManager: FavoriteLocationManager,
         toggleMarkerPlacementMode: () -> Unit,
         navigateToFavoritesFragment: () -> Unit,
-        lastKnownLocation: Location?
+        lastKnownLocation: Location?,
+        parentFragmentManager: FragmentManager
     ) {
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
         if (!isSignedin) {
             Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, SignInFragment())
+                .commit()
             return
         }
 

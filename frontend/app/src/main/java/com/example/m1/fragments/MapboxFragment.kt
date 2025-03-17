@@ -38,6 +38,7 @@ import com.example.m1.util.LocationHandler
 import com.example.m1.util.MarkerUtils
 import com.example.m1.util.DialogUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -183,7 +184,7 @@ class MapboxFragment : Fragment(), LocationListener {
 
         // Setup FAB click listener
         fabAddMarker.setOnClickListener {
-            dialogUtils.showOptionsDialog(requireContext(), favoriteLocationManager, this::toggleMarkerPlacementMode, this::navigateToFavoritesFragment, lastKnownLocation)
+            dialogUtils.showOptionsDialog(requireContext(), favoriteLocationManager, this::toggleMarkerPlacementMode, this::navigateToFavoritesFragment, lastKnownLocation, parentFragmentManager)
         }
 
         // Setup other event listeners
@@ -233,7 +234,7 @@ class MapboxFragment : Fragment(), LocationListener {
         val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isSignedin = sharedPreferences.getBoolean("isSignedIn", false)
         if (!isSignedin) {
-            Toast.makeText(context, "You must be logged in to add markers.", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "You must be logged in to add markers.", Snackbar.LENGTH_SHORT).show()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, SignInFragment())
                 .commit()

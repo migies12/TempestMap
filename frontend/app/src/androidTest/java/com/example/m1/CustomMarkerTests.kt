@@ -124,6 +124,8 @@ class CustomMarkerTests {
 
         onView(withId(R.id.fabAddMarker)).perform(click())
 
+        onView(withText("You must be logged in to add markers.")).check(matches(isDisplayed()))
+
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }
 
