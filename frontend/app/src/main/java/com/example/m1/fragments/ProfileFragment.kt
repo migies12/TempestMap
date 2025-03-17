@@ -144,10 +144,19 @@ class ProfileFragment : Fragment() {
 
         saveButton.setOnClickListener {
             if (validateAndSaveProfile()) {
-                ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
+                if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                    ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
+                } else {
+                    NetworkUtils.showNetworkErrorDialog(requireContext()) {
+                        if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                            ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
+                        } else {
+                            Toast.makeText(requireContext(), "Still no network connection. Please try again later.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
         }
-
         signOutButton.setOnClickListener {
             // Replace with signOut() if bugs
             val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)

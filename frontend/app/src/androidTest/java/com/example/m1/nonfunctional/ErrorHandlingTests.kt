@@ -29,18 +29,15 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.util.Log
-import java.io.IOException
-
-/*
- * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
- */
-
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+/*
+ * ENSURE YOU HAVE ANIMATIONS TURNED OFF! https://developer.android.com/training/testing/espresso/setup#set-up-environment
+ */
 
 /*
  * NFR 3: Ease of Use
@@ -285,15 +282,6 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc wifi disable")
             uiDevice.executeShellCommand("svc data disable")
             Thread.sleep(3000)
-        } catch (e: IOException) {
-            // Handle IO-related exceptions (e.g., issues with executing shell commands)
-            Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
-            throw IOException("Failed to disable network connectivity due to IO error", e)
-        } catch (e: SecurityException) {
-            // Handle cases where the app doesn't have permission to execute shell commands
-            Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
-            throw SecurityException("Failed to disable network connectivity due to security restrictions", e)
-        } 
             logEvent("simulateNoNetwork executed")
         } catch (e: Exception) {
             logEvent("simulateNoNetwork error: ${e.message}")
@@ -306,15 +294,6 @@ class ErrorHandlingTests {
             uiDevice.executeShellCommand("svc wifi enable")
             uiDevice.executeShellCommand("svc data enable")
             Thread.sleep(3000)
-        } catch (e: IOException) {
-            // Handle IO-related exceptions (e.g., issues with executing shell commands)
-            Log.e("ErrorHandlingTests", "IO error while disabling network: ${e.message}", e)
-            throw IOException("Failed to disable network connectivity due to IO error", e)
-        } catch (e: SecurityException) {
-            // Handle cases where the app doesn't have permission to execute shell commands
-            Log.e("ErrorHandlingTests", "Security exception while disabling network: ${e.message}", e)
-            throw SecurityException("Failed to disable network connectivity due to security restrictions", e)
-        } 
             logEvent("restoreNetwork executed")
         } catch (e: Exception) {
             logEvent("restoreNetwork error: ${e.message}")
