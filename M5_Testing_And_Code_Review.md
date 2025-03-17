@@ -199,43 +199,387 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
 
 ### 4.1. Location in Git of Front-end Test Suite:
 
-`frontend/src/androidTest/java/com/studygroupfinder/`
+These tests can be found in `frontend/app/src/androidTest/java/com/example/m1`. The files in which the tests are present are "CustomMarkerTests", "FavoriteLocationTests", and "NotificationTests".
 
 ### 4.2. Tests
 
-- **Use Case: Login**
+**It is crucial that for all of these tests, animations are turned off in developer options. For more information, please look [here](https://developer.android.com/training/testing/espresso/setup#set-up-environment)**
 
-  - **Expected Behaviors:**
-    | **Scenario Steps** | **Test Case Steps** |
-    | ------------------ | ------------------- |
-    | 1. The user opens â€œAdd Todo Itemsâ€ screen. | Open â€œAdd Todo Itemsâ€ screen. |
-    | 2. The app shows an input text field and an â€œAddâ€ button. The add button is disabled. | Check that the text field is present on screen.<br>Check that the button labelled â€œAddâ€ is present on screen.<br>Check that the â€œAddâ€ button is disabled. |
-    | 3a. The user inputs an ill-formatted string. | Input â€œ*^*^^OQ#$â€ in the text field. |
-    | 3a1. The app displays an error message prompting the user for the expected format. | Check that a dialog is opened with the text: â€œPlease use only alphanumeric charactersâ€. |
-    | 3. The user inputs a new item for the list and the add button becomes enabled. | Input â€œbuy milkâ€ in the text field.<br>Check that the button labelled â€œaddâ€ is enabled. |
-    | 4. The user presses the â€œAddâ€ button. | Click the button labelled â€œaddâ€. |
-    | 5. The screen refreshes and the new item is at the bottom of the todo list. | Check that a text box with the text â€œbuy milkâ€ is present on screen.<br>Input â€œbuy chocolateâ€ in the text field.<br>Click the button labelled â€œaddâ€.<br>Check that two text boxes are present on the screen with â€œbuy milkâ€ on top and â€œbuy chocolateâ€ at the bottom. |
-    | 5a. The list exceeds the maximum todo-list size. | Repeat steps 3 to 5 ten times.<br>Check that a dialog is opened with the text: â€œYou have too many items, try completing one firstâ€. |
-
-  - **Test Logs:**
-    ```
-    [Placeholder]
-    ```
-
-- **Use Case: ...**
+- **Use Case: Add Custom Marker**
 
   - **Expected Behaviors:**
 
     | **Scenario Steps** | **Test Case Steps** |
     | ------------------ | ------------------- |
-    | ...                | ...                 |
+    | 1. User clicks the "Add Marker" button | Navigate to the map page, click the button to open dialog selection. Select options and input title for marker |
+    | 1a. User is not Registered | Change sharedPreferences to simulate a signed-out user |
+    | 1a1. System displays an error message: "You must be logged in to add markers" | Ensure AlertDialog appears on the screen |
+    | 1a2. User is redirected to login screen | Click yes on the log-in prompt, and ensure the sign-in page is loaded |
+    | 2. User places marker on the map | Click on the screen |
+    | 3. User selects a marker type (safehouse, resource point, danger) and enters a short description | Enter a description for the marker |
+    | 4. User selects "Create Marker" | Click the "Create Marker" button. |
+    | 5. System saves the marker and displays it on the map | Click in the same spot we clicked to set the marker, and assert that we open the marker matching the description we entered earlier |
 
   - **Test Logs:**
     ```
-    [Placeholder for Espresso test execution logs]
+    2025-03-17 13:22:54: Launching CustomMarkerTests on 'Medium Phone API 35.
+    Running tests
+    Executing tasks: [:app:connectedDebugAndroidTest] in project C:\Users\User\AndroidStudioProjects\TempestMap2\frontend
+
+
+    > Configure project :app
+    AGPBI: {"kind":"warning","text":"The option setting 'android.experimental.testOptions.emulatorSnapshots.maxSnapshotsForTestFailures=0' is experimental.","sources":[{}]}
+
+    > Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+    > Task :app:preBuild UP-TO-DATE
+    > Task :app:preDebugBuild UP-TO-DATE
+    > Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+    > Task :app:generateDebugResValues UP-TO-DATE
+    > Task :app:generateDebugResources UP-TO-DATE
+    > Task :app:processDebugGoogleServices UP-TO-DATE
+    > Task :app:mergeDebugResources UP-TO-DATE
+    > Task :app:packageDebugResources UP-TO-DATE
+    > Task :app:parseDebugLocalResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+    > Task :app:generateDebugBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAarMetadata UP-TO-DATE
+    > Task :app:mapDebugSourceSetPaths UP-TO-DATE
+    > Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+    > Task :app:extractDeepLinksDebug UP-TO-DATE
+    > Task :app:processDebugMainManifest UP-TO-DATE
+    > Task :app:processDebugManifest UP-TO-DATE
+    > Task :app:processDebugManifestForPackage UP-TO-DATE
+    > Task :app:processDebugResources UP-TO-DATE
+    > Task :app:kaptGenerateStubsDebugKotlin UP-TO-DATE
+    > Task :app:kaptDebugKotlin UP-TO-DATE
+    > Task :app:compileDebugKotlin UP-TO-DATE
+    > Task :app:javaPreCompileDebug UP-TO-DATE
+    > Task :app:compileDebugJavaWithJavac UP-TO-DATE
+    > Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+    > Task :app:preDebugAndroidTestBuild SKIPPED
+    > Task :app:dataBindingMergeDependencyArtifactsDebugAndroidTest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResources UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebugAndroidTest UP-TO-DATE
+    > Task :app:processDebugAndroidTestManifest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+    > Task :app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+    > Task :app:processDebugAndroidTestResources UP-TO-DATE
+    > Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeDebugShaders UP-TO-DATE
+    > Task :app:compileDebugShaders NO-SOURCE
+    > Task :app:generateDebugAssets UP-TO-DATE
+    > Task :app:mergeDebugAssets UP-TO-DATE
+    > Task :app:compressDebugAssets UP-TO-DATE
+    > Task :app:processDebugJavaRes UP-TO-DATE
+    > Task :app:mergeDebugJavaResource UP-TO-DATE
+    > Task :app:checkDebugDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebug UP-TO-DATE
+    > Task :app:mergeLibDexDebug UP-TO-DATE
+    > Task :app:dexBuilderDebug UP-TO-DATE
+    > Task :app:mergeProjectDexDebug UP-TO-DATE
+    > Task :app:mergeDebugJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugNativeLibs UP-TO-DATE
+    > Task :app:stripDebugDebugSymbols UP-TO-DATE
+    > Task :app:validateSigningDebug UP-TO-DATE
+    > Task :app:writeDebugAppMetadata UP-TO-DATE
+    > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+    > Task :app:packageDebug UP-TO-DATE
+    > Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestShaders UP-TO-DATE
+    > Task :app:compileDebugAndroidTestShaders NO-SOURCE
+    > Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:compressDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+    > Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+    > Task :app:validateSigningDebugAndroidTest UP-TO-DATE
+    > Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+
+    > Task :app:kaptGenerateStubsDebugAndroidTestKotlin
+    w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+    > Task :app:kaptDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:compileDebugAndroidTestKotlin
+    > Task :app:compileDebugAndroidTestJavaWithJavac UP-TO-DATE
+    > Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+    > Task :app:dexBuilderDebugAndroidTest
+    > Task :app:mergeProjectDexDebugAndroidTest
+    > Task :app:packageDebugAndroidTest
+    > Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+    Connected to process 12482 on device 'Medium_Phone_API_35 [emulator-5554]'.
+
+    > Task :app:connectedDebugAndroidTest
+    Starting 2 tests on Medium_Phone_API_35(AVD) - 15
+
+    Medium_Phone_API_35(AVD) - 15 Tests 0/2 completed. (0 skipped) (0 failed)
+    Medium_Phone_API_35(AVD) - 15 Tests 1/2 completed. (0 skipped) (0 failed)
+    Medium_Phone_API_35(AVD) - 15 Tests 2/2 completed. (0 skipped) (0 failed)
+    Finished 2 tests on Medium_Phone_API_35(AVD) - 15
+
+    BUILD SUCCESSFUL in 43s
+    74 actionable tasks: 6 executed, 68 up-to-date
+
+    Build Analyzer results available
     ```
 
-- **...**
+- **Use Case: Save Location to Favorites**
+
+  - **Expected Behaviors:**
+
+    | **Scenario Steps** | **Test Case Steps** |
+    | ------------------ | ------------------- |
+    | 1. User clicks on a location on the map | Navigate to the map page and click on the map |
+    | 1a. User is not registered | Change sharedPreferences to simulate a signed-out user |
+    | 1a1. System displays an error message: "Location saved to Favorites" | Assert AlertDialog appear on screen |
+    | 1a2. User is redirected to login screen | Click yes on the log-in prompt, and ensure the sign-in page is loaded |
+    | 2. User clicks the "Save to Favorites" button  | Click on the Save to Favorites button |
+    | 3. System saves the location to the user's Favorites list | Check user's Favorites list to ensure test marker has been added |
+    | 4. User receives a confirmation message: "Location saved to Favorites" | Ensure Snackbar apears on screen with text matching "Location saved to Favorites" |
+
+  - **Test Logs:**
+    ```
+    2025-03-17 13:33:14: Launching FavoriteLocationTests on 'Medium Phone API 35.
+    Running tests
+    Executing tasks: [:app:connectedDebugAndroidTest] in project C:\Users\User\AndroidStudioProjects\TempestMap2\frontend
+
+
+    > Configure project :app
+    AGPBI: {"kind":"warning","text":"The option setting 'android.experimental.testOptions.emulatorSnapshots.maxSnapshotsForTestFailures=0' is experimental.","sources":[{}]}
+
+    > Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+    > Task :app:preBuild UP-TO-DATE
+    > Task :app:preDebugBuild UP-TO-DATE
+    > Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+    > Task :app:generateDebugResValues UP-TO-DATE
+    > Task :app:generateDebugResources UP-TO-DATE
+    > Task :app:processDebugGoogleServices UP-TO-DATE
+    > Task :app:mergeDebugResources UP-TO-DATE
+    > Task :app:packageDebugResources UP-TO-DATE
+    > Task :app:parseDebugLocalResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+    > Task :app:generateDebugBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAarMetadata UP-TO-DATE
+    > Task :app:mapDebugSourceSetPaths UP-TO-DATE
+    > Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+    > Task :app:extractDeepLinksDebug UP-TO-DATE
+    > Task :app:processDebugMainManifest UP-TO-DATE
+    > Task :app:processDebugManifest UP-TO-DATE
+    > Task :app:processDebugManifestForPackage UP-TO-DATE
+    > Task :app:processDebugResources UP-TO-DATE
+    > Task :app:kaptGenerateStubsDebugKotlin UP-TO-DATE
+    > Task :app:kaptDebugKotlin UP-TO-DATE
+    > Task :app:compileDebugKotlin UP-TO-DATE
+    > Task :app:javaPreCompileDebug UP-TO-DATE
+    > Task :app:compileDebugJavaWithJavac UP-TO-DATE
+    > Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+    > Task :app:preDebugAndroidTestBuild SKIPPED
+    > Task :app:dataBindingMergeDependencyArtifactsDebugAndroidTest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResources UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebugAndroidTest UP-TO-DATE
+    > Task :app:processDebugAndroidTestManifest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+    > Task :app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+    > Task :app:processDebugAndroidTestResources UP-TO-DATE
+    > Task :app:kaptGenerateStubsDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:kaptDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:compileDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+    > Task :app:compileDebugAndroidTestJavaWithJavac UP-TO-DATE
+    > Task :app:mergeDebugShaders UP-TO-DATE
+    > Task :app:compileDebugShaders NO-SOURCE
+    > Task :app:generateDebugAssets UP-TO-DATE
+    > Task :app:mergeDebugAssets UP-TO-DATE
+    > Task :app:compressDebugAssets UP-TO-DATE
+    > Task :app:processDebugJavaRes UP-TO-DATE
+    > Task :app:mergeDebugJavaResource UP-TO-DATE
+    > Task :app:checkDebugDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebug UP-TO-DATE
+    > Task :app:mergeLibDexDebug UP-TO-DATE
+    > Task :app:dexBuilderDebug UP-TO-DATE
+    > Task :app:mergeProjectDexDebug UP-TO-DATE
+    > Task :app:mergeDebugJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugNativeLibs UP-TO-DATE
+    > Task :app:stripDebugDebugSymbols UP-TO-DATE
+    > Task :app:validateSigningDebug UP-TO-DATE
+    > Task :app:writeDebugAppMetadata UP-TO-DATE
+    > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+    > Task :app:packageDebug UP-TO-DATE
+    > Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestShaders UP-TO-DATE
+    > Task :app:compileDebugAndroidTestShaders NO-SOURCE
+    > Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:compressDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+    > Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+    > Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+    > Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+    > Task :app:validateSigningDebugAndroidTest UP-TO-DATE
+    > Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+    > Task :app:packageDebugAndroidTest UP-TO-DATE
+    > Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+    Connected to process 13980 on device 'Medium_Phone_API_35 [emulator-5554]'.
+
+    > Task :app:connectedDebugAndroidTest
+    Starting 2 tests on Medium_Phone_API_35(AVD) - 15
+
+    Medium_Phone_API_35(AVD) - 15 Tests 0/2 completed. (0 skipped) (0 failed)
+    Medium_Phone_API_35(AVD) - 15 Tests 1/2 completed. (0 skipped) (0 failed)
+    Finished 2 tests on Medium_Phone_API_35(AVD) - 15
+
+    BUILD SUCCESSFUL in 34s
+    74 actionable tasks: 1 executed, 73 up-to-date
+
+    Build Analyzer results available
+    ```
+
+- **Use Case: Enable Warning Notifications**
+
+  - **Expected Behaviors:**
+
+    | **Scenario Steps** | **Test Case Steps** |
+    | ------------------ | ------------------- |
+    | 1. User navigates to the "Profile" page | Navigate to the Profile page with the nav bar |
+    | 2. User clicks the "Enable Notifications" button | Scroll down to the bottom of the page and press the "Enable Notifications" button |
+    | 2a. User has not completed profile creation | Change sharedPreferences to simulate a user that has not completed the sign-in process (username is null) |
+    | 2a1. System displays a message prompting user to complete profile creation | Assert Snackbar prompt appears |
+    | 2a2. User is not prompted to enable any permissions  | Assert no dialogs are present |
+    | 3. System prompts the user to enable location services | Ensure location permission dialog is present |
+    | 3a. User declines to enable location services | Click on the negative option in location permission dialog |
+    | 3a1. System displays an error message: "Location services are required for notifications" | Ensure Snackbar apears on screen with text matching "Location services are required for notifications" |
+    | 3a2. User is not prompted to enable further permissions | Ensure notification permission dialog is not present on the screen |
+    | 4. User enables location services and push notifications | Click "While using the app" for location permissions, and "Allow" for notifications |
+    | 4a. User declines to enable push notifications | Accept location permissions, but click "Don't Allow" for notification permissions |
+    | 4a1. System displays an error message: "Please enable notifications for up to date weather info" | Ensure Snackbar apears on screen with text matching "Please enable notifications for up to date weather info" |
+    | 4a2. User is returned to the Profile page, with notification permissions not enabled | Assert permissions are not enabled |
+
+  - **Test Logs:**
+    ```
+    2025-03-17 13:36:24: Launching NotificationTests on 'Medium Phone API 35.
+    Running tests
+    Executing tasks: [:app:connectedDebugAndroidTest] in project C:\Users\User\AndroidStudioProjects\TempestMap2\frontend
+
+
+    > Configure project :app
+    AGPBI: {"kind":"warning","text":"The option setting 'android.experimental.testOptions.emulatorSnapshots.maxSnapshotsForTestFailures=0' is experimental.","sources":[{}]}
+
+    > Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+    > Task :app:preBuild UP-TO-DATE
+    > Task :app:preDebugBuild UP-TO-DATE
+    > Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+    > Task :app:generateDebugResValues UP-TO-DATE
+    > Task :app:generateDebugResources UP-TO-DATE
+    > Task :app:processDebugGoogleServices UP-TO-DATE
+    > Task :app:mergeDebugResources UP-TO-DATE
+    > Task :app:packageDebugResources UP-TO-DATE
+    > Task :app:parseDebugLocalResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+    > Task :app:generateDebugBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAarMetadata UP-TO-DATE
+    > Task :app:mapDebugSourceSetPaths UP-TO-DATE
+    > Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+    > Task :app:extractDeepLinksDebug UP-TO-DATE
+    > Task :app:processDebugMainManifest UP-TO-DATE
+    > Task :app:processDebugManifest UP-TO-DATE
+    > Task :app:processDebugManifestForPackage UP-TO-DATE
+    > Task :app:processDebugResources UP-TO-DATE
+    > Task :app:kaptGenerateStubsDebugKotlin UP-TO-DATE
+    > Task :app:kaptDebugKotlin UP-TO-DATE
+    > Task :app:compileDebugKotlin UP-TO-DATE
+    > Task :app:javaPreCompileDebug UP-TO-DATE
+    > Task :app:compileDebugJavaWithJavac UP-TO-DATE
+    > Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+    > Task :app:preDebugAndroidTestBuild SKIPPED
+    > Task :app:dataBindingMergeDependencyArtifactsDebugAndroidTest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+    > Task :app:generateDebugAndroidTestResources UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestResources UP-TO-DATE
+    > Task :app:dataBindingGenBaseClassesDebugAndroidTest UP-TO-DATE
+    > Task :app:processDebugAndroidTestManifest UP-TO-DATE
+    > Task :app:generateDebugAndroidTestBuildConfig UP-TO-DATE
+    > Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+    > Task :app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+    > Task :app:processDebugAndroidTestResources UP-TO-DATE
+    > Task :app:kaptGenerateStubsDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:kaptDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:compileDebugAndroidTestKotlin UP-TO-DATE
+    > Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+    > Task :app:compileDebugAndroidTestJavaWithJavac UP-TO-DATE
+    > Task :app:mergeDebugShaders UP-TO-DATE
+    > Task :app:compileDebugShaders NO-SOURCE
+    > Task :app:generateDebugAssets UP-TO-DATE
+    > Task :app:mergeDebugAssets UP-TO-DATE
+    > Task :app:compressDebugAssets UP-TO-DATE
+    > Task :app:processDebugJavaRes UP-TO-DATE
+    > Task :app:mergeDebugJavaResource UP-TO-DATE
+    > Task :app:checkDebugDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebug UP-TO-DATE
+    > Task :app:mergeLibDexDebug UP-TO-DATE
+    > Task :app:dexBuilderDebug UP-TO-DATE
+    > Task :app:mergeProjectDexDebug UP-TO-DATE
+    > Task :app:mergeDebugJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugNativeLibs UP-TO-DATE
+    > Task :app:stripDebugDebugSymbols UP-TO-DATE
+    > Task :app:validateSigningDebug UP-TO-DATE
+    > Task :app:writeDebugAppMetadata UP-TO-DATE
+    > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+    > Task :app:packageDebug UP-TO-DATE
+    > Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestShaders UP-TO-DATE
+    > Task :app:compileDebugAndroidTestShaders NO-SOURCE
+    > Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:compressDebugAndroidTestAssets UP-TO-DATE
+    > Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+    > Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+    > Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+    > Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+    > Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+    > Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+    > Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+    > Task :app:validateSigningDebugAndroidTest UP-TO-DATE
+    > Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+    > Task :app:packageDebugAndroidTest UP-TO-DATE
+    > Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+    Connected to process 14563 on device 'Medium_Phone_API_35 [emulator-5554]'.
+
+    > Task :app:connectedDebugAndroidTest
+    Starting 1 tests on Medium_Phone_API_35(AVD) - 15
+
+    Medium_Phone_API_35(AVD) - 15 Tests 0/1 completed. (0 skipped) (0 failed)
+    Finished 1 tests on Medium_Phone_API_35(AVD) - 15
+
+    BUILD SUCCESSFUL in 37s
+    74 actionable tasks: 1 executed, 73 up-to-date
+
+    Build Analyzer results available
+    ```
 
 ---
 
