@@ -14,19 +14,19 @@
 
 #### 2.1.1. Tests
 
-| **Interface**                 | **Group Location (No Mocks)**          | **Group Location (With Mocks)**       | **Mocked Components**                       |
-| ----------------------------- | -------------------------------------- | ------------------------------------- | ------------------------------------------- |
-| **GET /**                     | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | None                                        |
-| **POST /test_cron**           | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | axios, External Disaster API                |
-| **GET /event**                | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB scan                               |
-| **POST /event/custom**        | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB put, uuid generation               |
-| **GET /event/firms**          | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | axios, csv-parser                           |
-| **POST /comment/:event_id**   | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB update, uuid generation            |
-| **GET /comment/:event_id**    | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB get                                |
-| **DELETE /comment/:event_id** | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB delete & update operations         |
-| **POST /user**                | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB put, Firebase Messaging            |
-| **GET /user/:user_id**        | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB get                                |
-| **POST /user/locations**      | `tests/mock/backend.test.js`           | `tests/unmock/backend.test.js`        | DynamoDB update                             |
+| **Interface**                 | **Group Location (No Mocks)** | **Group Location (With Mocks)** | **Mocked Components**               |
+| ----------------------------- | ----------------------------- | ------------------------------- | ----------------------------------- |
+| **GET /**                     | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | None                                |
+| **POST /test_cron**           | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | axios, External Disaster API        |
+| **GET /event**                | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB scan                       |
+| **POST /event/custom**        | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB put, uuid generation       |
+| **GET /event/firms**          | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | axios, csv-parser                   |
+| **POST /comment/:event_id**   | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB update, uuid generation    |
+| **GET /comment/:event_id**    | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB get                        |
+| **DELETE /comment/:event_id** | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB delete & update operations |
+| **POST /user**                | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB put, Firebase Messaging    |
+| **GET /user/:user_id**        | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB get                        |
+| **POST /user/locations**      | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB update                     |
 
 #### 2.1.2. Commit Hash Where Tests Run
 
@@ -36,49 +36,48 @@
 
 **Clone the Repository**:
 
-   - Open your terminal and run:
-     ```
-     git clone https://github.com/migies12/TempestMap.git
-     cd Tempest/Backend
-     ```
-   - For General (Mock + Unmock)
-     ```
-     npm test
-     ```
-   - For Mock ONLY
-     ```
-     npm run test-mock
-     ```
-   - For Unmock ONLY
-     ```
-     npm run test-unmock
-     ```
+- Open your terminal and run:
+  ```
+  git clone https://github.com/migies12/TempestMap.git
+  cd Tempest/Backend
+  ```
+- For General (Mock + Unmock)
+  ```
+  npm test
+  ```
+- For Mock ONLY
+  ```
+  npm run test-mock
+  ```
+- For Unmock ONLY
+  ```
+  npm run test-unmock
+  ```
 
 ### 2.2. GitHub Actions Configuration Location
 
 `~/.github/workflows/backend-test.yml`
 
 ### 2.3. Jest Coverage Report Screenshots With Mocks
-The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-451,500,521,529-575,584-616,624-625. Many of these uncovered lines include coverage mistake from jest, untestable routes such as server side errors, and omission of helper function testing. Find below more information on the rationale. 
 
-| **Uncover Lines** | **Context**                                                                                             | **Rationale**                                                                                                                      |
-|-------------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| 29-30             | **GET /**, returns `500` on error.                                                                      | Unable to simulate a server-side error in Jest tests for the `/` endpoint           |
-| 130-131           | **POST /test_cron**, returns `500` on failure calling `fetchDisasterData()`.                           | Unable to fail the csv parsing as it is a library function                      |
-| 189               | **GET /event/:eventid**, returns `400` on missing event_id                                                   | Jest fail to cover, despite tested in backend.test.js:216         |
-| 283               | **POST /user**                | Line to replace user_id with uuidv() if not passed                                                |
-| 342               | **GET /user/:user_id**, returns `500` on DB retrieval error.                                       | Jest fail to cover, despite tested in backend.test.js:434         |                    |
-| 410-418           | **Helper Function:deleteEvents**            |                                 |
-| 428-451           | **Helper Function:appendEvents**     |                                |
-| 529-575           | **Helper Function:notifyUsers`** |            |
-| 584-616           |  **Helper Function:dangerLevelCalc**     |       |
-| 624-625           | **Server startup**, `app.listen`.                                                           | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered.    |
+The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-451,500,521,529-575,584-616,624-625. Many of these uncovered lines include coverage mistake from jest, untestable routes such as server side errors, and omission of helper function testing. Find below more information on the rationale.
 
+| **Uncover Lines** | **Context**                                                                  | **Rationale**                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 29-30             | **GET /**, returns `500` on error.                                           | Unable to simulate a server-side error in Jest tests for the `/` endpoint                                                      |
+| 130-131           | **POST /test_cron**, returns `500` on failure calling `fetchDisasterData()`. | Unable to fail the csv parsing as it is a library function                                                                     |
+| 189               | **GET /event/:eventid**, returns `400` on missing event_id                   | Jest fail to cover, despite tested in backend.test.js:216                                                                      |
+| 283               | **POST /user**                                                               | Line to replace user_id with uuidv() if not passed                                                                             |
+| 342               | **GET /user/:user_id**, returns `500` on DB retrieval error.                 | Jest fail to cover, despite tested in backend.test.js:434                                                                      |
+| 410-418           | **Helper Function:deleteEvents**                                             |                                                                                                                                |
+| 428-451           | **Helper Function:appendEvents**                                             |                                                                                                                                |
+| 529-575           | **Helper Function:notifyUsers**                                              |                                                                                                                                |
+| 584-616           | **Helper Function:dangerLevelCalc**                                          |                                                                                                                                |
+| 624-625           | **Server startup**, `app.listen`.                                            | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered. |
 
 ![image](documentation/images/jest/mock.png)
 
 ### 2.4. Jest Coverage Report Screenshots Without Mocks
-
 
 ![image](documentation/images/jest/unmock.png)
 
@@ -88,25 +87,16 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
 
 ---
 
-## 3. Back-end Test Specification: Tests of Non-Functional Requirements
+## 3. Tests of Non-Functional Requirements
 
 ### 3.1. Test Locations in Git
 
 | **Non-Functional Requirement**   | **Location in Git**                                                                                                                                                                                                             |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Performance (Response Time)**  | [`tests/nonfunctional/response_time.test.js`](#)                                                                                                                                                                                |
 | **Accessibility Compliance**     | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/AccessibilityTest.kt)   |
 | **Ease of Use (Error Handling)** | [`frontend/app/src/androidTest/java/com/example/m1/nonfunctional/ErrorHandlingTests.kt`](https://github.com/migies12/TempestMap/blob/main/frontend/app/src/androidTest/java/com/example/m1/nonfunctional/ErrorHandlingTests.kt) |
 
 ### 3.2. Test Verification and Logs
-
-- **Performance (Response Time)**
-
-  - **Verification:** This test suite simulates multiple concurrent API calls using Jest along with a load-testing utility to mimic real-world user behavior. The focus is on key endpoints such as user login and study group search to ensure that each call completes within the target response time of 2 seconds under normal load. The test logs capture metrics such as average response time, maximum response time, and error rates. These logs are then analyzed to identify any performance bottlenecks, ensuring the system can handle expected traffic without degradation in user experience.
-  - **Log Output**
-    ```
-    [Placeholder for log]
-    ```
 
 - **Accessibility Compliance**
 
@@ -165,8 +155,43 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
     ```
 
 - **Ease of Use (Error Handling)**
-  - **Verification:**
+  - **Verification:** This test suite checks the error handling capabilities of the app, specifically in the profile sector. It does so by simulating a network failure on the Profile page and expects the app to display a clear error message with a retry option. Additionally, the test simulates invalid user input (e.g., an incorrect email format) to verify proper error handling for invalid user input cases. Lastly, whenever an error occurs, user input is expected to be preserved; the tests ensure that is the case. We run the test with detailed logs shown below to capture every step of the test.
   - **Log Output**
+  ```
+  2025-03-16 20:24:01.577 17772-17816 TestRunner              com.example.m1                       I  started: testFormDataPreservationOnError(com.example.m1.nonfunctional.ErrorHandlingTests)
+  2025-03-16 20:24:02.594 17772-17816 ErrorHandlingTests      com.example.m1                       D  Starting ErrorHandlingTests setup
+  2025-03-16 20:24:02.666 17772-17816 ErrorHandlingTests      com.example.m1                       D  UserPrefs set
+  2025-03-16 20:24:02.669 17772-17816 ErrorHandlingTests      com.example.m1                       D  Starting testFormDataPreservationOnError
+  2025-03-16 20:24:03.433 17772-17816 ErrorHandlingTests      com.example.m1                       D  Clicked nav_profile
+  2025-03-16 20:24:08.511 17772-17816 ErrorHandlingTests      com.example.m1                       D  Profile info filled
+  2025-03-16 20:24:08.526 17772-17816 ErrorHandlingTests      com.example.m1                       D  Filled profile info
+  2025-03-16 20:24:12.197 17772-17816 ErrorHandlingTests      com.example.m1                       D  simulateNoNetwork executed
+  2025-03-16 20:24:12.217 17772-17816 ErrorHandlingTests      com.example.m1                       D  Network disabled
+  2025-03-16 20:24:15.320 17772-17816 ErrorHandlingTests      com.example.m1                       D  Scrolled using UiScrollable
+  2025-03-16 20:24:15.322 17772-17816 ErrorHandlingTests      com.example.m1                       D  Scrolled to save button
+  2025-03-16 20:24:16.419 17772-17816 ErrorHandlingTests      com.example.m1                       D  Clicked save_button
+  2025-03-16 20:24:18.007 17772-17816 ErrorHandlingTests      com.example.m1                       D  Network error dialog displayed
+  2025-03-16 20:24:18.399 17772-17816 ErrorHandlingTests      com.example.m1                       D  Clicked Retry in dialog
+  2025-03-16 20:24:21.540 17772-17816 ErrorHandlingTests      com.example.m1                       D  Form fields verified via UiDevice
+  2025-03-16 20:24:21.544 17772-17816 ErrorHandlingTests      com.example.m1                       D  Form fields verified
+  2025-03-16 20:24:24.609 17772-17816 ErrorHandlingTests      com.example.m1                       D  restoreNetwork executed
+  2025-03-16 20:24:24.628 17772-17816 ErrorHandlingTests      com.example.m1                       D  Network restored
+  2025-03-16 20:24:26.665 17772-17816 ErrorHandlingTests      com.example.m1                       D  Completed testFormDataPreservationOnError
+  2025-03-16 20:24:26.892 17772-17816 TestRunner              com.example.m1                       I  finished: testFormDataPreservationOnError(com.example.m1.nonfunctional.ErrorHandlingTests)
+  2025-03-16 20:24:27.011 17772-17816 TestRunner              com.example.m1                       I  started: testInvalidInputHandling(com.example.m1.nonfunctional.ErrorHandlingTests)
+  2025-03-16 20:24:27.371 17772-17816 ErrorHandlingTests      com.example.m1                       D  Starting ErrorHandlingTests setup
+  2025-03-16 20:24:27.380 17772-17816 ErrorHandlingTests      com.example.m1                       D  UserPrefs set
+  2025-03-16 20:24:27.382 17772-17816 ErrorHandlingTests      com.example.m1                       D  Starting testInvalidInputHandling
+  2025-03-16 20:24:27.798 17772-17816 ErrorHandlingTests      com.example.m1                       D  Clicked nav_profile
+  2025-03-16 20:24:30.687 17772-17816 ErrorHandlingTests      com.example.m1                       D  Entered invalid email
+  2025-03-16 20:24:32.066 17772-17816 ErrorHandlingTests      com.example.m1                       D  Initial save_button click failed, trying alternate method
+  2025-03-16 20:24:34.810 17772-17816 ErrorHandlingTests      com.example.m1                       D  UiDevice clicked Save Profile
+  2025-03-16 20:24:37.876 17772-17816 ErrorHandlingTests      com.example.m1                       D  Re-entered valid email
+  2025-03-16 20:24:39.433 17772-17816 ErrorHandlingTests      com.example.m1                       D  Scrolled using UiScrollable
+  2025-03-16 20:24:40.418 17772-17816 ErrorHandlingTests      com.example.m1                       D  Clicked save_button after correcting email
+  2025-03-16 20:24:41.126 17772-17816 ErrorHandlingTests      com.example.m1                       D  Completed testInvalidInputHandling
+  2025-03-16 20:24:41.386 17772-17816 TestRunner              com.example.m1                       I  finished: testInvalidInputHandling(com.example.m1.nonfunctional.ErrorHandlingTests)
+  ```
 
 ---
 
@@ -218,25 +243,16 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
 
 ### 5.1. Commit Hash Where Codacy Ran
 
-`[Insert Commit SHA here]`
+`ece336e1ed38376fa29be0e3f096f0d7fe7e3633`
 
 ### 5.2. Unfixed Issues per Codacy Category
 
-_(Placeholder for screenshots of Codacyâ€™s Category Breakdown table in Overview)_
+![image](documentation/images/codacyReview.png)
 
 ### 5.3. Unfixed Issues per Codacy Code Pattern
 
-_(Placeholder for screenshots of Codacyâ€™s Issues page)_
+![image](documentation/images/codacyIssues.png)
 
 ### 5.4. Justifications for Unfixed Issues
 
-- **Code Pattern: [Usage of Deprecated Modules](#)**
-
-  1. **Issue**
-
-     - **Location in Git:** [`src/services/chatService.js#L31`](#)
-     - **Justification:** ...
-
-  2. ...
-
-- ...
+- _No Unfixed Issues to be Justified :))_

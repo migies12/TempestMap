@@ -31,6 +31,7 @@ import com.example.m1.util.NetworkUtils
 import com.example.m1.util.LocationHandler
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
@@ -148,11 +149,22 @@ class ProfileFragment : Fragment() {
         }
 
         signOutButton.setOnClickListener {
-            signOut()
+            // Replace with signOut() if bugs
+            val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            signInPrefs.edit().clear().apply()
+            Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, SignInFragment())
+                .commit()
         }
 
         notiButton.setOnClickListener {
-            handleNotificationPermissions()
+            if(sharedPreferences.getString(KEY_FULL_NAME, null) == null) {
+                Snackbar.make(requireView(), "Please complete profile creation first", Snackbar.LENGTH_SHORT).show()
+            }
+            else {
+                checkLocationPermissions()
+            }
         }
     }
 
@@ -222,38 +234,121 @@ class ProfileFragment : Fragment() {
     private fun handleNotificationPermissions() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            askNotificationPermission()
+            // Replace if else with askNotificationsPermission if something breaks.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            else {
+                Snackbar.make(requireView(), "Notifications enabled", Snackbar.LENGTH_SHORT).show()
+            }
         } else {
-            Toast.makeText(requireContext(), "Location permissions required for notifications.", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Location permissions required for notifications", Snackbar.LENGTH_SHORT).show()
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
         }
-    }
-
-    private fun askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            Toast.makeText(requireContext(), "Notifications enabled", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun signOut() {
-        val signInPrefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        signInPrefs.edit().clear().apply()
-        Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, SignInFragment())
-            .commit()
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", true)
+                .apply()
+
+            Snackbar.make(requireView(), "Notifications enabled", Snackbar.LENGTH_SHORT).show()
+
             ProfileApiHelper.sendProfileToServer(sharedPreferences, requireContext())
         } else {
-            Toast.makeText(requireContext(), "Please enable notifications for up to date weather info.", Toast.LENGTH_SHORT).show()
+            val sharedPrefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPrefs.edit()
+                .putBoolean("notificationsEnabled", false)
+                .apply()
+            Snackbar.make(requireView(), "Please enable notifications for up to date weather info", Snackbar.LENGTH_SHORT).show()
         }
     }
+
+    private fun checkLocationPermissions() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Location permissions granted")
+                handleNotificationPermissions()
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Log.d(TAG, "Request permission rationale true")
+                //Replace with showLocationPermissionRationale if bugs
+                val alertDialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Enable Location Permissions?")
+                    .setMessage("Location permissions are necessary for the map feature, and also for notifications. It is highly recommended you turn on location permissions.")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        // Request permissions
+                        dialog.dismiss()
+                        requestLocationPermissions()
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss() // Just close the dialog
+                        Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .create()
+
+                alertDialog.show()
+            }
+
+            else -> {
+                Log.d(TAG, "Requesting location permissions")
+                requestLocationPermissions()
+            }
+        }
+    }
+
+    private val requestLocationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+            // We only care about fineLocation
+
+            if (fineLocationGranted) {
+                handleNotificationPermissions()
+                Log.d("Permission", "Location permission granted")
+            } else {
+                Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
+                Log.d("Permission", "Location permission denied")
+            }
+        }
+
+    private fun requestLocationPermissions() {
+        requestLocationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 0) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                handleNotificationPermissions()
+                Log.d("Permission", "Location permission granted")
+            } else {
+                // Permission denied
+                Snackbar.make(requireView(), "Location services are required for notifications", Snackbar.LENGTH_SHORT).show()
+                Log.d("Permission", "Location permission denied")
+            }
+        }
+    }
+
 }
 
 

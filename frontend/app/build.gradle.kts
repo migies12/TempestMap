@@ -112,5 +112,4 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0")
     androidTestImplementation("org.hamcrest:hamcrest:2.2")
 
-
 }

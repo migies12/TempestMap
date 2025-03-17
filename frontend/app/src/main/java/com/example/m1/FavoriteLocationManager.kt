@@ -3,6 +3,8 @@ package com.example.m1
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.m1.FavoriteLocation
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
@@ -46,10 +48,12 @@ class FavoriteLocationManager(private val context: Context) {
             true
         } catch (e: JsonSyntaxException) {
             // Handle JSON serialization errors
+            Toast.makeText(context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
             Log.e("FavoriteLocationManager", "Failed to serialize favorite locations to JSON", e)
             false
         } catch (e: IllegalStateException) {
             // Handle invalid state (e.g., SharedPreferences is not available)
+            Toast.makeText(context, "Failed to save location. Please try again later.", Toast.LENGTH_SHORT).show()
             Log.e("FavoriteLocationManager", "Invalid state while saving favorite location", e)
             false
         }

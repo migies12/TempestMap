@@ -27,6 +27,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
@@ -58,6 +59,8 @@ class CustomMarkerTests {
             .commit()
 
         onView(withId(R.id.nav_map)).perform(click())
+
+        Thread.sleep(5000) // Let map load
 
         onView(withId(R.id.fabAddMarker)).perform(click())
 
@@ -122,29 +125,15 @@ class CustomMarkerTests {
 
         onView(withId(R.id.nav_map)).perform(click())
 
+        Thread.sleep(5000) // Let map load
+
         onView(withId(R.id.fabAddMarker)).perform(click())
+
+        onView(withText("Sign In Required")).check(matches(isDisplayed())) // Confirm 1a dialog exists
+
+        onView(withText("YES")).perform(click())
 
         onView(withId(R.id.signInButton)).check(matches(isDisplayed())) // Verify we are redirected to sign-in page
     }
-}
-
-/*
-class ToastMatcher : TypeSafeMatcher<Root?>() {
-    override fun describeTo(description: Description?) {
-        description?.appendText("is toast")
-    }
-
-    override fun matchesSafely(item: Root?): Boolean {
-        val type: Int? = item?.windowLayoutParams?.get()?.type
-        if (type == WindowManager.LayoutParams.TYPE_TOAST) {
-            val windowToken: IBinder = item.getDecorView().getWindowToken()
-            val appToken: IBinder = item.getDecorView().getApplicationWindowToken()
-            if (windowToken === appToken) {
-                return true
-            }
-        }
-        return false
-    }
 
 }
-*/
