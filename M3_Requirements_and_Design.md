@@ -454,6 +454,8 @@ M4: Setup AWS Services: EC2, DyanomDB, IAM (5 hr), Created all backend endpoints
 M3: Project Description, Use Case Diagram, Functional Requirements 2-6,  Sequence Diagrams 1-6, Help in Non-Functional Requirements. 
 
 M4: Connect to AMBEED weather API (5h), Connect Mapbox API to frontend (5h), Setup Coroutine for API fetching (1h), Click Listener for Weather Pings (3h), Add home Marker (1h), add Custom Marker (2h), Redesign Project Requirements (18h), additional organizational and miscellaneous code (10h)
+
+M5: All codacy fixed (7h), Peer review (2h)
 </ul>
 
 - Armaan Braich:
