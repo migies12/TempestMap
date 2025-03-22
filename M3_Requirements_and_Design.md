@@ -462,5 +462,7 @@ M5: All codacy fixed (7h), Peer review (2h)
 <ul>
 M3: Wrote non-functional requirements and design. Assisted in writing main project complexity design, as well as determining key actors and use cases. Additionally wrote some of the functional requirements and flows. Helped to fix grammar issues.
 
-M4: Designed and implemented the Google Sign-In and Authentication flow (6 hrs). Added notification support on the front and back-end (6 hrs). Updated ProfileFragment and /user endpoint to match new functionality (3 hrs). Updated notifications to trigger based on danger level (3 hrs). 
+M4: Designed and implemented the Google Sign-In and Authentication flow (6 hrs). Added notification support on the front and back-end (6 hrs). Updated ProfileFragment and /user endpoint to match new functionality (3 hrs). Updated notifications to trigger based on danger level (3 hrs).
+
+M5: Changed use-case flows to accurately represent application flow (1 hr). Wrote tests for 3 functional requirements (4 hrs). Updated code functionality to match requirements/use-cases (7hrs). Wrote documentation for functional requirement tests (< 1hr)
 </ul>
