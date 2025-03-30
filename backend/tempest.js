@@ -103,7 +103,7 @@ app.post('/user_marker', async (req, res) => {
     res.status(201).json({ message: 'User marker created successfully', user_marker: newUserMarker });
   } catch (error) {
     console.error('Error creating user marker:', error);
-    res.status(500).json({ error: 'Error creating user marker' });
+    res.status(500).json({ error: 'Error creating user marker'+error });
   }
 });
 
