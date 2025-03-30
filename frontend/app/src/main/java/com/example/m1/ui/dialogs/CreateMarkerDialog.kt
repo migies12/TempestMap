@@ -8,11 +8,12 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.lifecycleScope
 import com.example.m1.R
 import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.viewmodels.MapViewModel
 import com.mapbox.geojson.Point
+import kotlinx.coroutines.launch
 
 /**
  * Dialog for creating custom markers
@@ -68,30 +69,44 @@ class CreateMarkerDialog(
         longitude: Double,
         dialog: AlertDialog
     ) {
-
         val markerType = spinnerMarkerType.selectedItem.toString()
         val description = etDescription.text.toString().trim()
 
         if (description.isEmpty()) {
             Toast.makeText(context, "Please enter a description", Toast.LENGTH_SHORT).show()
-            return // Exit the function early if description is empty
+            return
         }
 
-        // Create marker through ViewModel
-        val marker = viewModel.addUserMarker(
-            type = markerType,
-            latitude = latitude,
-            longitude = longitude,
-            description = description
-        )
+        // Get the lifecycleScope from the context if it's an Activity
+        val lifecycleScope = (context as? androidx.activity.ComponentActivity)?.lifecycleScope
+            ?: (context as? androidx.fragment.app.FragmentActivity)?.lifecycleScope
+            ?: (context as? androidx.fragment.app.Fragment)?.lifecycleScope
 
-        // Notify callback
-        onMarkerCreated(marker)
+        lifecycleScope?.launch {
+            try {
+                // Create marker through ViewModel
+                val marker = viewModel.addUserMarker(
+                    type = markerType,
+                    latitude = latitude,
+                    longitude = longitude,
+                    description = description
+                )
 
-        // Show confirmation
-        Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
+                // Notify callback on main thread
+                onMarkerCreated(marker)
 
-        // Dismiss dialog
-        dialog.dismiss()
+                // Show confirmation
+                Toast.makeText(context, "Marker created successfully", Toast.LENGTH_SHORT).show()
+
+                // Dismiss dialog
+                dialog.dismiss()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Failed to create marker: ${e.message}", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+            }
+        } ?: run {
+            // Fallback if we can't get a lifecycleScope (shouldn't happen in normal usage)
+            Toast.makeText(context, "System error: Could not create marker", Toast.LENGTH_SHORT).show()
+        }
     }
 }

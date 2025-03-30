@@ -6,6 +6,8 @@ import com.example.m1.data.models.CommentResponse
 import com.example.m1.data.models.Event
 import com.example.m1.data.models.EventResponse
 import com.example.m1.data.models.FIRMSData
+import com.example.m1.data.models.UserMarker
+import com.example.m1.data.models.UserMarkerResponse
 import com.example.m1.data.remote.RetrofitClient
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,6 @@ import retrofit2.HttpException
 import retrofit2.Response
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /**
@@ -192,6 +193,102 @@ class EventRepository {
         } catch (e: JsonSyntaxException) {
             // Handle JSON parsing errors
             Log.e("EventRepository", "JSON parsing error while fetching comments: ${e.message}", e)
+            emptyList()
+        }
+    }
+    /**
+     * Post a new user marker to the server
+     * @param type The type of marker
+     * @param latitude The latitude coordinate
+     * @param longitude The longitude coordinate
+     * @param description The description of the marker
+     * @param comments Optional list of comments (default empty)
+     * @return True if successful, false otherwise
+     */
+    suspend fun postUserMarker(
+        id: String? = null,
+        type: String,
+        latitude: Double,
+        longitude: Double,
+        description: String,
+        comments: List<Comment> = emptyList()
+    ): Boolean = withContext(Dispatchers.IO) {
+        try {
+            suspendCoroutine { continuation ->
+                apiService.postUserMarker(
+                    UserMarker(
+                        id = id,
+                        type = type,
+                        latitude = latitude,
+                        longitude = longitude,
+                        description = description,
+                        comments = comments
+                    )
+                ).enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
+                            Log.d("MarkerRepository", "User marker posted successfully")
+                            continuation.resume(true)
+                        } else {
+                            Log.e("MarkerRepository", "Failed to post user marker: ${response.errorBody()?.string()}")
+                            continuation.resume(false)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Log.e("MarkerRepository", "Error posting user marker: ${t.message}")
+                        continuation.resume(false)
+                    }
+                })
+            }
+        } catch (e: CancellationException) {
+            Log.e("MarkerRepository", "Coroutine was cancelled while posting user marker", e)
+            false
+        } catch (e: IOException) {
+            Log.e("MarkerRepository", "Network error while posting user marker: ${e.message}", e)
+            false
+        } catch (e: JsonSyntaxException) {
+            Log.e("MarkerRepository", "JSON parsing error while posting user marker: ${e.message}", e)
+            false
+        }
+    }
+    /**
+     * Fetch all user markers from the API
+     * @return List of UserMarker or empty list if there was an error
+     */
+    suspend fun getAllUserMarkers(): List<UserMarker> = withContext(Dispatchers.IO) {
+        try {
+            suspendCoroutine { continuation ->
+                apiService.getAllUserMarkers().enqueue(object : Callback<UserMarkerResponse> {
+                    override fun onResponse(
+                        call: Call<UserMarkerResponse>,
+                        response: Response<UserMarkerResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val markers = response.body()?.markers ?: emptyList()
+                            Log.d("MarkerRepository", "Fetched ${markers.size} markers")
+                            continuation.resume(markers)
+                        } else {
+                            Log.e("MarkerRepository",
+                                "Response not successful: ${response.errorBody()?.string()}")
+                            continuation.resume(emptyList())
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UserMarkerResponse>, t: Throwable) {
+                        Log.e("MarkerRepository", "Failed to fetch markers: ${t.message}")
+                        continuation.resume(emptyList())
+                    }
+                })
+            }
+        } catch (e: IOException) {
+            Log.e("MarkerRepository", "Network error fetching markers: ${e.message}")
+            emptyList()
+        } catch (e: HttpException) {
+            Log.e("MarkerRepository", "HTTP error fetching markers: ${e.message}")
+            emptyList()
+        } catch (e: CancellationException) {
+            Log.e("MarkerRepository", "Coroutine cancelled while fetching markers: ${e.message}")
             emptyList()
         }
     }

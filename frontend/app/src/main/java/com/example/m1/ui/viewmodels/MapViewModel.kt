@@ -1,6 +1,7 @@
 package com.example.m1.ui.viewmodels
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,7 @@ class MapViewModel : ViewModel() {
     val events: LiveData<List<Event>> = _events
 
     // LiveData for user-created markers
-    private val _userMarkers = MutableLiveData<List<UserMarker>>(emptyList())
+    private var _userMarkers = MutableLiveData<List<UserMarker>>(emptyList())
     val userMarkers: LiveData<List<UserMarker>> = _userMarkers
 
     // LiveData for user location
@@ -84,6 +85,10 @@ class MapViewModel : ViewModel() {
             // Limit to 50 events and update LiveData
             _events.value = sanitizedEvents.take(50)
 
+            // Fetch user markers (logging/debug omitted)
+            val userMarkers = repository.getAllUserMarkers()
+            _userMarkers.postValue(userMarkers)
+
             // Fetch FIRMS data (logging/debug omitted)
             val firmsData = repository.getFIRMSData()
             // Optionally log or process FIRMS data here
@@ -118,7 +123,7 @@ class MapViewModel : ViewModel() {
      * @param description The description
      * @return The created UserMarker
      */
-    fun addUserMarker(type: String, latitude: Double, longitude: Double, description: String): UserMarker {
+    suspend fun addUserMarker(type: String, latitude: Double, longitude: Double, description: String): UserMarker {
         val marker = UserMarker(
             id = UUID.randomUUID().toString(),
             type = type,
@@ -126,6 +131,15 @@ class MapViewModel : ViewModel() {
             longitude = longitude,
             description = description
         )
+
+        val test = repository.postUserMarker( id = UUID.randomUUID().toString(),
+            type = type,
+            latitude = latitude,
+            longitude = longitude,
+            description = description)
+
+        Log.d("addUserMarker", "test: $test")
+
 
         val currentMarkers = _userMarkers.value ?: emptyList()
         _userMarkers.value = currentMarkers + marker

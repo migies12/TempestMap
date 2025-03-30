@@ -3,6 +3,8 @@ package com.example.m1.data.remote
 import com.example.m1.data.models.CommentResponse
 import com.example.m1.data.models.EventResponse
 import com.example.m1.data.models.FIRMSData
+import com.example.m1.data.models.UserMarker
+import com.example.m1.data.models.UserMarkerResponse
 import com.example.m1.fragments.ApiResponse
 import com.example.m1.fragments.User
 import retrofit2.Call
@@ -43,4 +45,10 @@ interface ApiService {
 
     @POST("prod/user")
     fun postUser(@Body user: User): Call<ApiResponse>
+
+    @POST("prod/user_marker")
+    fun postUserMarker(@Body userMarker: UserMarker): Call<Void>
+
+    @GET("prod/user_markers") // Adjust endpoint as needed
+    fun getAllUserMarkers(): Call<UserMarkerResponse>
 }

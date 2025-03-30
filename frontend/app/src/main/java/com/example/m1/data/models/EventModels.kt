@@ -9,8 +9,12 @@ data class CommentResponse(
     val comments: List<Comment>
 )
 
+data class UserMarkerResponse(
+    val markers: List<UserMarker>
+)
+
 data class UserMarker(
-    val id: String,
+    val id: String? = null,  // Let server generate if null
     val type: String,
     val latitude: Double,
     val longitude: Double,
