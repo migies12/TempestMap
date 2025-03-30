@@ -65,44 +65,43 @@ app.get('/event', async (req, res) => {
   }
 });
 
-//Adds new custom marker information to the DB
-app.post('/event/custom', async (req, res) => {
-  const { latitude, longitude, markerType } = req.body;
+app.post('/user_marker', async (req, res) => {
+  const id = req.body.id || req.query.id || uuidv4(); // Generate new ID if not provided
+  const type = req.body.type || req.query.type;
+  const latitude = req.body.latitude || req.query.latitude;
+  const longitude = req.body.longitude || req.query.longitude;
+  const description = req.body.description || req.query.description;
+  const comments = req.body.comments || req.query.comments || [];
 
   // Validate required fields
-  if (!latitude || !longitude || !markerType) {
-    return res.status(400).json({ error: 'Missing latitude, longitude, or markerType in request body.' });
+  if (!type || !latitude || !longitude || !description) {
+    console.log("Bad params", req.body);
+    console.log(`type: ${type}, latitude: ${latitude}, longitude: ${longitude}, description: ${description}`);
+    return res.status(400).json({ error: 'Missing type, latitude, longitude, or description in request body' });
   }
 
-  // Create a new event object
-  const newEvent = {
-    event_id: uuidv4(), // Generate a unique event ID
-    event_type: markerType, 
-    event_name: `Custom ${markerType} Event`, 
-    date: new Date().toISOString(), 
-    lat: parseFloat(latitude),
-    lng: parseFloat(longitude), 
-    continent: 'Custom', 
-    country_code: 'N/A',
-    created_time: new Date().toISOString(),
-    source_event_id: 'custom',
-    estimated_end_date: null, 
-    comments: [], 
+  // Create new UserMarker object
+  const newUserMarker = {
+    id,
+    type,
+    latitude: parseFloat(latitude), // Ensure numeric type
+    longitude: parseFloat(longitude), // Ensure numeric type
+    description,
+    comments: Array.isArray(comments) ? comments : [], // Ensure comments is an array
+    created_at: new Date().toISOString()
   };
 
-  // Define DynamoDB parameters
   const params = {
-    TableName: 'event',
-    Item: newEvent,
+    TableName: 'user_marker', // You'll need to create this table in DynamoDB
+    Item: newUserMarker
   };
 
   try {
-    // Insert the new event into the DynamoDB table
     await dynamoDB.put(params).promise();
-    res.status(201).json({ message: 'Custom event created successfully', event: newEvent });
+    res.status(201).json({ message: 'User marker created successfully', user_marker: newUserMarker });
   } catch (error) {
-    console.error('Error creating custom event:', error);
-    res.status(500).json({ error: 'Error creating custom event' });
+    console.error('Error creating user marker:', error);
+    res.status(500).json({ error: 'Error creating user marker' });
   }
 });
 
