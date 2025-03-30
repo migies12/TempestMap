@@ -66,7 +66,7 @@ app.get('/event', async (req, res) => {
 });
 
 app.post('/user_marker', async (req, res) => {
-  const id = req.body.id || req.query.id || uuidv4(); // Generate new ID if not provided
+  const marker_id = req.body.id || req.query.id || uuidv4(); // Generate new ID if not provided
   const type = req.body.type || req.query.type;
   const latitude = req.body.latitude || req.query.latitude;
   const longitude = req.body.longitude || req.query.longitude;
@@ -82,7 +82,7 @@ app.post('/user_marker', async (req, res) => {
 
   // Create new UserMarker object
   const newUserMarker = {
-    id,
+    marker_id,
     type,
     latitude: parseFloat(latitude), // Ensure numeric type
     longitude: parseFloat(longitude), // Ensure numeric type
