@@ -178,15 +178,6 @@ app.post('/comment/:id', async (req, res) => {
   const type = req.body.type || req.query.type;
 
   const id = req.params;
-  var event_id = null;
-  var userMarker_id = null;
-
-  if(type == "event"){
-    event_id = id;
-   
-  }else if(type == "user_marker"){
-   userMarker_id= id;
-  }
 
   const comment = req.body.comment || req.query.comment;
   const user = req.body.user || req.query.user;
@@ -209,7 +200,7 @@ app.post('/comment/:id', async (req, res) => {
 
   const params = {
     TableName: type,
-    Key: { event_id },
+    Key: { id },
     UpdateExpression: 'SET comments = list_append(if_not_exists(comments, :emptyList), :newComment)',
     ExpressionAttributeValues: {
       ':emptyList': [],
