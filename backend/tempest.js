@@ -173,14 +173,27 @@ app.get('/event/firms', async (req, res) => {
 
 
 
-app.post('/comment/:event_id', async (req, res) => {
+app.post('/comment/:id', async (req, res) => {
 
-  const { event_id } = req.params;
+  const type = req.body.type || req.query.type;
+
+  const id = req.params.id;
+  var event_id = null;
+  var userMarker_id = null;
+
+  if(type == "user"){
+    event_id = id;
+   
+  }else if(type == "user_marker"){
+   userMarker_id= id;
+  }
+
   const comment = req.body.comment || req.query.comment;
   const user = req.body.user || req.query.user;
+
   
-  if (!event_id || !comment) {
-    console.log(event_id)
+  if (!id || !comment) {
+    console.log(id)
     console.log(comment)
     return res.status(400).json({ error: 'Missing event_id or comment in request body' });
   }
@@ -193,8 +206,9 @@ app.post('/comment/:event_id', async (req, res) => {
     created_at: new Date().toISOString(),
   };
 
+
   const params = {
-    TableName: 'event',
+    TableName: type,
     Key: { event_id },
     UpdateExpression: 'SET comments = list_append(if_not_exists(comments, :emptyList), :newComment)',
     ExpressionAttributeValues: {
