@@ -185,12 +185,15 @@ app.post('/comment/:id', async (req, res) => {
       received: { id, comment, type } 
     });
   }
-  var key = null;
 
-  if (type == "event"){
-    key = "event_id";
-  }else if (type == "user_marker"){
-    key = "marker_id";
+  // Determine the correct key name based on table type
+  let keyName;
+  if (type === "event") {
+    keyName = "event_id";
+  } else if (type === "user_marker") {
+    keyName = "marker_id";
+  } else {
+    return res.status(400).json({ error: 'Invalid table type' });
   }
 
   const newComment = {
@@ -203,7 +206,7 @@ app.post('/comment/:id', async (req, res) => {
   const params = {
     TableName: type,
     Key: {
-      key: id 
+      [keyName]: id  // Use computed property name here
     },
     UpdateExpression: 'SET #comments = list_append(if_not_exists(#comments, :emptyList), :newComment)',
     ExpressionAttributeNames: {
@@ -237,7 +240,6 @@ app.post('/comment/:id', async (req, res) => {
         code: error.code,
         requestId: error.requestId
       },
-      suggestion: 'Verify the table exists and the id matches an existing item'
     });
   }
 });
