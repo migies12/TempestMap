@@ -177,7 +177,7 @@ app.post('/comment/:id', async (req, res) => {
 
   const type = req.body.type || req.query.type;
 
-  const id = req.params;
+  const id = req.params.id;
 
   const comment = req.body.comment || req.query.comment;
   const user = req.body.user || req.query.user;
