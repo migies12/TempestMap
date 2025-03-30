@@ -73,12 +73,14 @@ app.post('/user_marker', async (req, res) => {
   const description = req.body.description || req.query.description;
   const comments = req.body.comments || req.query.comments || [];
 
-  // Validate required fields
-  if (!type || !latitude || !longitude || !description) {
-    console.log("Bad params", req.body);
-    console.log(`type: ${type}, latitude: ${latitude}, longitude: ${longitude}, description: ${description}`);
-    return res.status(400).json({ error: 'Missing type, latitude, longitude, or description in request body' });
-  }
+  // // Validate required fields
+  // if (!type || !latitude || !longitude || !description) {
+  //   console.log("Bad params", req.body);
+  //   console.log(`type: ${type}, latitude: ${latitude}, longitude: ${longitude}, description: ${description}`);
+  //   return res.status(400).json({ error: 'Missing type, latitude, longitude, or description in request body' });
+  // }
+
+  console.log(`type: ${type}, latitude: ${latitude}, longitude: ${longitude}, description: ${description}`)
 
   // Create new UserMarker object
   const newUserMarker = {
