@@ -174,50 +174,64 @@ app.get('/event/firms', async (req, res) => {
 
 
 app.post('/comment/:id', async (req, res) => {
-
   const type = req.body.type || req.query.type;
-
   const id = req.params.id;
-
   const comment = req.body.comment || req.query.comment;
   const user = req.body.user || req.query.user;
 
-  
-  if (!id || !comment) {
-    console.log(id)
-    console.log(comment)
-    return res.status(400).json({ error: 'Missing event_id or comment in request body' });
+  if (!id || !comment || !type) {
+    return res.status(400).json({ 
+      error: 'Missing required parameters',
+      received: { id, comment, type } 
+    });
   }
-  
-  // Create a comment object that includes a unique comment_id and timestamp
+
   const newComment = {
     comment_id: uuidv4(),
     text: comment,
-    user: user,
+    user: user || 'anonymous',
     created_at: new Date().toISOString(),
   };
 
-
   const params = {
     TableName: type,
-    Key: { id },
-    UpdateExpression: 'SET comments = list_append(if_not_exists(comments, :emptyList), :newComment)',
+    Key: {
+      'id': id 
+    },
+    UpdateExpression: 'SET #comments = list_append(if_not_exists(#comments, :emptyList), :newComment)',
+    ExpressionAttributeNames: {
+      '#comments': 'comments'  
+    },
     ExpressionAttributeValues: {
       ':emptyList': [],
-      ':newComment': [newComment],
+      ':newComment': [newComment]
     },
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'UPDATED_NEW'
   };
 
   try {
     const result = await dynamoDB.update(params).promise();
     res.status(200).json({
       message: 'Comment appended successfully',
-      updatedAttributes: result.Attributes,
+      comment: newComment,
+      updated: result.Attributes
     });
   } catch (error) {
-    console.error('Error appending comment:', error);
-    res.status(500).json({ error: 'Error appending comment '+error+' '+id });
+    console.error('DynamoDB Error:', {
+      params,
+      error: error.message,
+      stack: error.stack
+    });
+    
+    res.status(500).json({ 
+      error: 'Failed to add comment',
+      details: {
+        message: error.message,
+        code: error.code,
+        requestId: error.requestId
+      },
+      suggestion: 'Verify the table exists and the id matches an existing item'
+    });
   }
 });
 
