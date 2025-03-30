@@ -217,7 +217,7 @@ app.post('/comment/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error appending comment:', error);
-    res.status(500).json({ error: 'Error appending comment' });
+    res.status(500).json({ error: 'Error appending comment '+error });
   }
 });
 
