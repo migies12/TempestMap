@@ -185,6 +185,13 @@ app.post('/comment/:id', async (req, res) => {
       received: { id, comment, type } 
     });
   }
+  var key = null;
+
+  if (type == "event"){
+    key = "event_id";
+  }else if (type == "user_marker"){
+    key = "marker_id";
+  }
 
   const newComment = {
     comment_id: uuidv4(),
@@ -196,7 +203,7 @@ app.post('/comment/:id', async (req, res) => {
   const params = {
     TableName: type,
     Key: {
-      'id': id 
+      key: id 
     },
     UpdateExpression: 'SET #comments = list_append(if_not_exists(#comments, :emptyList), :newComment)',
     ExpressionAttributeNames: {
