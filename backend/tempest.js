@@ -105,6 +105,41 @@ app.post('/user_marker', async (req, res) => {
   }
 });
 
+/**
+ * GET /user_markers - Fetch all user markers
+ */
+app.get('/user_markers', async (req, res) => {
+  const params = {
+    TableName: 'user_marker',
+  };
+
+  try {
+    const result = await dynamoDB.scan(params).promise();
+  
+    // Format response to match your Kotlin data class
+    const markers = result.Items.map(item => ({
+      id: item.marker_id,
+      type: item.type,
+      latitude: item.latitude,
+      longitude: item.longitude,
+      description: item.description,
+      comments: item.comments || [],
+      createdAt: item.created_at
+    }));
+
+    res.status(200).json({
+      markers: markers
+    });
+    
+  } catch (error) {
+    console.error('Error fetching markers:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch markers',
+      details: error.message 
+    });
+  }
+});
+
 
 // Endpoint to fetch FIRMS data
 app.get('/event/firms', async (req, res) => {
