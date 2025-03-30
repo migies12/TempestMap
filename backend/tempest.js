@@ -177,11 +177,11 @@ app.post('/comment/:id', async (req, res) => {
 
   const type = req.body.type || req.query.type;
 
-  const id = req.params.id;
+  const id = req.params;
   var event_id = null;
   var userMarker_id = null;
 
-  if(type == "user"){
+  if(type == "event"){
     event_id = id;
    
   }else if(type == "user_marker"){
