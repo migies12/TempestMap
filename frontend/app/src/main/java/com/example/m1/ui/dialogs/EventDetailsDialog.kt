@@ -114,7 +114,7 @@ class EventDetailsDialog(
                 val userName = getSignedInUserName(context)
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    val success = viewModel.postComment(event.event_id, newComment, userName)
+                    val success = viewModel.postComment(event.event_id, newComment, userName, "event")
 
                     if (success) {
                         addCommentBubbleToCommentSection(commentSection, userName, newComment)

@@ -167,8 +167,8 @@ class MapViewModel : ViewModel() {
      * @param userName The username of the commenter
      * @return True if successful, false otherwise
      */
-    suspend fun postComment(eventId: String, comment: String, userName: String): Boolean {
-        return repository.postComment(eventId, comment, userName)
+    suspend fun postComment(eventId: String, comment: String, userName: String, type: String): Boolean {
+        return repository.postComment(eventId, comment, userName, type)
     }
 
     override fun onCleared() {

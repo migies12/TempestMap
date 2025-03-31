@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.m1.R
+import com.example.m1.data.models.Event
 import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.viewmodels.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -127,30 +128,12 @@ class UserMarkerBottomSheetDialog(
 
         // Set up add comment button
         addCommentButton.setOnClickListener {
-            val newComment = commentInput.text.toString().trim()
-            if (newComment.isNotEmpty()) {
-                // Get user name from shared preferences
-                val userName = getSignedInUserName(context)
+            handleAddComment(commentSection, commentInput, userMarker) // Pass event here
 
-                // Post comment
-                CoroutineScope(Dispatchers.Main).launch {
-                    val id = userMarker.id ?: ""
-                    val success = viewModel.postComment(id, newComment, userName)
-
-                    if (success) {
-                        // Add comment bubble
-                        addCommentBubble(commentSection, userName, newComment)
-                        commentInput.text.clear()
-                        Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                Toast.makeText(context, "Please enter a comment", Toast.LENGTH_SHORT).show()
-            }
         }
     }
+
+
 
 
     private fun addCommentBubble(commentSection: LinearLayout, username: String, comment: String) {
@@ -187,6 +170,51 @@ class UserMarkerBottomSheetDialog(
 
         commentSection.addView(bubbleContainer)
     }
+    private fun handleAddComment(
+        commentSection: LinearLayout,
+        commentInput: EditText,
+        marker: UserMarker // Add event as a parameter
+    ) {
+        // Check if user is signed in before allowing a comment
+        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
+
+        if (!isSignedIn) {
+            Toast.makeText(context, "Please sign in to comment", Toast.LENGTH_SHORT).show()
+            return // Early return if the user is not signed in
+        }
+
+        val newComment = commentInput.text.toString().trim()
+        if (newComment.isEmpty()) {
+            Toast.makeText(context, "Please enter a comment", Toast.LENGTH_SHORT).show()
+            return // Early return if the comment is empty
+        }
+
+        val profaneWords = listOf("fuck", "shit", "ass", "bitch")
+        val lowercaseComment = newComment.lowercase()
+        if (profaneWords.any {it in lowercaseComment}) {
+            Toast.makeText(context, "Comment contains inappropriate content. Please revise.", Toast.LENGTH_SHORT).show()
+            return // Early return if comment contains profanity
+        }
+
+        // Get user name from SharedPreferences
+        val userName = getSignedInUserName(context)
+
+        // Post comment using a coroutine
+        CoroutineScope(Dispatchers.Main).launch {
+            val id = marker.id ?: ""
+            val success = viewModel.postComment(id, newComment, userName, "user_marker") // Use event here
+            if (success) {
+                // Add the new comment bubble to the comment section
+                addCommentBubble(commentSection, userName, newComment)
+                commentInput.text.clear()
+                Toast.makeText(context, "Comment added", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private fun getSignedInUserName(context: Context): String {
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)

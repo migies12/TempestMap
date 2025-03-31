@@ -122,10 +122,10 @@ class EventRepository {
      * @param userName The username of the commenter
      * @return True if successful, false otherwise
      */
-    suspend fun postComment(eventId: String, comment: String, userName: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun postComment(eventId: String, comment: String, userName: String, type:String): Boolean = withContext(Dispatchers.IO) {
         try {
             suspendCoroutine { continuation ->
-                apiService.postComment(eventId, comment, userName).enqueue(object : Callback<Void> {
+                apiService.postComment(eventId, comment, userName, type).enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
                             Log.d("EventRepository", "Comment posted successfully")

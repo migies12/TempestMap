@@ -32,16 +32,18 @@ interface ApiService {
 
     /**
      * Post a comment to an event
-     * @param eventId The ID of the event
+     * @param id The ID of the event
      * @param comment The comment text
      * @param user The username of the commenter
      */
-    @POST("prod/comment/{eventId}")
+    @POST("prod/comment/{id}")
     fun postComment(
-        @Path("eventId") eventId: String,
+        @Path("id") id: String,
         @Query("comment") comment: String,
-        @Query("user") user: String
+        @Query("user") user: String,
+        @Query("type") markerType: String
     ): Call<Void>
+
 
     @POST("prod/user")
     fun postUser(@Body user: User): Call<ApiResponse>

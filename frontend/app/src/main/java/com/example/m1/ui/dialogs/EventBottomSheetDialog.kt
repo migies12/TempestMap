@@ -190,7 +190,7 @@ class EventBottomSheetDialog(
 
         // Post comment using a coroutine
         CoroutineScope(Dispatchers.Main).launch {
-            val success = viewModel.postComment(event.event_id, newComment, userName) // Use event here
+            val success = viewModel.postComment(event.event_id, newComment, userName, "event") // Use event here
             if (success) {
                 // Add the new comment bubble to the comment section
                 addCommentBubble(commentSection, userName, newComment)

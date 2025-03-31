@@ -77,7 +77,7 @@ class UserMarkerDetailsDialog(
                 // Post comment
                 CoroutineScope(Dispatchers.Main).launch {
                     val id = userMarker.id ?: ""
-                    val success = viewModel.postComment(id, newComment, userName)
+                    val success = viewModel.postComment(id, newComment, userName, "user_marker")
 
                     if (success) {
                         // Add comment bubble
