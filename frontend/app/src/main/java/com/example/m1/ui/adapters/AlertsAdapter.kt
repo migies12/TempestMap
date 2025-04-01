@@ -2,6 +2,8 @@ package com.example.m1.ui.adapters
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.location.Location
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import com.example.m1.R
 import com.example.m1.data.models.Event
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
 /**
@@ -23,6 +26,15 @@ class AlertsAdapter(
     private val onItemClick: (Event) -> Unit
 ) : RecyclerView.Adapter<AlertsAdapter.AlertViewHolder>() {
 
+    // User location for distance calculation
+    private var userLocation: Location? = null
+
+    // Cache for calculated distances - using event_id as key
+    private val distanceCache = ConcurrentHashMap<String, String>()
+
+    // Flag to track if we need to recalculate all distances
+    private var locationChanged = false
+
     inner class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val eventTypeIndicator: View = itemView.findViewById(R.id.eventTypeIndicator)
         val tvAlertTitle: TextView = itemView.findViewById(R.id.tvAlertTitle)
@@ -31,14 +43,14 @@ class AlertsAdapter(
         val tvAlertDate: TextView = itemView.findViewById(R.id.tvAlertDate)
         val tvAlertDistance: TextView = itemView.findViewById(R.id.tvAlertDistance)
 
-//        init {
-//            itemView.setOnClickListener {
-//                val position = adapterPosition
-//                if (position != RecyclerView.NO_POSITION) {
-//                    onItemClick(events[position])
-//                }
-//            }
-//        }
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(events[position])
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
@@ -136,16 +148,56 @@ class AlertsAdapter(
             holder.tvAlertDate.text = event.date
         }
 
-        // Set estimated distance
-        // This would ideally be calculated based on user's location
-        // For now, we'll use a placeholder based on danger level
-        val estimatedDistance = when {
-            dangerLevel >= 75 -> (5..20).random()
-            dangerLevel >= 50 -> (20..50).random()
-            dangerLevel >= 25 -> (50..100).random()
-            else -> (100..300).random()
+        // Set distance text - use cached value if available
+        getDistanceText(event).let { distanceText ->
+            holder.tvAlertDistance.text = distanceText
         }
-        holder.tvAlertDistance.text = "~${estimatedDistance}km away"
+    }
+
+    private fun getDistanceText(event: Event): String {
+        // Check if we need to refresh the cache
+        if (locationChanged) {
+            // Location changed, so clear the cache for recalculation
+            distanceCache.clear()
+            locationChanged = false
+        }
+
+        // Get the cached distance or calculate a new one
+        return distanceCache.getOrPut(event.event_id) {
+            calculateDistanceText(event)
+        }
+    }
+
+    private fun calculateDistanceText(event: Event): String {
+        return userLocation?.let { location ->
+            // Create location for the event
+            val eventLocation = Location("").apply {
+                latitude = event.lat
+                longitude = event.lng
+            }
+
+            // Calculate distance in meters
+            val distanceInMeters = location.distanceTo(eventLocation)
+
+            // Convert to appropriate unit and round
+            when {
+                distanceInMeters < 1000 -> {
+                    // Less than 1km, show in meters
+                    val distanceRounded = distanceInMeters.roundToInt()
+                    "~${distanceRounded}m away"
+                }
+                distanceInMeters < 10000 -> {
+                    // Less than 10km, show with 1 decimal place
+                    val distanceKm = (distanceInMeters / 100).roundToInt() / 10.0
+                    "~${distanceKm}km away"
+                }
+                else -> {
+                    // More than 10km, round to nearest km
+                    val distanceKm = (distanceInMeters / 1000).roundToInt()
+                    "~${distanceKm}km away"
+                }
+            }
+        } ?: "Distance unknown"
     }
 
     override fun getItemCount() = events.size
@@ -154,7 +206,37 @@ class AlertsAdapter(
      * Update the list of events/alerts
      */
     fun updateEvents(newEvents: List<Event>) {
+        // Check if we have new events that need distance calculation
+        val newEventIds = newEvents.map { it.event_id }.toSet()
+        val oldEventIds = events.map { it.event_id }.toSet()
+
+        // If we have new events, we might need to calculate new distances
+        // But we'll still keep the cached distances for existing events
+        if (newEventIds != oldEventIds) {
+            // Clear cache for events that are no longer in the list
+            distanceCache.keys
+                .filter { it !in newEventIds }
+                .forEach { distanceCache.remove(it) }
+        }
+
         this.events = newEvents
         notifyDataSetChanged()
+    }
+
+    /**
+     * Update the user's location for distance calculations
+     */
+    fun updateUserLocation(location: Location) {
+        // Check if location has significantly changed (more than 100m)
+        val significantChange = userLocation?.let {
+            it.distanceTo(location) > 100
+        } ?: true
+
+        if (significantChange) {
+            userLocation = location
+            // Mark that we need to recalculate distances
+            locationChanged = true
+            notifyDataSetChanged()
+        }
     }
 }

@@ -152,6 +152,7 @@ class HomeFragment : Fragment(), LocationListener {
                 updateLocationDisplay(it)
                 currentLocation = it
                 viewModel.updateUserLocation(it)
+                alertsAdapter.updateUserLocation(it)
                 viewModel.fetchEvents()
             }
         }
@@ -274,21 +275,8 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun handleEvents(events: List<Event>) {
-        // Filter and sort events by danger level (if user location is available)
-        val processedEvents = currentLocation?.let { location ->
-            // Create location object from current location
-            val userLocation = Location("").apply {
-                latitude = location.latitude
-                longitude = location.longitude
-            }
-
-            // Update danger levels based on user's location
-            val eventsWithDanger =
-                DangerLevelCalculator.updateEventDangerLevels(events, userLocation)
-
-            // Sort by danger level (highest first)
-            eventsWithDanger.sortedByDescending { it.danger_level }
-        } ?: events
+        // Filter and sort events by danger level
+        val processedEvents = events.sortedByDescending { it.danger_level }
 
         // Update UI based on events
         if (processedEvents.isEmpty()) {
