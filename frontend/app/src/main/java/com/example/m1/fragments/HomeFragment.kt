@@ -56,9 +56,9 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var actionExploreMap: LinearLayout
     private lateinit var actionSavedLocations: LinearLayout
     private lateinit var actionReportEvent: LinearLayout
-    private lateinit var actionSafeHouses: LinearLayout
-    private lateinit var actionResources: LinearLayout
-    private lateinit var actionProfile: LinearLayout
+//    private lateinit var actionSafeHouses: LinearLayout
+//    private lateinit var actionResources: LinearLayout
+//    private lateinit var actionProfile: LinearLayout
 
     // Other components
 //    private lateinit var btnMoreSafetyTips: Button
@@ -117,9 +117,9 @@ class HomeFragment : Fragment(), LocationListener {
         actionExploreMap = view.findViewById(R.id.actionExploreMap)
         actionSavedLocations = view.findViewById(R.id.actionSavedLocations)
         actionReportEvent = view.findViewById(R.id.actionReportEvent)
-        actionSafeHouses = view.findViewById(R.id.actionSafeHouses)
-        actionResources = view.findViewById(R.id.actionResources)
-        actionProfile = view.findViewById(R.id.actionProfile)
+//        actionSafeHouses = view.findViewById(R.id.actionSafeHouses)
+//        actionResources = view.findViewById(R.id.actionResources)
+//        actionProfile = view.findViewById(R.id.actionProfile)
 
         // Other buttons
 //        btnMoreSafetyTips = view.findViewById(R.id.btnMoreSafetyTips)
@@ -189,17 +189,17 @@ class HomeFragment : Fragment(), LocationListener {
             }
         }
 
-        actionSafeHouses.setOnClickListener {
-            Toast.makeText(context, "Safe Houses feature coming soon", Toast.LENGTH_SHORT).show()
-        }
-
-        actionResources.setOnClickListener {
-            Toast.makeText(context, "Resources feature coming soon", Toast.LENGTH_SHORT).show()
-        }
-
-        actionProfile.setOnClickListener {
-            navigateToProfileFragment()
-        }
+//        actionSafeHouses.setOnClickListener {
+//            Toast.makeText(context, "Safe Houses feature coming soon", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        actionResources.setOnClickListener {
+//            Toast.makeText(context, "Resources feature coming soon", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        actionProfile.setOnClickListener {
+//            navigateToProfileFragment()
+//        }
 
         // Other buttons
 //        btnMoreSafetyTips.setOnClickListener {
