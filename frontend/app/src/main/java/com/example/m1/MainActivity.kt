@@ -31,6 +31,7 @@ import com.example.m1.fragments.HomeFragment
 import com.example.m1.fragments.MapboxFragment
 import com.example.m1.fragments.ProfileFragment
 import com.example.m1.fragments.SignInFragment
+import com.example.m1.services.LocationService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(Dispatchers.Main)
 
     lateinit var bottomNav : BottomNavigationView
+
+    private lateinit var locationService: LocationService
 
     private fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
@@ -144,6 +147,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        locationService = LocationService.getInstance(applicationContext)
+
         loadFragment(HomeFragment())
 
         // Fetch FCM token
@@ -151,6 +156,15 @@ class MainActivity : AppCompatActivity() {
 
         // Set up bottom navigation
         setupBottomNavigation()
+
+        if (!locationService.hasLocationPermission()) {
+            locationService.requestLocationPermission(this) { granted ->
+                if (granted) {
+                    locationService.startLocationUpdates()
+                }
+            }
+        }
+
     }
 
     private fun fetchFcmToken() {
@@ -205,5 +219,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Start location updates when app is in foreground
+        if (locationService.hasLocationPermission()) {
+            locationService.startLocationUpdates()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Stop location updates when app is in background to save battery
+        locationService.stopLocationUpdates()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Forward permission results to location service
+        locationService.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
 
 }

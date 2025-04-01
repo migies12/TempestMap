@@ -61,6 +61,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import com.example.m1.services.LocationService
 
 class MapboxFragment : Fragment(), LocationListener {
 
@@ -79,7 +80,7 @@ class MapboxFragment : Fragment(), LocationListener {
     private lateinit var locationManager: LocationManager
 
     // Helper classes
-    private lateinit var locationHandler: LocationHandler
+    private lateinit var locationService: LocationService
     private lateinit var markerManager: MarkerManager
     private lateinit var favoriteLocationManager: FavoriteLocationManager
 
@@ -97,7 +98,6 @@ class MapboxFragment : Fragment(), LocationListener {
 
     companion object {
         private const val TAG = "MapboxFragment"
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     override fun onCreateView(
@@ -109,15 +109,10 @@ class MapboxFragment : Fragment(), LocationListener {
 
         initGlobalsAndListeners(view)
 
-        val sharedPreferences =
-            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
-        val currLocation = locationHandler.getLastKnownLocation(requireContext(), locationManager)
-        if (currLocation != null) {
-            Log.d(TAG, "Adding Location, ${currLocation.latitude}, ${currLocation.longitude}")
-            sharedPreferences.edit()
-                .putFloat("latitude", currLocation.latitude.toFloat())
-                .putFloat("longitude", currLocation.longitude.toFloat())
-                .apply()
+        locationService.currentLocation.observe(viewLifecycleOwner) { location ->
+            if (location != null) {
+                onLocationChanged(location)
+            }
         }
 
         // Check for any passed location from FavoritesFragment
@@ -161,10 +156,8 @@ class MapboxFragment : Fragment(), LocationListener {
         mapboxMap = mapView.mapboxMap
 
         // Initialize helper classes
-        locationHandler = LocationHandler(requireContext(), requireActivity(), this)
+        locationService = LocationService.getInstance(requireContext())
         markerManager = MarkerManager(requireContext())
-        locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         favoriteLocationManager = FavoriteLocationManager(requireContext())
 
         // Set initial camera position
@@ -219,7 +212,18 @@ class MapboxFragment : Fragment(), LocationListener {
         }
 
         // Start location updates
-        locationHandler.startLocationUpdates()
+        if (locationService.hasLocationPermission()) {
+            locationService.startLocationUpdates()
+        } else {
+            // Request permissions
+            locationService.requestLocationPermission(requireActivity()) { granted ->
+                if (granted) {
+                    locationService.startLocationUpdates()
+                } else {
+                    Toast.makeText(requireContext(), "Location permission is required for full functionality", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
 
         // Start fetching events
         viewModel.startFetchingEvents()
@@ -435,14 +439,7 @@ class MapboxFragment : Fragment(), LocationListener {
             )
         }
 
-        Log.d(TAG, "Location changed: $location")
-
-        val sharedPreferences =
-            requireContext().getSharedPreferences("UserProfilePrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit()
-            .putFloat("latitude", location.latitude.toFloat())
-            .putFloat("longitude", location.longitude.toFloat())
-            .apply()
+        Log.d(TAG, "Using location: ${location.latitude}, ${location.longitude}")
     }
 
     private fun navigateToFavoritesFragment() {
@@ -450,5 +447,20 @@ class MapboxFragment : Fragment(), LocationListener {
             .replace(R.id.container, FavoritesFragment())
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Start location updates when fragment becomes visible
+        if (locationService.hasLocationPermission()) {
+            locationService.startLocationUpdates()
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Forward permission results to the location service
+        locationService.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

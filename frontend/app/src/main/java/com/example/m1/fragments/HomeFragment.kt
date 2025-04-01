@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.m1.MainActivity
 import com.example.m1.R
 import com.example.m1.data.models.Event
+import com.example.m1.services.LocationService
 import com.example.m1.ui.adapters.AlertsAdapter
 import com.example.m1.ui.dialogs.EventBottomSheetDialog
 import com.example.m1.ui.viewmodels.MapViewModel
@@ -68,9 +69,8 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var viewModel: MapViewModel
     private lateinit var alertsAdapter: AlertsAdapter
 
-    // Location related
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationHandler: LocationHandler
+    // Location related - use central service
+    private lateinit var locationService: LocationService
     private var currentLocation: Location? = null
 
     override fun onCreateView(
@@ -87,7 +87,7 @@ class HomeFragment : Fragment(), LocationListener {
         initializeViews(view)
 
         // Initialize location services
-        initializeLocation()
+        locationService = LocationService.getInstance(requireContext())
 
         // Set up RecyclerView
         setupRecyclerView()
@@ -147,12 +147,15 @@ class HomeFragment : Fragment(), LocationListener {
         }
 
         // Observe user location
-        viewModel.userLocation.observe(viewLifecycleOwner) { location ->
+        locationService.currentLocation.observe(viewLifecycleOwner) { location ->
             location?.let {
                 updateLocationDisplay(it)
 
                 // Update current location reference
                 currentLocation = it
+
+                // Update ViewModel with new location for event processing
+                viewModel.updateUserLocation(it)
 
                 // Refresh events with new location for proper danger calculation
                 viewModel.fetchEvents()
@@ -214,29 +217,6 @@ class HomeFragment : Fragment(), LocationListener {
 
         settingsButton.setOnClickListener {
             navigateToProfileFragment()
-        }
-    }
-
-    private fun initializeLocation() {
-        locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationHandler = LocationHandler(requireContext(), requireActivity(), this)
-
-        // Check if we have location permission
-        if (locationHandler.hasLocationPermission()) {
-            // Start location updates
-            locationHandler.startLocationUpdates()
-
-            // Try to get last known location
-            val lastLocation =
-                locationHandler.getLastKnownLocation(requireContext(), locationManager)
-            lastLocation?.let {
-                updateLocationDisplay(it)
-                currentLocation = it
-                viewModel.updateUserLocation(it)
-            }
-        } else {
-            locationHandler.requestLocationPermission()
         }
     }
 
@@ -421,15 +401,30 @@ class HomeFragment : Fragment(), LocationListener {
         // Start fetching events
         viewModel.startFetchingEvents()
 
-        // Resume location updates
-        if (locationHandler.hasLocationPermission()) {
-            locationHandler.startLocationUpdates()
+        // Start location updates if we have permission
+        if (locationService.hasLocationPermission()) {
+            locationService.startLocationUpdates()
+        } else {
+            // Request permissions
+            locationService.requestLocationPermission(requireActivity()) { granted ->
+                if (granted) {
+                    locationService.startLocationUpdates()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Location permission is required for full functionality",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        // Stop location updates to save battery
-        locationHandler.stopLocationUpdates()
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Forward permission results to the location service
+        locationService.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
 }
