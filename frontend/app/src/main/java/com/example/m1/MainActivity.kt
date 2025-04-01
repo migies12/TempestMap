@@ -56,10 +56,18 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var bottomNav : BottomNavigationView
 
-    private  fun loadFragment(fragment: Fragment){
+    private fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container,fragment)
         transaction.commit()
+    }
+
+    /**
+     * Update the bottom navigation view to show the specified item as selected
+     * @param itemId The ID of the navigation item to select
+     */
+    fun updateBottomNavSelection(itemId: Int) {
+        bottomNav.selectedItemId = itemId
     }
 
     private fun checkLocationPermission() {
@@ -169,7 +177,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {

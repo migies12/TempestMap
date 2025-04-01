@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.m1.MainActivity
 import com.example.m1.R
 import com.example.m1.data.models.Event
 import com.example.m1.ui.adapters.AlertsAdapter
@@ -33,6 +34,7 @@ import com.example.m1.ui.dialogs.EventBottomSheetDialog
 import com.example.m1.ui.viewmodels.MapViewModel
 import com.example.m1.util.DangerLevelCalculator
 import com.example.m1.util.LocationHandler
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.IOException
 import java.util.Locale
 
@@ -339,18 +341,25 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun navigateToMapFragment() {
+        // Update the bottom navigation view to show the Map tab as selected
+        (activity as? MainActivity)?.updateBottomNavSelection(R.id.nav_map)
+
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, MapboxFragment())
             .commit()
     }
 
     private fun navigateToAlertsFragment() {
+        // Update the bottom navigation view to show the Alerts tab as selected
+        (activity as? MainActivity)?.updateBottomNavSelection(R.id.nav_alerts)
+
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, AlertsFragment())
             .commit()
     }
 
     private fun navigateToFavoritesFragment() {
+        // For Favorites we don't update bottom nav since it's not a main tab
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, FavoritesFragment())
             .addToBackStack(null)
@@ -358,6 +367,9 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun navigateToProfileFragment() {
+        // Update the bottom navigation view to show the Profile tab as selected
+        (activity as? MainActivity)?.updateBottomNavSelection(R.id.nav_profile)
+
         val sharedPreferences =
             requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
@@ -370,6 +382,9 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun navigateToMapFragmentForMarkerPlacement() {
+        // Update the bottom navigation view to show the Map tab as selected
+        (activity as? MainActivity)?.updateBottomNavSelection(R.id.nav_map)
+
         val mapFragment = MapboxFragment()
         // We could potentially pass a bundle to indicate marker placement mode
 
