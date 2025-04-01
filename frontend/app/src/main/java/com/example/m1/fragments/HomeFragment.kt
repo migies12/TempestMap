@@ -61,7 +61,7 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var actionProfile: LinearLayout
 
     // Other components
-    private lateinit var btnMoreSafetyTips: Button
+//    private lateinit var btnMoreSafetyTips: Button
     private lateinit var btnLearnMore: Button
     private lateinit var settingsButton: ImageView
 
@@ -122,8 +122,8 @@ class HomeFragment : Fragment(), LocationListener {
         actionProfile = view.findViewById(R.id.actionProfile)
 
         // Other buttons
-        btnMoreSafetyTips = view.findViewById(R.id.btnMoreSafetyTips)
-        btnLearnMore = view.findViewById(R.id.btnLearnMore)
+//        btnMoreSafetyTips = view.findViewById(R.id.btnMoreSafetyTips)
+//        btnLearnMore = view.findViewById(R.id.btnLearnMore)
         settingsButton = view.findViewById(R.id.settingsButton)
     }
 
@@ -150,14 +150,8 @@ class HomeFragment : Fragment(), LocationListener {
         locationService.currentLocation.observe(viewLifecycleOwner) { location ->
             location?.let {
                 updateLocationDisplay(it)
-
-                // Update current location reference
                 currentLocation = it
-
-                // Update ViewModel with new location for event processing
                 viewModel.updateUserLocation(it)
-
-                // Refresh events with new location for proper danger calculation
                 viewModel.fetchEvents()
             }
         }
@@ -207,13 +201,13 @@ class HomeFragment : Fragment(), LocationListener {
         }
 
         // Other buttons
-        btnMoreSafetyTips.setOnClickListener {
-            Toast.makeText(context, "Safety tips feature coming soon", Toast.LENGTH_SHORT).show()
-        }
+//        btnMoreSafetyTips.setOnClickListener {
+//            Toast.makeText(context, "Safety tips feature coming soon", Toast.LENGTH_SHORT).show()
+//        }
 
-        btnLearnMore.setOnClickListener {
-            Toast.makeText(context, "About Tempest feature coming soon", Toast.LENGTH_SHORT).show()
-        }
+//        btnLearnMore.setOnClickListener {
+//            Toast.makeText(context, "About Tempest feature coming soon", Toast.LENGTH_SHORT).show()
+//        }
 
         settingsButton.setOnClickListener {
             navigateToProfileFragment()

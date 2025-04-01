@@ -31,14 +31,14 @@ class AlertsAdapter(
         val tvAlertDate: TextView = itemView.findViewById(R.id.tvAlertDate)
         val tvAlertDistance: TextView = itemView.findViewById(R.id.tvAlertDistance)
 
-        init {
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(events[position])
-                }
-            }
-        }
+//        init {
+//            itemView.setOnClickListener {
+//                val position = adapterPosition
+//                if (position != RecyclerView.NO_POSITION) {
+//                    onItemClick(events[position])
+//                }
+//            }
+//        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
