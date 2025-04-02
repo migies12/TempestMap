@@ -53,7 +53,7 @@ exports.createUser = async (req, res) => {
     try {
         await dynamoDB.put(params).promise();
         // Optionally send notifications after user creation
-        //notifyUsers();
+        notifyUsers();
         res.status(200).json({
             message: 'User created successfully',
             user: newUser,
