@@ -1,16 +1,8 @@
-//const { initializeApp, applicationDefault } = require('firebase-admin/app');
+const { initializeApp, applicationDefault } = require('firebase-admin/app');
 const { getMessaging } = require('firebase-admin/messaging');
 
-/*const firebaseApp = initializeApp({
-  credential: applicationDefault(),
-  projectId: 'tempestmap-f0234'
-});*/
-
-const admin = require('firebase-admin');
-const serviceAccount = require('/home/ec2-user/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+const firebaseApp = initializeApp({
+  credential: applicationDefault()
 });
 
-module.exports = { admin, getMessaging };
+module.exports = { firebaseApp, getMessaging };
