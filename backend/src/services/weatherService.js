@@ -2,6 +2,7 @@ const axios = require('axios');
 const csv = require('csv-parser');
 const { v4: uuidv4 } = require('uuid');
 const dynamoDB = require('../config/aws');
+const notifyUsers = require('../services/notificationService');
 
 const deleteAllEvents = async () => {
     try {
@@ -51,6 +52,7 @@ const appendEvents = async (events) => {
 
         try {
             await dynamoDB.put(params).promise();
+            notifyUsers();
             console.log(`Inserted event ${event.event_id}`);
         } catch (error) {
             console.error(`Error inserting event ${event.event_id}:`, error);
