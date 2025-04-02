@@ -27,7 +27,7 @@ jobs:
           
       - name: Create service account JSON file
         run: |
-          cat <<EOF > backend/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          cat <<EOF > backend/src/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
           {
             "type": "service_account",
             "project_id": "tempestmap-f0234",
