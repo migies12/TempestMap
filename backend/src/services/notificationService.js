@@ -47,7 +47,7 @@ const notifyUsers = async () => {
                 event.event_type
             );
             console.log("danger level: ", dangerLevel);
-            if (dangerLevel > -1) {
+            if (dangerLevel > 25) {
                 console.log(
                     `lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`
                 );
