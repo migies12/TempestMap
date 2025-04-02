@@ -5,7 +5,7 @@ module.exports = {
       '**/*.{js,jsx}',
       '!**/*.config.js',
       '!**/index.js',
-      '!tempest.js',
+      '!src/tempest.js',
       '!**/coverage/**',
       '!**/tests/**',
       '!**/jobs/**'

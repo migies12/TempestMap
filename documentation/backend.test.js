@@ -22,7 +22,7 @@ jest.mock('axios');
 
 const request = require('supertest');
 // Updated app import for the refactored project structure
-const app = require('../../app');
+const app = require('../backend/src/app');
 const AWS = require('aws-sdk');
 const axios = require('axios');
 

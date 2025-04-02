@@ -60,7 +60,7 @@ exports.addComment = async (req, res) => {
 };
 
 exports.getComments = async (req, res) => {
-    const { event_id } = req.params;
+    const { event_id } = req.params.event_id;
     if (!event_id) {
         return res
             .status(400)

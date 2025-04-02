@@ -6,13 +6,15 @@
 
 - **February 24th, 2025: Added custom markers**: Users can now add custom markers for safehouses, resource points, and dangers. This is an extra interaction for users that is useful to share important information amidst dangerous ennvironmental factors. It allows users to share information that may be more important than a simple comment on a weather marker.
 
-- **x___x, 2025: Added Save Locations Use Case**: Users can save important locations for easy tracking and notifications. This use case is for users that may have important locations they would like to be able to be able to receive updates on, for example a second house.
+- **February 24th, 2025: Added Save Locations Use Case**: Users can save important locations for easy tracking and notifications. This use case is for users that may have important locations they would like to be able to be able to receive updates on, for example a second house.
 
 - **February 26th, 2025: Added Google Sign-In and Authnetication**: Users are now redirected to a sign-in page if they are not signed in. After users sign in, they are redirected to a profile page where they can update information about their profile.
 
 - **March 2nd, 2025: Added Front-End Notification Functionality**: Users can now enable notifications and notifications can be received and displayed.
 
 - **March 4th, 2025: Added Back-End Notification and User Functionality**: Updated the POST /user endpoint to match new notification functionality, as well as not duplicate users by viewing user_id. Notification system is also in place to be sent, sending a test notification to users when they save their profile.
+
+- **April 30th, 2025: Added User Marker**: 
 
 ## 2. Project Description
 
@@ -30,7 +32,7 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 
 ### **3.1. Use-Case Diagram**
 
-![image](documentation/images/use-caseDiagram.jpeg)
+![image](images/use-caseDiagram.jpeg)
 
 ### **3.2. Actors Description**
 
@@ -181,27 +183,27 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 
 1. **App Icon**
 
-<img src="documentation/images/tempest-appicon.png" alt="App Icon" width="100">
+<img src="images/tempest-appicon.png" alt="App Icon" width="100">
 
 2. **Create Account**
 
-![image](documentation/mockup/create_account.png)
+![image](mockup/create_account.png)
 
 3. **Profile**
 
-![image](documentation/mockup/profile.png)
+![image](mockup/profile.png)
 
 4. **Home**
 
-![image](documentation/mockup/home_page.png)
+![image](mockup/home_page.png)
 
 5. **Map**
 
-![image](documentation/mockup/map.png)
+![image](mockup/map.png)
 
 6. **Alert**
 
-![image](documentation/mockup/alert.png)
+![image](mockup/alert.png)
 
 ### **3.5. Non-Functional Requirements**
 
@@ -369,32 +371,32 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 
 ### **4.5.1 Dependencies Diagram**
 
-![Dependency Diagram](documentation/images/4.5v2.png)
+![Dependency Diagram](images/4.5v2.png)
 
 ### **4.5.2 Cloud Architecture**
 
-![Dependency Diagram](documentation/images/cloud_architecture.png)
+![Dependency Diagram](images/cloud_architecture.png)
 
 ### **4.6. Functional Requirements Sequence Diagram**
 
 1. [**Create Account**](#fr1)
 
-      ![Dependency Diagram](documentation/images/CU_sequence.jpg)
+      ![Dependency Diagram](images/CU_sequence.jpg)
 2. [**Add Comment**](#fr1)
 
-      ![Dependency Diagram](documentation/images/addComment_sequence.jpg)
+      ![Dependency Diagram](images/addComment_sequence.jpg)
 3. [**Select Marker**](#fr1)
 
-      ![Dependency Diagram](documentation/images/selectMarker_sequence.jpg)
+      ![Dependency Diagram](images/selectMarker_sequence.jpg)
 4. [**Add Custom Marker**](#fr1)
 
-      ![Dependency Diagram](documentation/images/customMarker_sequence.jpg)
+      ![Dependency Diagram](images/customMarker_sequence.jpg)
 5. [**Save Location to Favorites**](#fr1)
 
-      ![Dependency Diagram](documentation/images/saveLocation_sequence.jpg)
+      ![Dependency Diagram](images/saveLocation_sequence.jpg)
 6. [**Enable Warning Notifications**](#fr1)
 
-      ![Dependency Diagram](documentation/images/enable_notifications_sequence.png)
+      ![Dependency Diagram](images/enable_notifications_sequence.png)
 
 ### **4.7. Non-Functional Requirements Design**
 
