@@ -76,6 +76,7 @@ const notifyUsers = async () => {
                     .catch((error) => {
                         console.error('Error sending message:', error);
                     });
+                break;
             }
         }
     }
