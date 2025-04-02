@@ -129,14 +129,12 @@ class MapViewModel : ViewModel() {
             type = type,
             latitude = latitude,
             longitude = longitude,
-            description = description
+            description = description,
+            comments = emptyList()
         )
 
-        val test = repository.postUserMarker( id = UUID.randomUUID().toString(),
-            type = type,
-            latitude = latitude,
-            longitude = longitude,
-            description = description)
+
+        val test = repository.postUserMarker(marker)
 
         Log.d("addUserMarker", "test: $test")
 

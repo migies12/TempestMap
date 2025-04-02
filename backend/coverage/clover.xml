@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1743577757133" clover="3.2.0">
-  <project timestamp="1743577757134" name="All files">
-    <metrics statements="298" coveredstatements="252" conditionals="108" coveredconditionals="96" methods="25" coveredmethods="19" elements="431" coveredelements="367" complexity="0" loc="298" ncloc="298" packages="6" files="15" classes="15"/>
+<coverage generated="1743622984933" clover="3.2.0">
+  <project timestamp="1743622984934" name="All files">
+    <metrics statements="305" coveredstatements="255" conditionals="108" coveredconditionals="96" methods="25" coveredmethods="19" elements="438" coveredelements="370" complexity="0" loc="305" ncloc="305" packages="6" files="15" classes="15"/>
     <package name="src">
       <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="app.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/app.js">
@@ -23,7 +23,7 @@
       </file>
     </package>
     <package name="src.config">
-      <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="aws.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/config/aws.js">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="10" type="stmt"/>
@@ -33,15 +33,16 @@
         <line num="7" count="10" type="stmt"/>
       </file>
       <file name="firebase.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/config/firebase.js">
-        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="10" type="stmt"/>
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="2" count="10" type="stmt"/>
-        <line num="4" count="10" type="stmt"/>
-        <line num="8" count="10" type="stmt"/>
+        <line num="9" count="10" type="stmt"/>
+        <line num="11" count="10" type="stmt"/>
+        <line num="13" count="10" type="stmt"/>
+        <line num="17" count="10" type="stmt"/>
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="164" coveredstatements="162" conditionals="94" coveredconditionals="90" methods="17" coveredmethods="16"/>
+      <metrics statements="165" coveredstatements="163" conditionals="94" coveredconditionals="90" methods="17" coveredmethods="16"/>
       <file name="commentsController.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/controllers/commentsController.js">
         <metrics statements="53" coveredstatements="53" conditionals="35" coveredconditionals="33" methods="4" coveredmethods="4"/>
         <line num="1" count="10" type="stmt"/>
@@ -172,7 +173,7 @@
         <line num="61" count="1" type="stmt"/>
       </file>
       <file name="usersController.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/controllers/usersController.js">
-        <metrics statements="47" coveredstatements="47" conditionals="35" coveredconditionals="35" methods="3" coveredmethods="3"/>
+        <metrics statements="48" coveredstatements="48" conditionals="35" coveredconditionals="35" methods="3" coveredmethods="3"/>
         <line num="1" count="10" type="stmt"/>
         <line num="2" count="10" type="stmt"/>
         <line num="3" count="10" type="stmt"/>
@@ -186,40 +187,41 @@
         <line num="12" count="4" type="cond" truecount="2" falsecount="0"/>
         <line num="13" count="4" type="cond" truecount="2" falsecount="0"/>
         <line num="14" count="4" type="stmt"/>
-        <line num="16" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="24" count="1" type="stmt"/>
-        <line num="29" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="33" count="3" type="stmt"/>
-        <line num="46" count="3" type="stmt"/>
-        <line num="51" count="3" type="stmt"/>
-        <line num="52" count="3" type="stmt"/>
-        <line num="54" count="2" type="stmt"/>
-        <line num="55" count="2" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
-        <line num="61" count="1" type="stmt"/>
-        <line num="65" count="10" type="stmt"/>
-        <line num="66" count="4" type="stmt"/>
-        <line num="68" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="69" count="1" type="stmt"/>
-        <line num="74" count="3" type="stmt"/>
-        <line num="79" count="3" type="stmt"/>
-        <line num="80" count="3" type="stmt"/>
-        <line num="81" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="82" count="1" type="stmt"/>
+        <line num="16" count="4" type="stmt"/>
+        <line num="18" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="31" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="67" count="10" type="stmt"/>
+        <line num="68" count="4" type="stmt"/>
+        <line num="70" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="81" count="3" type="stmt"/>
+        <line num="82" count="3" type="stmt"/>
+        <line num="83" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="84" count="1" type="stmt"/>
         <line num="86" count="1" type="stmt"/>
-        <line num="87" count="1" type="stmt"/>
-        <line num="91" count="10" type="stmt"/>
-        <line num="92" count="3" type="stmt"/>
-        <line num="93" count="3" type="cond" truecount="5" falsecount="0"/>
-        <line num="94" count="1" type="stmt"/>
-        <line num="99" count="2" type="stmt"/>
-        <line num="110" count="2" type="stmt"/>
-        <line num="111" count="2" type="stmt"/>
-        <line num="112" count="1" type="stmt"/>
-        <line num="117" count="1" type="stmt"/>
-        <line num="118" count="1" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="89" count="1" type="stmt"/>
+        <line num="93" count="10" type="stmt"/>
+        <line num="94" count="3" type="stmt"/>
+        <line num="95" count="3" type="cond" truecount="5" falsecount="0"/>
+        <line num="96" count="1" type="stmt"/>
+        <line num="101" count="2" type="stmt"/>
+        <line num="112" count="2" type="stmt"/>
+        <line num="113" count="2" type="stmt"/>
+        <line num="114" count="1" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="120" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.routes">
@@ -264,43 +266,48 @@
       </file>
     </package>
     <package name="src.services">
-      <metrics statements="73" coveredstatements="39" conditionals="14" coveredconditionals="6" methods="7" coveredmethods="3"/>
+      <metrics statements="78" coveredstatements="40" conditionals="14" coveredconditionals="6" methods="7" coveredmethods="3"/>
       <file name="notificationService.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/services/notificationService.js">
-        <metrics statements="34" coveredstatements="13" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="1"/>
+        <metrics statements="39" coveredstatements="14" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="1"/>
         <line num="1" count="10" type="stmt"/>
         <line num="2" count="10" type="stmt"/>
         <line num="3" count="10" type="stmt"/>
         <line num="5" count="10" type="stmt"/>
         <line num="6" count="2" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
         <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
-        <line num="11" count="2" type="stmt"/>
         <line num="12" count="2" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
         <line num="27" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="35" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
-        <line num="44" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="45" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="67" count="0" type="stmt"/>
-        <line num="70" count="0" type="stmt"/>
-        <line num="77" count="10" type="stmt"/>
+        <line num="50" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="84" count="10" type="stmt"/>
       </file>
       <file name="weatherService.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/services/weatherService.js">
         <metrics statements="39" coveredstatements="26" conditionals="10" coveredconditionals="6" methods="4" coveredmethods="2"/>
