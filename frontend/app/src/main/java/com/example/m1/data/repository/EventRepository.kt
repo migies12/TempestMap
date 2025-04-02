@@ -206,13 +206,16 @@ class EventRepository {
      * @return True if successful, false otherwise
      */
     suspend fun postUserMarker(
-        id: String? = null,
-        type: String,
-        latitude: Double,
-        longitude: Double,
-        description: String,
-        comments: List<Comment> = emptyList()
+        marker: UserMarker
     ): Boolean = withContext(Dispatchers.IO) {
+
+        val id = marker.id
+        val type = marker.type
+        val latitude = marker.latitude
+        val longitude = marker.longitude
+        val description = marker.description
+        val comments = marker.comments
+
         try {
             suspendCoroutine { continuation ->
                 apiService.postUserMarker(

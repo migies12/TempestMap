@@ -14,6 +14,8 @@ import com.example.m1.data.models.UserMarker
 import com.example.m1.ui.viewmodels.MapViewModel
 import com.mapbox.geojson.Point
 import kotlinx.coroutines.launch
+import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Dialog for creating custom markers
@@ -100,8 +102,13 @@ class CreateMarkerDialog(
 
                 // Dismiss dialog
                 dialog.dismiss()
-            } catch (e: Exception) {
-                Toast.makeText(context, "Failed to create marker: ${e.message}", Toast.LENGTH_SHORT).show()
+            } catch (e: CancellationException) {
+                // Handle coroutine cancellation
+                // Might not need to show a toast for this case
+                e.printStackTrace()
+            } catch (e: IOException) {
+                // Handle network or file I/O errors
+                Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
                 e.printStackTrace()
             }
         } ?: run {
