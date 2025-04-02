@@ -11,4 +11,4 @@ backend/src/.env
 # Test
 backend/coverage/
 
-backend/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+backend/src/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json

@@ -1,10 +1,10 @@
-# M5: Testing and Code Review
+# M6: Testing and Code Review
 
 ## 1. Change History
 
 | **Change Date**   | **Modified Sections** | **Rationale** |
 | ----------------- | --------------------- | ------------- |
-| March 31st | **Back-end Test**: Backend File Structure | After M5 Feedback, we refactored our codebase from a monofile to MVC architecture including folders for config, jobs, services, utils, etc.
+| March 31st | **Back-end Test**: Backend File Structure | After M5 Feedback, we refactored our codebase from a monofile to MVCS architecture including folders for config, jobs, services, utils, etc.
 | March 31st | **Back-end Test**: Mock + Unmocked Test | From refactoring, we recoded our test cases covering not only 500 errors but route and controller specific errors
 | April 2nd | **Back-end Test**: Mock + Unmocked Test | 
 
@@ -18,17 +18,19 @@
 
 | **Interface**                 | **Group Location (No Mocks)** | **Group Location (With Mocks)** | **Mocked Components**               |
 | ----------------------------- | ----------------------------- | ------------------------------- | ----------------------------------- |
-| **GET /**                     | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | None                                |
-| **POST /test_cron**           | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | axios, External Disaster API        |
-| **GET /event**                | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB scan                       |
-| **POST /event/custom**        | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB put, uuid generation       |
-| **GET /event/firms**          | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | axios, csv-parser                   |
-| **POST /comment/:event_id**   | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB update, uuid generation    |
-| **GET /comment/:event_id**    | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB get                        |
-| **DELETE /comment/:event_id** | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB delete & update operations |
-| **POST /user**                | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB put, Firebase Messaging    |
-| **GET /user/:user_id**        | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB get                        |
-| **POST /user/locations**      | `tests/mock/backend.test.js`  | `tests/unmock/backend.test.js`  | DynamoDB update                     |
+| **GET /**                     | `tests/unmock/index.test.js`  | `tests/mock/index.test.js`  | None                                |
+| **POST /test_cron**           | `tests/unmock/index.test.js`  | `tests/mock/index.test.js`  | axios, External Disaster API        |
+| **GET /event**                | `tests/unmock/events.test.js`  | `tests/mock/events.test.js`  | DynamoDB                      |
+| **POST /event/custom**        | `tests/unmock/events.test.js`  | `tests/mock/events.test.js`  | DynamoDB, uuid generation       |
+| **GET /event/firms**          | `tests/unmock/events.test.js`  | `tests/mock/events.test.js`  | axios, csv-parser                   |
+| **POST /comment/:event_id**   | `tests/unmock/comments.test.js`  | `tests/mock/comments.test.js`  | DynamoDB, uuid generation    |
+| **GET /comment/:event_id**    | `tests/unmock/comments.test.js`  | `tests/mock/comments.test.js`  | DynamoDB                         |
+| **DELETE /comment/:event_id** | `tests/unmock/comments.test.js`  | `tests/mock/comments.test.js`  | DynamoDB  |
+| **POST /user**                | `tests/unmock/users.test.js`  | `tests/mock/users.test.js`  | DynamoDB , Firebase Messaging    |
+| **GET /user/:user_id**        | `tests/unmock/users.test.js`  | `tests/mock/users.test.js`  | DynamoDB                         |
+| **POST /user/locations**      | `tests/unmock/users.test.js`  | `tests/mock/users.test.js`  | DynamoDB                      |
+| **POST /user_marker**      | `tests/unmock/markers.test.js`  | `tests/mock/marker.test.js`  | DynamoDB                      |
+| **GET /user_marker**      | `tests/unmock/markers.test.js`  | `tests/mock/marker.test.js`  | axios, DynamoDB                  |
 
 #### 2.1.2. Commit Hash Where Tests Run
 
@@ -38,23 +40,19 @@
 
 **Clone the Repository**:
 
-- Open your terminal and run:
-  ```
-  git clone https://github.com/migies12/TempestMap.git
-  cd Tempest/Backend
-  ```
-- For General (Mock + Unmock)
-  ```
-  npm test
-  ```
-- For Mock ONLY
-  ```
-  npm run test-mock
-  ```
-- For Unmock ONLY
-  ```
-  npm run test-unmock
-  ```
+1. Clone the Repository:
+    ```bash
+    git clone https://github.com/migies12/TempestMap.git
+    ```
+
+2. Build:
+    ```bash
+    cd backend
+    npm install
+    npm run test
+    ```
+    NOTE: For the test to run, you need config a firebase messging service in order to run the tests, please contact the team for environment files when needed. 
+
 
 ### 2.2. GitHub Actions Configuration Location
 
@@ -77,15 +75,15 @@ The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-
 | 584-616           | **Helper Function:dangerLevelCalc**                                          |                                                                                                                                |
 | 624-625           | **Server startup**, `app.listen`.                                            | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered. |
 
-![image](documentation/images/jest/mock.png)
+![image](images/jest/full_test.png)
 
 ### 2.4. Jest Coverage Report Screenshots Without Mocks
 
-![image](documentation/images/jest/unmock.png)
+![image](images/jest/unmock_test.png)
 
-### 2.5. Jest Coverage Report Screenshots with and without Mocks
+### 2.5. Jest Coverage Report Screenshots With Mocks
 
-![image](documentation/images/jest/mock_unmock.png)
+![image](images/jest/mock_test.png)
 
 ---
 

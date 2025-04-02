@@ -107,7 +107,7 @@ describe('fetchDisasterData success scenario', () => {
         // Assertions on axios calls.
         expect(axios.get).toHaveBeenCalledTimes(2);
 
-        expect(dynamoDB.scan).toHaveBeenCalledTimes(1);
+        expect(dynamoDB.scan).toHaveBeenCalledTimes(5);
 
         // The combined events from both API responses should be 2.
         expect(dynamoDB.put).toHaveBeenCalledTimes(2);
