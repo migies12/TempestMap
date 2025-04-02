@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { fetchDisasterData } = require('../services/disasterService');
+const { fetchDisasterData } = require('../services/weatherService');
 
 // Schedule the job to run at the start of every hour
 cron.schedule('0 * * * *', () => {

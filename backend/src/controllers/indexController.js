@@ -1,4 +1,4 @@
-const { fetchDisasterData } = require('../services/disasterService');
+const { fetchDisasterData } = require('../services/weatherService');
 
 exports.home = (req, res) => {
     res.status(200).json({ message: 'Success' });
