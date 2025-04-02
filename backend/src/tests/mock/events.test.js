@@ -15,6 +15,7 @@ jest.mock('aws-sdk', () => {
 });
 jest.mock('axios');
 
+const EventEmitter = require('events');
 const request = require('supertest');
 const app = require('../../app');
 const AWS = require('aws-sdk');
@@ -47,6 +48,7 @@ describe('MOCK: Events Route', () => {
     });
 
     describe('GET /event/firms', () => {
+
         it('should return 500 if an error occurs fetching data', async () => {
             // Simulate axios.get failure for FIRMS data
             axios.get.mockRejectedValue(new Error('FIRMS fetch error'));
@@ -55,5 +57,6 @@ describe('MOCK: Events Route', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty('error', 'Failed to fetch FIRMS data');
         });
+
     });
 });

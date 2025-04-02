@@ -57,8 +57,9 @@ describe('MOCK: Comments Route', () => {
     describe('GET /comment/:event_id', () => {
         
         it('should return 400 if event_id is missing', async () => {
-            const response = await request(app).get('/comment/');
-            expect(response.status).toBeGreaterThanOrEqual(400);
+            const response = await request(app).get('/comment');
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Missing event_id in the URL parameter.');
         });
 
         it('should return 404 if no event found', async () => {
@@ -72,7 +73,7 @@ describe('MOCK: Comments Route', () => {
             expect(response.body).toHaveProperty('error', 'Event not found.');
         });
 
-        it('should return 400 if missing required parameters', async () => {
+        it('should return 400 if incorrect required parameters', async () => {
             const response = await request(app).post('/comment/123').send({ comment: 'Nice event', user: 'John', type: 'test' });
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('error', 'Invalid table type');

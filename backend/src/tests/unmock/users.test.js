@@ -36,7 +36,7 @@ jest.mock('aws-sdk', () => {
      *  POST /user
      * -------------------------- */
     describe('POST /user', () => {
-      it('should create a user and return 201', async () => {
+      it('create a user and return 200', async () => {
         docClient.put.mockReturnValueOnce({
           promise: jest.fn().mockResolvedValue({}),
         });
@@ -55,13 +55,41 @@ jest.mock('aws-sdk', () => {
   
         const response = await request(app).post('/user').send(userData);
   
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(200);
         expect(response.body).toHaveProperty(
           'message',
           'User created successfully'
         );
         expect(docClient.put).toHaveBeenCalled();
       });
+
+      it('should create a user (without id) and return 200', async () => {
+        docClient.put.mockReturnValueOnce({
+          promise: jest.fn().mockResolvedValue({}),
+        });
+  
+        const userData = {
+          name: 'Test User',
+          location: 'Testville',
+          latitude: 12.34,
+          longitude: 56.78,
+          account_type: 'basic',
+          email: 'test@example.com',
+          regToken: 'abc123',
+          notifications: true,
+        };
+  
+        const response = await request(app).post('/user').send(userData);
+  
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty(
+          'message',
+          'User created successfully'
+        );
+        expect(docClient.put).toHaveBeenCalled();
+      });
+
+
     });
   
     /* --------------------------
