@@ -26,16 +26,16 @@ describe('MOCK: Index Route', () => {
         jest.spyOn(console, 'log').mockImplementation(() => {});
     });
 
-    // describe('POST /test_cron', () => {
-    //     it('should return 500 if an error occurs', async () => {
-    //         // Force axios.get to fail to simulate error handling
-    //         axios.get.mockRejectedValue(new Error('Some fetch error'));
+    describe('POST /test_cron', () => {
+        it('should return 500 if an error occurs', async () => {
+            // Force axios.get to fail to simulate error handling
+            axios.get.mockRejectedValue(new Error('Some fetch error'));
 
-    //         const response = await request(app).post('/test_cron');
-    //         expect(response.status).toBe(500);
-    //         expect(response.body).toHaveProperty('error', 'Error fetching disaster data');
-    //     });
-    // });
+            const response = await request(app).post('/test_cron');
+            expect(response.status).toBe(500);
+            expect(response.body).toHaveProperty('error', 'Error fetching disaster data');
+        });
+    });
 
     // Optionally, you can add a test for GET / (home) if needed.
     describe('GET /', () => {

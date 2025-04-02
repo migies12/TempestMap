@@ -38,14 +38,16 @@ describe('MOCK: Marker Route', () => {
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty(
                 'error',
-                'Missing type, latitude, longitude, or description',
+                'Missing type, latitude, longitude, or description'
             );
         });
 
         it('should return 500 if DynamoDB put fails', async () => {
             // Simulate failure on DynamoDB put
             docClient.put.mockReturnValueOnce({
-                promise: jest.fn().mockRejectedValue(new Error('DynamoDB Put Error')),
+                promise: jest
+                    .fn()
+                    .mockRejectedValue(new Error('DynamoDB Put Error')),
             });
 
             const response = await request(app).post('/user_marker').send({
@@ -56,9 +58,27 @@ describe('MOCK: Marker Route', () => {
             });
 
             expect(response.status).toBe(500);
-            expect(response.body).toHaveProperty('error', 'Error creating user marker');
+            expect(response.body).toHaveProperty(
+                'error',
+                'Error creating user marker'
+            );
         });
     });
 
-    // You can add tests for GET /user_marker if needed.
+    it('should return 500 if an error occurs during scan', async () => {
+        const errorMessage = 'Test error message';
+
+        // Mock the dynamoDB.scan method to reject with an error
+        jest.spyOn(docClient, 'scan').mockReturnValue({
+            promise: () => Promise.reject(new Error(errorMessage)),
+        });
+
+        // Make the GET request through the route
+        const response = await request(app).get('/user_marker');
+
+        // Assert that the error is handled properly
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty('error', 'Failed to fetch markers');
+        expect(response.body).toHaveProperty('details', errorMessage);
+    });
 });

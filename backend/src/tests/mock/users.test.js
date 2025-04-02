@@ -65,6 +65,13 @@ describe('MOCK: Users Route', () => {
     });
 
     describe('GET /user/:user_id', () => {
+
+        it('should return 400 if user_id missing', async () => {
+            const response = await request(app).get('/user').send({});
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Missing user_id in URL parameter.');
+        });
+
         it('should return 404 if user not found', async () => {
             // Simulate no user found
             docClient.get.mockReturnValueOnce({
