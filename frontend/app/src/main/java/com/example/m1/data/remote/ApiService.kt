@@ -51,6 +51,6 @@ interface ApiService {
     @POST("prod/user_marker")
     fun postUserMarker(@Body userMarker: UserMarker): Call<Void>
 
-    @GET("prod/user_markers") // Adjust endpoint as needed
+    @GET("prod/user_marker") // Adjust endpoint as needed
     fun getAllUserMarkers(): Call<UserMarkerResponse>
 }
