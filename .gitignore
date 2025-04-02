@@ -6,7 +6,7 @@ backend/node_modules
 backend/m1.js
 
 # Env
-backend/.env
+backend/src/.env
 
 # Test
 backend/coverage

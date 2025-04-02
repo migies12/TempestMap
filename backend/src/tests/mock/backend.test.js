@@ -53,7 +53,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error fetching disaster data'
+                'Error fetching disaster data',
             );
         });
     });
@@ -74,7 +74,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error fetching events'
+                'Error fetching events',
             );
         });
     });
@@ -90,7 +90,7 @@ describe('Backend Tests (Errors)', () => {
             // The error message from our controller is 'Missing type, latitude, longitude, or description'
             expect(response.body).toHaveProperty(
                 'error',
-                'Missing type, latitude, longitude, or description'
+                'Missing type, latitude, longitude, or description',
             );
         });
 
@@ -113,7 +113,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error creating user marker'
+                'Error creating user marker',
             );
         });
     });
@@ -129,7 +129,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Failed to fetch FIRMS data'
+                'Failed to fetch FIRMS data',
             );
         });
     });
@@ -144,7 +144,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty(
                 'error',
-                'Missing required parameters'
+                'Missing required parameters',
             );
         });
 
@@ -162,7 +162,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Failed to add comment'
+                'Failed to add comment',
             );
         });
     });
@@ -198,7 +198,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error retrieving comments.'
+                'Error retrieving comments.',
             );
         });
     });
@@ -212,7 +212,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty(
                 'error',
-                'Missing event_id or comment_id in request body.'
+                'Missing event_id or comment_id in request body.',
             );
         });
 
@@ -264,7 +264,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error removing comment.'
+                'Error removing comment.',
             );
         });
     });
@@ -299,7 +299,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error creating user'
+                'Error creating user',
             );
         });
     });
@@ -329,7 +329,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error retrieving user'
+                'Error retrieving user',
             );
         });
     });
@@ -362,7 +362,7 @@ describe('Backend Tests (Errors)', () => {
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty(
                 'error',
-                'Error updating user location'
+                'Error updating user location',
             );
         });
     });
