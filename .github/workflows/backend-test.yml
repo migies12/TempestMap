@@ -26,13 +26,13 @@ jobs:
           npm install
           
       - name: Generate Firebase service account file
-        working-directory: ./backend
+        working-directory: ./backend/src
         run: |
           # Escape newlines and quotes for JSON
           PRIVATE_KEY_ESCAPED=$(echo "${{ secrets.PRIVATE_KEY }}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}' | tr -d '\n')
           
           # Create the service account JSON
-          cat > service-account.json <<EOF
+          cat > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json <<EOF
           {
             "type": "service_account",
             "project_id": "tempestmap-f0234",
@@ -50,7 +50,7 @@ jobs:
           
           # Verify the file was created (without exposing key)
           echo "Service account file generated successfully"
-          ls -la service-account.json
+          ls -la tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
           
       - name: Debug Firebase Key
         working-directory: ./backend
