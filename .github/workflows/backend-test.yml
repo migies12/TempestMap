@@ -25,6 +25,33 @@ jobs:
           cd backend
           npm install
           
+      - name: Generate Firebase service account file
+        working-directory: ./backend
+        run: |
+          # Escape newlines and quotes for JSON
+          PRIVATE_KEY_ESCAPED=$(echo "${{ secrets.PRIVATE_KEY }}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}' | tr -d '\n')
+          
+          # Create the service account JSON
+          cat > service-account.json <<EOF
+          {
+            "type": "service_account",
+            "project_id": "tempestmap-f0234",
+            "private_key_id": "cb8db3f6e98e0bc166291808c78a0684a57a18e2",
+            "private_key": "$PRIVATE_KEY_ESCAPED",
+            "client_email": "firebase-adminsdk-fbsvc@tempestmap-f0234.iam.gserviceaccount.com",
+            "client_id": "107007959838485127095",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40tempestmap-f0234.iam.gserviceaccount.com",
+            "universe_domain": "googleapis.com"
+          }
+          EOF
+          
+          # Verify the file was created (without exposing key)
+          echo "Service account file generated successfully"
+          ls -la service-account.json
+          
       - name: Debug Firebase Key
         working-directory: ./backend
         run: |
