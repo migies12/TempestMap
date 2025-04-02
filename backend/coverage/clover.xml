@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1743622984933" clover="3.2.0">
-  <project timestamp="1743622984934" name="All files">
-    <metrics statements="305" coveredstatements="255" conditionals="108" coveredconditionals="96" methods="25" coveredmethods="19" elements="438" coveredelements="370" complexity="0" loc="305" ncloc="305" packages="6" files="15" classes="15"/>
+<coverage generated="1743623519691" clover="3.2.0">
+  <project timestamp="1743623519691" name="All files">
+    <metrics statements="300" coveredstatements="250" conditionals="108" coveredconditionals="96" methods="25" coveredmethods="19" elements="433" coveredelements="365" complexity="0" loc="300" ncloc="300" packages="6" files="14" classes="14"/>
     <package name="src">
       <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="app.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/app.js">
@@ -23,7 +23,7 @@
       </file>
     </package>
     <package name="src.config">
-      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="aws.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/config/aws.js">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="10" type="stmt"/>
@@ -31,14 +31,6 @@
         <line num="4" count="10" type="stmt"/>
         <line num="5" count="10" type="stmt"/>
         <line num="7" count="10" type="stmt"/>
-      </file>
-      <file name="firebase.js" path="/Users/martintang/Desktop/Github/TempestMap/backend/src/config/firebase.js">
-        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="2" count="10" type="stmt"/>
-        <line num="9" count="10" type="stmt"/>
-        <line num="11" count="10" type="stmt"/>
-        <line num="13" count="10" type="stmt"/>
-        <line num="17" count="10" type="stmt"/>
       </file>
     </package>
     <package name="src.controllers">

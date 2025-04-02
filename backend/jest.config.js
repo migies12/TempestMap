@@ -8,7 +8,8 @@ module.exports = {
       '!src/tempest.js',
       '!**/coverage/**',
       '!**/tests/**',
-      '!**/jobs/**'
+      '!**/jobs/**',
+      '!src/config/firebase.js'
     ],
     verbose: true,
   };
