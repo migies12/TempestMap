@@ -25,18 +25,19 @@ jobs:
           cd backend
           npm install
           
-      - name: Create service account JSON file
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      - name: Generate Firebase service account file
+        working-directory: ./backend/src
         run: |
-          mkdir -p backend/src
-          PRIVATE_KEY=$(echo "$PRIVATE_KEY" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
-          cat > backend/src/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json <<EOF
+          # Escape newlines and quotes for JSON
+          PRIVATE_KEY_ESCAPED=$(echo "${{ secrets.PRIVATE_KEY }}" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}' | tr -d '\n')
+          
+          # Create the service account JSON
+          cat > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json <<EOF
           {
             "type": "service_account",
             "project_id": "tempestmap-f0234",
             "private_key_id": "cb8db3f6e98e0bc166291808c78a0684a57a18e2",
-            "private_key": "$PRIVATE_KEY",
+            "private_key": "$PRIVATE_KEY_ESCAPED",
             "client_email": "firebase-adminsdk-fbsvc@tempestmap-f0234.iam.gserviceaccount.com",
             "client_id": "107007959838485127095",
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -46,6 +47,10 @@ jobs:
             "universe_domain": "googleapis.com"
           }
           EOF
+          
+          # Verify the file was created (without exposing key)
+          echo "Service account file generated successfully"
+          ls -la service-account.json
       
       - name: Run Jest tests in backend
         run: |
