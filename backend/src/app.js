@@ -3,7 +3,6 @@ const app = express();
 
 app.use(express.json());
 
-// Mount routes
 const indexRoutes = require('./routes/index');
 const eventRoutes = require('./routes/events');
 const markersRoutes = require('./routes/markers');
@@ -12,8 +11,8 @@ const usersRoutes = require('./routes/users');
 
 app.use('/', indexRoutes);
 app.use('/event', eventRoutes);
-app.use('/user_marker', markersRoutes); // For marker creation
-app.use('/user_markers', markersRoutes); // For fetching markers
+app.use('/user_marker', markersRoutes);
+app.use('/user_markers', markersRoutes);
 app.use('/comment', commentsRoutes);
 app.use('/user', usersRoutes);
 
