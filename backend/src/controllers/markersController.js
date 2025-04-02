@@ -42,7 +42,7 @@ exports.createUserMarker = async (req, res) => {
     }
 };
 
-exports.getUserMarkers = async (req, res) => {
+exports.getUserMarker = async (req, res) => {
     const params = { TableName: 'user_marker' };
     try {
         const result = await dynamoDB.scan(params).promise();

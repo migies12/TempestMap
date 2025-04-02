@@ -12,7 +12,6 @@ const usersRoutes = require('./routes/users');
 app.use('/', indexRoutes);
 app.use('/event', eventRoutes);
 app.use('/user_marker', markersRoutes);
-app.use('/user_markers', markersRoutes);
 app.use('/comment', commentsRoutes);
 app.use('/user', usersRoutes);
 
