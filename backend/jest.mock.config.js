@@ -1,12 +1,19 @@
 module.exports = {
-    // Match tests in the "tests/mock" folder
-    testMatch: ['**/tests/mock/**/*.test.js'],
-    // Specify a unique coverage directory
-    collectCoverage: true,
-    collectCoverageFrom: [
-      '*.{js,jsx}',
-      '!*.config.js'
-    ],
-    coverageDirectory: 'coverage/mock',
-    // Other configuration options can go here
+  testEnvironment: 'node',
+  // Match tests in the "tests/mock" folder (adjust the pattern if needed)
+  testMatch: ['**/tests/mock/**/*.test.js'],
+  collectCoverage: true,
+  // Collect coverage only from source files, excluding config and index files if needed
+  collectCoverageFrom: [
+    '**/*.{js,jsx}',
+    '!**/*.config.js',
+    '!**/index.js',
+    '!tempest.js',
+    '!**/coverage/**',
+    '!**/tests/**',
+    '!**/jobs/**'
+  ],
+  // Specify a unique coverage directory
+  coverageDirectory: 'coverage/mock',
+  verbose: true,
   };
