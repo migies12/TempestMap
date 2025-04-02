@@ -17,7 +17,6 @@ jobs:
           node-version: '20'
 
       - name: Clean npm cache
-          
         run: npm cache clean --force
 
       - name: Install dependencies in backend
@@ -28,13 +27,13 @@ jobs:
       - name: Generate Firebase service account file
         working-directory: ./backend/src
         run: |
-          # Create the service account JSON
-          cat > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json <<EOF
+          # Create the service account JSON with proper escaping
+          cat > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json << 'EOF'
           {
             "type": "service_account",
             "project_id": "tempestmap-f0234",
             "private_key_id": "cb8db3f6e98e0bc166291808c78a0684a57a18e2",
-            "private_key": "${{secrets.PRIVATE_KEY}}",
+            "private_key": "${{ secrets.PRIVATE_KEY }}",
             "client_email": "firebase-adminsdk-fbsvc@tempestmap-f0234.iam.gserviceaccount.com",
             "client_id": "107007959838485127095",
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -49,9 +48,6 @@ jobs:
           echo "Service account file generated successfully"
           ls -la tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
           
-      
-          
-      
       - name: Run Jest tests in backend
         run: |
           cd backend
