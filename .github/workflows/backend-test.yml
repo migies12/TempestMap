@@ -27,6 +27,7 @@ jobs:
           
       - name: Create service account JSON file
         run: |
+          echo '${{ secrets.PRIVATE_KEY }}' | tr -d '\r' | sed 's/\\n/\n/g' > backend/private_key.pem
           cat <<EOF > backend/src/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
           {
             "type": "service_account",
