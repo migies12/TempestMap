@@ -1,8 +1,12 @@
 .history
+node_modules
+
+# Backend
 backend/node_modules
 backend/m1.js
-node_modules
-backend/coverage/lcov-report/base.css
-backend/coverage/lcov-report/prettify.css
-backend/coverage/mock/lcov-report/prettify.css
-backend/coverage/mock/lcov-report/base.css
+
+# Env
+backend/src/.env
+
+# Test
+backend/coverage
