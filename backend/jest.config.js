@@ -9,7 +9,6 @@ module.exports = {
       '!**/coverage/**',
       '!**/tests/**',
       '!**/jobs/**',
-      '!src/config/firebase.js'
     ],
     verbose: true,
   };

@@ -17,14 +17,19 @@ jobs:
           node-version: '20'
 
       - name: Clean npm cache
-          
         run: npm cache clean --force
 
       - name: Install dependencies in backend
         run: |
           cd backend
           npm install
-      
+          
+      - name: Generate Firebase service account file
+        working-directory: ./backend/src
+        run: |
+          echo '${{ secrets.JSON_ENV }}' > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          jq '.' tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          
       - name: Run Jest tests in backend
         run: |
           cd backend
