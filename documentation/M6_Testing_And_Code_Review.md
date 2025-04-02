@@ -45,7 +45,7 @@
     git clone https://github.com/migies12/TempestMap.git
     ```
 
-2. Build:
+2. Build and Run Tests:
     ```bash
     cd backend
     npm install
