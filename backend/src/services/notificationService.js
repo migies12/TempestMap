@@ -33,6 +33,9 @@ const notifyUsers = async () => {
         return;
     }
 
+    console.log("events: ", events);
+    console.log("users: ", users);
+
     for (const user of users) {
         if (!user.notifications) continue;
         for (const event of events) {
