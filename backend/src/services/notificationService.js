@@ -3,6 +3,7 @@ const { getMessaging } = require('../config/firebase');
 const dangerLevelCalc = require('../utils/dangerLevelCalc');
 
 const notifyUsers = async () => {
+    console.log("in notifyUsers");
 
     let events = [];
     try {
@@ -47,6 +48,7 @@ const notifyUsers = async () => {
                     `lat1: ${event.lat}, lon1: ${event.lng}, lat2: ${user.latitude}, lon2: ${user.longitude}, disaster: ${event.event_type}`
                 );
                 console.log('Danger Level: ', dangerLevel);
+                console.log('RegToken: ', user.regToken);
                 const message = {
                     notification: {
                         title: `WARNING: ${event.event_type} detected near your location!`,
