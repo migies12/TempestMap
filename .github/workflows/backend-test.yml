@@ -17,7 +17,6 @@ jobs:
           node-version: '20'
 
       - name: Clean npm cache
-          
         run: npm cache clean --force
 
       - name: Install dependencies in backend
@@ -25,24 +24,12 @@ jobs:
           cd backend
           npm install
           
-      - name: Create service account JSON file
+      - name: Generate Firebase service account file
+        working-directory: ./backend/src
         run: |
-          cat <<EOF > backend/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
-          {
-            "type": "service_account",
-            "project_id": "tempestmap-f0234",
-            "private_key_id": "cb8db3f6e98e0bc166291808c78a0684a57a18e2",
-            "private_key": "${{ secrets.PRIVATE_KEY }}",
-            "client_email": "firebase-adminsdk-fbsvc@tempestmap-f0234.iam.gserviceaccount.com",
-            "client_id": "107007959838485127095",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40tempestmap-f0234.iam.gserviceaccount.com",
-            "universe_domain": "googleapis.com"
-          }
-          EOF
-      
+          echo '${{ secrets.JSON_ENV }}' > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          jq '.' tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          
       - name: Run Jest tests in backend
         run: |
           cd backend
