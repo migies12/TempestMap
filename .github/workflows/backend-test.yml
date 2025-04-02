@@ -49,35 +49,7 @@ jobs:
           echo "Service account file generated successfully"
           ls -la tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
           
-      - name: Debug Firebase Key
-        working-directory: ./backend
-        run: |
-          # Create a safe debug output
-          echo "Checking Firebase key..."
-          KEY_PATH="src/tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json"
-          
-          # Show file exists and permissions
-          ls -la $KEY_PATH
-          
-          # Show first and last 20 chars of private key (safe for logs)
-          echo "Key preview (first/last 20 chars):"
-          PRIVATE_KEY=$(jq -r '.private_key' $KEY_PATH)
-          echo "First 20: ${PRIVATE_KEY:0:20}"
-          echo "Last 20: ${PRIVATE_KEY: -20}"
-          
-          # Verify key has proper PEM markers
-          echo "Checking PEM format..."
-          if [[ "$PRIVATE_KEY" == *"BEGIN PRIVATE KEY"* ]]; then
-            echo "PEM header found ✓"
-          else
-            echo "⚠ Missing PEM header!"
-          fi
-          
-          if [[ "$PRIVATE_KEY" == *"END PRIVATE KEY"* ]]; then
-            echo "PEM footer found ✓"
-          else
-            echo "⚠ Missing PEM footer!"
-          fi
+      
           
       
       - name: Run Jest tests in backend
