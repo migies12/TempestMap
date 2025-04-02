@@ -4,9 +4,9 @@
 
 | **Change Date**   | **Modified Sections** | **Rationale** |
 | ----------------- | --------------------- | ------------- |
-| March 31st | **Back-end Test**: Backend File Structure | After M5 Feedback, we refactored our codebase from a monofile to MVCS architecture including folders for config, jobs, services, utils, etc.
-| March 31st | **Back-end Test**: Mock + Unmocked Test | From refactoring, we recoded our test cases covering not only 500 errors but route and controller specific errors
-| April 2nd | **Back-end Test**: Mock + Unmocked Test | 
+| March 31st | **2. Back-end Test**: Backend File Structure | After M5 Feedback, we refactored our codebase from a monofile to MVCS architecture including folders for config, jobs, services, utils, etc.
+| March 31st | **2. Back-end Test**: Mock + Unmocked Test | From refactoring, we recoded our test cases covering not only 500 errors but route and controller specific errors
+| April 2nd | **2. Back-end Test**: Instructions and Screenshots | With new test cases, the instructions to run the test are more indepth with new results for the coverage
 
 ---
 
@@ -34,7 +34,7 @@
 
 #### 2.1.2. Commit Hash Where Tests Run
 
-`8bddf463318870e0e1e9e2be822cdfeab3af0a7c`
+`__TO_BE_DONE___`
 
 #### 2.1.3. Explanation on How to Run the Tests
 
@@ -59,31 +59,20 @@
 `~/.github/workflows/backend-test.yml`
 
 ### 2.3. Jest Coverage Report Screenshots With Mocks
-
-The uncovered lines is the following: 29-30,130-131,189,283,342,410-418,423,428-451,500,521,529-575,584-616,624-625. Many of these uncovered lines include coverage mistake from jest, untestable routes such as server side errors, and omission of helper function testing. Find below more information on the rationale.
-
-| **Uncover Lines** | **Context**                                                                  | **Rationale**                                                                                                                  |
-| ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| 29-30             | **GET /**, returns `500` on error.                                           | Unable to simulate a server-side error in Jest tests for the `/` endpoint                                                      |
-| 130-131           | **POST /test_cron**, returns `500` on failure calling `fetchDisasterData()`. | Unable to fail the csv parsing as it is a library function                                                                     |
-| 189               | **GET /event/:eventid**, returns `400` on missing event_id                   | Jest fail to cover, despite tested in backend.test.js:216                                                                      |
-| 283               | **POST /user**                                                               | Line to replace user_id with uuidv() if not passed                                                                             |
-| 342               | **GET /user/:user_id**, returns `500` on DB retrieval error.                 | Jest fail to cover, despite tested in backend.test.js:434                                                                      |
-| 410-418           | **Helper Function:deleteEvents**                                             |                                                                                                                                |
-| 428-451           | **Helper Function:appendEvents**                                             |                                                                                                                                |
-| 529-575           | **Helper Function:notifyUsers**                                              |                                                                                                                                |
-| 584-616           | **Helper Function:dangerLevelCalc**                                          |                                                                                                                                |
-| 624-625           | **Server startup**, `app.listen`.                                            | Unit tests don’t include server startup code; typically covered in an integration or end-to-end setup, leaving this uncovered. |
-
-![image](images/jest/full_test.png)
+![image](images/jest/mock_test.png)
 
 ### 2.4. Jest Coverage Report Screenshots Without Mocks
 
 ![image](images/jest/unmock_test.png)
 
-### 2.5. Jest Coverage Report Screenshots With Mocks
+### 2.5. Jest Coverage Report Full Test
 
-![image](images/jest/mock_test.png)
+![image](images/jest/full_test.png)
+
+### 2.6  Reasoning For Files with < 100% coverage
+
+- `notificationService`: The firebase notification service is unable to be mocked for certian failure scenarios hindering the statement coverage for the code
+
 
 ---
 
