@@ -14,7 +14,7 @@
 
 - **March 4th, 2025: Added Back-End Notification and User Functionality**: Updated the POST /user endpoint to match new notification functionality, as well as not duplicate users by viewing user_id. Notification system is also in place to be sent, sending a test notification to users when they save their profile.
 
-- **April 30th, 2025: Added User Marker**: 
+- **March 30th, 2025: Added User Marker**: Updated the dependency diagram for the new User Marker component and database. 
 
 ## 2. Project Description
 
@@ -371,7 +371,7 @@ By combining **real-time weather data** with **community-driven insights**, Temp
 
 ### **4.5.1 Dependencies Diagram**
 
-![Dependency Diagram](images/4.5v2.png)
+![Dependency Diagram](images/4.5v3.png)
 
 ### **4.5.2 Cloud Architecture**
 
