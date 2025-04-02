@@ -6,3 +6,6 @@ backend/coverage/lcov-report/base.css
 backend/coverage/lcov-report/prettify.css
 backend/coverage/mock/lcov-report/prettify.css
 backend/coverage/mock/lcov-report/base.css
+
+# Env
+backend/.env
