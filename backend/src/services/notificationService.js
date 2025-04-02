@@ -4,31 +4,6 @@ const dangerLevelCalc = require('../utils/dangerLevelCalc');
 
 const notifyUsers = async () => {
 
-    const message = {
-        notification: {
-            title: `Testing!`,
-            body: `Testinggggg`,
-        },
-        token: 'eALDsigmQG-C8vTy1AVEDH:APA91bHOvzz1Y-3tOLd7u-4HG9J-Pfi5P_vSMjYRlXwIgR-_etpLGeLotN5Yrjscfs3o_mHfFQgLW0NC8lheee5Z4aTHYiGr1lOvGSGVfJjojSn0TZcsi3w',
-        android: {
-            notification: {
-                tag: `event_test`,
-            },
-        },
-    };
-
-    console.log("Token: ", message.token);
-
-    getMessaging()
-        .send(message)
-        .then((response) => {
-            console.log('Successfully sent message:', response);
-        })
-        .catch((error) => {
-            console.error('Error sending message:', error);
-        });
-
-        /*
     let events = [];
     try {
         const params = { TableName: 'event' };
@@ -97,7 +72,7 @@ const notifyUsers = async () => {
                     });
             }
         }
-    }*/
+    }
 };
 
 module.exports = notifyUsers;
