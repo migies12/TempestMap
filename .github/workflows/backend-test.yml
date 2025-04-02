@@ -50,7 +50,7 @@ jobs:
           
           # Verify the file was created (without exposing key)
           echo "Service account file generated successfully"
-          ls -la service-account.json
+          ls -la tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
       
       - name: Run Jest tests in backend
         run: |
