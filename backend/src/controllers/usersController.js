@@ -13,6 +13,8 @@ exports.createUser = async (req, res) => {
     const regToken = req.body.regToken || req.query.regToken;
     const notifications = req.body.notifications;
 
+    console.log(`latitude: ${latitude}, longitude: ${longitude}`);
+
     if (
         !name ||
         !location ||
