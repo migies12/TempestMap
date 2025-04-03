@@ -51,7 +51,7 @@
     npm install
     npm run test
     ```
-    NOTE: For the test to run, you need to config a Firebase Messaging Service in order to run the tests. This requires a special .json folder, placed where the "example-firebase-admin.json" file is located. A properly formatted .env file also needs to be present, in the same format as env.example. Please contact the team for environment files when needed. 
+    NOTE: For the test to run, you need to config a Firebase Messaging Service in order to run the tests. This requires a special .json file, placed where the "example-firebase-admin.json" file is located. A properly formatted .env file also needs to be present, in the same format as env.example. Please contact the team for environment files when needed, this may be available along with the canvas submission.
 
 
 ### 2.2. GitHub Actions Configuration Location
