@@ -39,8 +39,11 @@
 
     <!-- Event colors -->
     <color name="wildfire_color">#FF5722</color>
-    <color name="earthquake_color">#8BC34A</color>
-    <color name="default_event_color">#2196F3</color>
+    <color name="earthquake_color">#795548</color>
+    <color name="flood_color">#2196F3</color>
+    <color name="hurricane_color">#9C27B0</color>
+    <color name="storm_color">#03A9F4</color>
+    <color name="default_event_color">#757575</color>
 
     <!-- User Marker Colors -->
     <color name="safehouse_color">#4CAF50</color> <!-- Green -->

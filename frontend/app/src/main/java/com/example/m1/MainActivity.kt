@@ -198,4 +198,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun updateBottomNavSelection(itemId: Int) {
+        try {
+            // Make sure bottomNav is initialized
+            if (::bottomNav.isInitialized) {
+                bottomNav.selectedItemId = itemId
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating bottom nav selection: ${e.message}", e)
+        }
+    }
 }
