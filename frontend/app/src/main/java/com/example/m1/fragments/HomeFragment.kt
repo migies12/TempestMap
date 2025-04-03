@@ -94,15 +94,15 @@ class HomeFragment : Fragment() {
 
     private fun navigateToMapFragment() {
         try {
-            // Update bottom navigation selection if possible
-            (activity as? MainActivity)?.let { mainActivity ->
-                mainActivity.updateBottomNavSelection(R.id.nav_map)
-            }
-
-            // Navigate to map fragment
+            // First navigate to map fragment
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, MapboxFragment())
                 .commit()
+
+            // Then update bottom navigation selection
+            (activity as? MainActivity)?.let { mainActivity ->
+                mainActivity.updateBottomNavSelection(R.id.nav_map)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error navigating to map: ${e.message}", e)
             Toast.makeText(context, "Error navigating to map", Toast.LENGTH_SHORT).show()
@@ -111,15 +111,15 @@ class HomeFragment : Fragment() {
 
     private fun navigateToAlertsFragment() {
         try {
-            // Update bottom navigation selection if possible
-            (activity as? MainActivity)?.let { mainActivity ->
-                mainActivity.updateBottomNavSelection(R.id.nav_alerts)
-            }
-
-            // Navigate to alerts fragment
+            // First navigate to alerts fragment
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, AlertsFragment())
                 .commit()
+
+            // Then update bottom navigation selection
+            (activity as? MainActivity)?.let { mainActivity ->
+                mainActivity.updateBottomNavSelection(R.id.nav_alerts)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error navigating to alerts: ${e.message}", e)
             Toast.makeText(context, "Error navigating to alerts", Toast.LENGTH_SHORT).show()
@@ -141,20 +141,20 @@ class HomeFragment : Fragment() {
 
     private fun navigateToProfileFragment() {
         try {
-            // Update bottom navigation selection if possible
-            (activity as? MainActivity)?.let { mainActivity ->
-                mainActivity.updateBottomNavSelection(R.id.nav_profile)
-            }
-
             // Determine which fragment to show based on sign-in status
             val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val isSignedIn = sharedPreferences.getBoolean("isSignedIn", false)
             val fragment = if (isSignedIn) ProfileFragment() else SignInFragment()
 
-            // Navigate to appropriate fragment
+            // First navigate to appropriate fragment
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit()
+
+            // Then update bottom navigation selection
+            (activity as? MainActivity)?.let { mainActivity ->
+                mainActivity.updateBottomNavSelection(R.id.nav_profile)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error navigating to profile: ${e.message}", e)
             Toast.makeText(context, "Error navigating to profile", Toast.LENGTH_SHORT).show()
@@ -163,18 +163,18 @@ class HomeFragment : Fragment() {
 
     private fun navigateToMapFragmentForMarkerPlacement() {
         try {
-            // Update bottom navigation selection if possible
-            (activity as? MainActivity)?.let { mainActivity ->
-                mainActivity.updateBottomNavSelection(R.id.nav_map)
-            }
-
             // Create map fragment (could pass data to indicate marker placement mode)
             val mapFragment = MapboxFragment()
 
-            // Navigate to map fragment
+            // First navigate to map fragment
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, mapFragment)
                 .commit()
+
+            // Then update bottom navigation selection
+            (activity as? MainActivity)?.let { mainActivity ->
+                mainActivity.updateBottomNavSelection(R.id.nav_map)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error navigating to map for marker placement: ${e.message}", e)
             Toast.makeText(context, "Error navigating to map", Toast.LENGTH_SHORT).show()

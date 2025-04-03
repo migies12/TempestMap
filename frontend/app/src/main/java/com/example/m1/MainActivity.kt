@@ -54,9 +54,10 @@ class MainActivity : AppCompatActivity() {
 
     private val activityScope = CoroutineScope(Dispatchers.Main)
 
-    lateinit var bottomNav : BottomNavigationView
+    // Initialize bottomNav property
+    private lateinit var bottomNav: BottomNavigationView
 
-    private  fun loadFragment(fragment: Fragment){
+    private fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container,fragment)
         transaction.commit()
@@ -169,7 +170,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        // Initialize the bottomNav field
+        bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+
         bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
@@ -202,7 +205,10 @@ class MainActivity : AppCompatActivity() {
         try {
             // Make sure bottomNav is initialized
             if (::bottomNav.isInitialized) {
+                Log.d(TAG, "Updating bottom nav selection to: $itemId")
                 bottomNav.selectedItemId = itemId
+            } else {
+                Log.e(TAG, "bottomNav is not initialized")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error updating bottom nav selection: ${e.message}", e)
