@@ -52,7 +52,7 @@ const appendEvents = async (events) => {
 
         try {
             await dynamoDB.put(params).promise();
-            notifyUsers();
+            notifyUsers(); // Notify users when new data is added
             console.log(`Inserted event ${event.event_id}`);
         } catch (error) {
             console.error(`Error inserting event ${event.event_id}:`, error);

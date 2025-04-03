@@ -8,7 +8,7 @@ const { getMessaging } = require('firebase-admin/messaging');
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("../tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json");
+var serviceAccount = require("../tempestmap-f0234-firebase-adminsdk-fbsvc-72247d1ba6.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)

@@ -51,7 +51,7 @@
     npm install
     npm run test
     ```
-    NOTE: For the test to run, you need config a firebase messging service in order to run the tests, please contact the team for environment files when needed. 
+    NOTE: For the test to run, you need to config a firebase messaging service in order to run the tests, please contact the team for environment files when needed. 
 
 
 ### 2.2. GitHub Actions Configuration Location
@@ -71,7 +71,7 @@
 
 ### 2.6  Reasoning For Files with < 100% coverage
 
-- `notificationService`: The firebase notification service is unable to be mocked for certian failure scenarios hindering the statement coverage for the code
+- `notificationService`: The firebase notification service is unable to be mocked for certain failure scenarios hindering the statement coverage for the code
 
 
 ---
