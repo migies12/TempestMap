@@ -34,7 +34,7 @@
 
 #### 2.1.2. Commit Hash Where Tests Run
 
-`__TO_BE_DONE___`
+`919ac261bda4ada7aa9d69e0ec2152c29e619d50`
 
 #### 2.1.3. Explanation on How to Run the Tests
 
