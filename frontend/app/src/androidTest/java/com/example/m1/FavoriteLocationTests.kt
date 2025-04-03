@@ -64,6 +64,7 @@ class FavoriteLocationTests {
 
         Thread.sleep(5000) // Let map load
 
+        // Clicks on the screen, Adjust X or Y position if you are having troubles
         onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
 
@@ -72,7 +73,7 @@ class FavoriteLocationTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 250 // Adjust X position
+                val x = screenPos[0] + 550 // Adjust X position
                 val y = screenPos[1] + 100// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
@@ -128,6 +129,7 @@ class FavoriteLocationTests {
 
         Thread.sleep(5000)
 
+        // Clicks on the screen, Adjust X or Y position if you are having troubles
         onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
 
@@ -136,7 +138,7 @@ class FavoriteLocationTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 250 // Adjust X position
+                val x = screenPos[0] + 550 // Adjust X position
                 val y = screenPos[1] + 100// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(

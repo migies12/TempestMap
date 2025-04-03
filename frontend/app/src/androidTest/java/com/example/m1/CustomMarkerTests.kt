@@ -71,7 +71,10 @@ class CustomMarkerTests {
 
         onView(withText("Create Marker")).perform(click())
 
-        onView(isRoot()).perform(object : ViewAction {
+        Thread.sleep(2000)
+
+        // Clicks on the screen, adjust X or Y position to a point on the map without a marker if you are having troubles
+        onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
 
             override fun getDescription() = "Click at specific position"
@@ -79,15 +82,25 @@ class CustomMarkerTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 450 // Adjust X position
-                val y = screenPos[1] + 200// Adjust Y position
+                val x = screenPos[0] + 350 // Adjust X position
+                val y = screenPos[1] + 250// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0))
+                        MotionEvent.obtain(
+                            0,
+                            0,
+                            MotionEvent.ACTION_DOWN,
+                            x.toFloat(),
+                            y.toFloat(),
+                            0
+                        ),
+                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0)
+                    )
                 )
             }
         })
+
+        Thread.sleep(2000)
 
         onView(withText("Add a Custom Marker"))
             .inRoot(isDialog())
@@ -101,7 +114,8 @@ class CustomMarkerTests {
 
         Thread.sleep(2000)
 
-        onView(isRoot()).perform(object : ViewAction {
+        // Clicks on the screen, adjust X or Y position to a point on the map without a marker if you are having troubles
+        onView(isRoot()).perform(object : ViewAction { // Click somewhere
             override fun getConstraints() = isDisplayed()
 
             override fun getDescription() = "Click at specific position"
@@ -109,12 +123,20 @@ class CustomMarkerTests {
             override fun perform(uiController: UiController, view: View) {
                 val screenPos = IntArray(2)
                 view.getLocationOnScreen(screenPos)
-                val x = screenPos[0] + 450 // Adjust X position
-                val y = screenPos[1] + 200// Adjust Y position
+                val x = screenPos[0] + 350 // Adjust X position
+                val y = screenPos[1] + 250// Adjust Y position
                 uiController.injectMotionEventSequence(
                     listOf(
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x.toFloat(), y.toFloat(), 0),
-                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0))
+                        MotionEvent.obtain(
+                            0,
+                            0,
+                            MotionEvent.ACTION_DOWN,
+                            x.toFloat(),
+                            y.toFloat(),
+                            0
+                        ),
+                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x.toFloat(), y.toFloat(), 0)
+                    )
                 )
             }
         })

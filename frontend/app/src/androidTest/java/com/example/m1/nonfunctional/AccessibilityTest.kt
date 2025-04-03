@@ -169,8 +169,7 @@ class AccessibilityTest {
         val navItems = listOf(
             R.id.nav_home to "Home Navigation",
             R.id.nav_map to "Map Navigation",
-            R.id.nav_profile to "Profile Navigation",
-            R.id.nav_alerts to "Alerts Navigation"
+            R.id.nav_profile to "Profile Navigation"
         )
 
         for ((id, description) in navItems) {

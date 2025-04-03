@@ -16,10 +16,10 @@
       <SelectionState runConfigName="FavoriteLocationTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AccessibilityTest">
+      <SelectionState runConfigName="CustomMarkerTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ErrorHandlingTests">
+      <SelectionState runConfigName="NotificationTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
