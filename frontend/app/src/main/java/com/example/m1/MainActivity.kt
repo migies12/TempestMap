@@ -192,10 +192,6 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(fragment)
                     true
                 }
-                R.id.nav_alerts -> {
-                    loadFragment(AlertsFragment())
-                    true
-                }
                 else -> false
             }
         }

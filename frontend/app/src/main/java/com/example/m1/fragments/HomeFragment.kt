@@ -109,23 +109,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun navigateToAlertsFragment() {
-        try {
-            // First navigate to alerts fragment
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, AlertsFragment())
-                .commit()
-
-            // Then update bottom navigation selection
-            (activity as? MainActivity)?.let { mainActivity ->
-                mainActivity.updateBottomNavSelection(R.id.nav_alerts)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error navigating to alerts: ${e.message}", e)
-            Toast.makeText(context, "Error navigating to alerts", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun navigateToFavoritesFragment() {
         try {
             // For favorites, we don't update bottom nav since it's not a main tab

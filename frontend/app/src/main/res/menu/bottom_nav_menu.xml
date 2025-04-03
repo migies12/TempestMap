@@ -12,11 +12,6 @@
         android:title="Map"/>
 
     <item
-        android:id="@+id/nav_alerts"
-        android:icon="@drawable/alerts"
-        android:title="Alerts"/>
-
-    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/profile"
         android:title="Profile"/>
