@@ -27,8 +27,8 @@ jobs:
       - name: Generate Firebase service account file
         working-directory: ./backend/src
         run: |
-          echo '${{ secrets.JSON_ENV }}' > tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
-          jq '.' tempestmap-f0234-firebase-adminsdk-fbsvc-cb8db3f6e9.json
+          echo '${{ secrets.JSON_ENV }}' > tempestmap-f0234-firebase-adminsdk-fbsvc-72247d1ba6.json
+          jq '.' tempestmap-f0234-firebase-adminsdk-fbsvc-72247d1ba6.json
           
       - name: Run Jest tests in backend
         run: |
